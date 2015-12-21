@@ -65,7 +65,7 @@ public class Roster{
             throw new IllegalArgumentException(ID + " is already taken.");
         map[ID] = new Student(ID);
         ++numStudents;
-	 }
+	}
 	 
     /**
 	 * Resizes this Roster to allow addition of more Students. If shrinking
@@ -73,9 +73,9 @@ public class Roster{
 	 *
 	 * @param newSize New size of Roster.
 	 */
-    public void resize(int newSize){
-    /*
-     * @todo Implement
-     */
+	public void resize(int newSize){
+	/*
+	 * @todo Implement
+	 */
     }
 }
