@@ -1,43 +1,3 @@
-/*
-public class FeedbackEntry {
-
-	private boolean good=true;
-	private int grading=-1;
-	private int userID;
-	private int partnerID;
-	public FeedbackEntry(String swagString, NRList map)
-	{
-		
-			System.out.println(swagString);
-			String[] seperated= swagString.split(",");
-			if(seperated.length != 6){
-				good = false;
-				return;
-			}
-			if(seperated[0].equals("")||seperated[1].equals(""))
-			{
-				good=false;
-				
-				return;
-			}
-			String tempUser=seperated[0].substring(1,seperated[0].length()-1);
-			String tempPartner=seperated[1].substring(1,seperated[1].length()-1);
-			
-	}
-	
-	public int getUserID() {return userID;}
-	public int getPartnerID() {return partnerID;}
-	public boolean valid()  {return good;}
-	public int getGrading() {return grading;}
-	
-	public String toString(){
-		if (!good)
-			return "INVALID ENTRY";
-		return userID + "." + partnerID + " " + grading;
-	}
-			
-}
-*/
 	import java.text.SimpleDateFormat;
 /**
 	 *  This class is a simple data structure that represents an entry from the CS125
@@ -46,7 +6,7 @@ public class FeedbackEntry {
 	 *  @author CS125 Research
 	 */
 	import java.util.*;
-	public class FeedbackEntry{
+	public final class FeedbackEntry{
 		
 		private boolean good = false;
 		private int grade = -1;
@@ -57,7 +17,7 @@ public class FeedbackEntry {
 		private Date date;
 		
 		/**
-		 * String constructor. Takes an unprocessed line from a CVS file and
+		 * String constructor. Takes an unprocessed line from a CSV file and
 		 * parses it as a valid FeedbackEntry using a passed-in NRList to
 		 * verify NetIDs. The constructor exits early and marks the entry as
 		 * bad if any NetIDs are missing or do not belong to any students in
@@ -117,17 +77,18 @@ public class FeedbackEntry {
 		/**
 		 *  @return The student's report on what he/she understood from lecture.
 		 */
-		public String  getStrength()  {return strengths;}
+		public String  getStrength()  { return strengths; }
 
 		/**
-		 *  @return The student's report on what he/she did not understand from lecture.
+		 *  @return The student's report on what he/she did not understand from 
+		 *          lecture.
 		 */
-		public String  getWeakness()  {return weaknesses;}
+		public String  getWeakness()  { return weaknesses; }
 
 		/**
 		 *  @return The date of this entry.
 		 */
-		public Date  getDate()      {return date;}
+		public Date    getDate()      { return new Date(date.getTime()); }
 
 		/**
 		 *  Method that indicates whether this entry has any written
@@ -165,18 +126,19 @@ public class FeedbackEntry {
 		 *  @param line The line to be validated. 
 		 */
 		private void checkCorruptData(String line){
+			SimpleDateFormat tst = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 			try{
 				String[] separated = splitCommas(line);
-				date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(separated[5]);
+				Date tmp1 = tst.parse(separated[5]);
+				int tmp2 = Integer.parseInt(separated[2]);
 			}catch(Exception e){
 				throw new IllegalArgumentException(line);
 			}
 		}
 
 		/**
-		 *  Possibly useful method that processes written feedback for better
-		 *  representation. For example, should remove newlines and excessive
-		 *  spaces.
+		 *  Method that processes written feedback for better representation. 
+		 *  For example, should remove newlines and leading whitespaces.
 		 *
 		 *  @param An unprocessed string of written feedback.
 		 *  @return A processed string of written feedback.
@@ -184,28 +146,22 @@ public class FeedbackEntry {
 		private String process(String unprocessed){
 			if (unprocessed.length() == 0)
 				return unprocessed;
-			unprocessed = unprocessed.replace("\n", " "); //Not sure if matters, but removes newlines
-			return unprocessed.trim();      //Trims gets rid of trailing/leading whitespace
+			unprocessed = unprocessed.replace("\n", " "); //Removes newlines
+			return unprocessed.trim();      //Removes trailing/leading whitespace
 		}
 	
-	/*
-	 * @todo Implement this to make sure to ignore commas in quotes.
-	 */
+
 		 /**
-		  * Private helper method for constructor. Splits a string into a String[],
-		  * splitting at (and getting rid of) commas ONLY IF those commas are not 
-		  * enclosed by quotes. Note that CSV files represent user-input quotation
-		  * marks as double-double quotes (""). So {"We got into ""aggressive 
-		  * negotations""", "What's that?", "Negotiations with a lightsaber."} 
-		  * should be parsed as {We got into "aggressive negotations"} {What's 
-		  * that?} {Negotations with a lightsaber.}. Also converts double-double 
-		  * quotes into ordinary double quotes and implicitly throws an exception 
-		  * if the number of partitions is not exactly 6.
+		  *  Private helper method for constructor. Splits a string into a String[],
+		  *  splitting at (and getting rid of) commas ONLY IF those commas are not 
+		  *  enclosed by quotes. Also converts double-double quotes into ordinary 
+		  *  double quotes and implicitly throws an exception if the number of 
+		  *  partitions is not exactly 6.
 		  *
-		  * @params input The string to be parsed from a CVS file.
+		  *  @params input The string to be parsed from a CVS file.
 		  *
-		  * @return A String array containing the formatted contents of input, 
-		  *         split at commas only if they are enclosed by quotation marks.
+		  *  @return A String array containing the formatted contents of input, 
+		  *          split at commas only if they are enclosed by quotation marks.
 		  */
 		private static String[] splitCommas(String input)
 		{
@@ -221,7 +177,6 @@ public class FeedbackEntry {
 		            if (current == '\"'){
 		                evenQuotes = !evenQuotes;
 		                if (lastQuote && !evenQuotes){
-		                    //System.out.print(current);
 		                    build.append(current);
 		                    lastQuote = false;
 		                    continue;
@@ -229,7 +184,6 @@ public class FeedbackEntry {
 		                    lastQuote = true;
 		            }else if (!evenQuotes){
 		                build.append(current);
-		                //System.out.print(current);
 		                lastQuote = false;
 		            }
 		        }
