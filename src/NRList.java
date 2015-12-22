@@ -89,7 +89,7 @@ public class NRList implements Iterable{
 		
 		public NRIterator()      { curr = 0; }
 		public boolean hasNext() { return curr < pairList.size(); }
-		public NetIDPair next()  { return pairList[curr++]; }
+		public NetIDPair next()  { return pairList.get(curr++); }
 		public void remove()     { throw new UnsupportedOperationException(); }
 	}
 }
