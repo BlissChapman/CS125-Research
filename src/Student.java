@@ -9,6 +9,8 @@ import java.util.ArrayList;
  * @todo Implement everything
  */
 public class Student{
+	public static final float WEIGHT_PROPORTIONALITY_CONSTANT = 1;
+	
 	private int ID;
 	//private boolean female; //One possibility for what we could store here
 	private ArrayList<FeedbackEntry> records;
@@ -45,7 +47,16 @@ public class Student{
 	 * @return The weight given to this Student's feedback.
 	 */
 	public double feedbackWeight(){
-		return weight; //Not complete
+		
+		int numberOfCommonResponses = 0; // For now, if the feedback was 5 or 10, it's not important
+		for(int i = 0; i < records.size(); i++){
+			if(records.get(i).getGrade() == 5 || records.get(i).getGrade() == 10){
+				numberOfCommonResponses++;
+			}
+		}
+		
+		weight = (2*records.size())/numberOfCommonResponses;
+		return WEIGHT_PROPORTIONALITY_CONSTANT*weight;
 	}
 
 	/**
