@@ -1,4 +1,4 @@
-import Java.util.ArrayList;
+import java.util.ArrayList;
 
 /**
  * Important: Student class. Stores information regarding a particular Student in class, 
@@ -32,7 +32,8 @@ public class Student{
 	 * @param entry The first FeedbackEntry made by this student.
 	 */
 	public Student(int code, FeedbackEntry entry){
-		Student(code);
+		this(code); // Pranay: My IDE throws an error if I use the line below instead. (Ref to #9)
+//		Student(code);
 		records.add(entry);
 	}
 
