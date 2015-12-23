@@ -10,6 +10,7 @@ import java.util.ArrayList;
  */
 public class Student{
 	public static final float WEIGHT_PROPORTIONALITY_CONSTANT = 1;
+	public static final float WEIGHT_THRESHOLD = 10;
 	
 	private int ID;
 	//private boolean female; //One possibility for what we could store here
@@ -43,6 +44,9 @@ public class Student{
 	 * Computes and returns the weight of this Student, used when calculating
 	 * weighted grade distributions for a Lecture. 
 	 *
+	 * Formula: (2 * Number of records by student) / (Number of times the record had a feedback rating of 5 OR 10)
+	 * 	Weight can be a max of WEIGHT_THRESHOLD
+	 *
 	 * @return The weight given to this Student's feedback.
 	 */
 	public double feedbackWeight(){
@@ -53,8 +57,14 @@ public class Student{
 				numberOfCommonResponses++;
 			}
 		}
+		if(numberOfCommonResponses > 0)
+			weight = (2*records.size())/numberOfCommonResponses;
+		else
+			weight = WEIGHT_THRESHOLD;
 		
-		weight = (2*records.size())/numberOfCommonResponses;
+		if(weight > WEIGHT_THRESHOLD)
+			weight = WEIGHT_THRESHOLD;
+		
 		return WEIGHT_PROPORTIONALITY_CONSTANT*weight;
 	}
 
