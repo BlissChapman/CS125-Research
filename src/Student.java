@@ -42,7 +42,6 @@ public class Student{
 	/**
 	 * Computes and returns the weight of this Student, used when calculating
 	 * weighted grade distributions for a Lecture. 
-	 * @todo Insert implementation.
 	 *
 	 * @return The weight given to this Student's feedback.
 	 */
