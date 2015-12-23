@@ -64,6 +64,9 @@ public class LectureInitializer {
 			System.out.println(lectures.get(j).toString());
 			System.out.println("\tRating Distribution:");
 			System.out.print("\t\t");
+			
+			//Perhaps this is what you meant? -Bliss
+			//int[] values = lectures.get(j).getRatingDistribution();
 			int[] values = lectures.get(j).getValues();
 			for(int i = 0; i < values.length; i++) {
 				System.out.print((i + 1) + ": " + values[i] + ", ");
