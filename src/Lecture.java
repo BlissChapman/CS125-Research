@@ -55,6 +55,35 @@ public class Lecture {
 	}
 	
 	/**
+	 * Static method that uses a right-biased binary search of existing Lectures
+	 * to associate a FeedbackEntry with a Lecture. Runs in logarithmic time with respect to the number of 
+	 * Lectures.
+	 *
+	 * @param key The entry to be associated with a Lecture.
+	 *
+	 * @return The Lecture corresponding to an entry.
+	 */
+	public static Lecture get(FeedbackEntry key){
+		ArrayList<Lecture> lecs = LectureInitializer.lectures;
+		int lo = 0;
+		int hi = lecs.size()-1;
+		Date search = key.getDate();
+		while (hi != lo){
+			int mid = (lo + hi + 1)/2;
+			Date comp = lecs.get(mid).getDate();
+			switch (search.compareTo(comp)){
+			case -1:
+				hi = mid-1; break; //Can exclude Dates that come after target
+			case 1:
+				lo = mid; break;  //Can't exclude Dates that come before
+			default:
+				return lecs.get(mid); //Unlikely case of exact match
+			}
+		}
+		return lecs.get(lo);
+	}
+	
+	/**
 	 * Method that returns the unadjusted rating distribution of all
 	 * FeedbackEntries for this Lecture. The 0th element of this
 	 * array corresponds to the number of entries with ratings of
@@ -107,7 +136,7 @@ public class Lecture {
 	 *         "Mean: %, Standard Deviation: %"
 	 */
 	public String toString(){
-		return String.format("ID: %d\n\tDate: ", ID) + date + String.format("\n\tNumber of Entries: %d\n\t"
+		return String.format("ID: %d\n\tDate: ", lectureNumber) + date + String.format("\n\tNumber of Entries: %d\n\t"
 				+ "Mean: %f\n\tStandard Deviation: %f", recordsByTime.size(), getAverage(), getStdDev());		
 	}	
 }
