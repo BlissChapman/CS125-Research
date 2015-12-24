@@ -1,7 +1,9 @@
 import java.util.*;
 
-//A model for a lecture object with a unique id corresponding to the lecture number,
-//all the associated feedback entries, the date, and the lecture topics.
+/**
+ * A model for a lecture object with a unique id corresponding to the lecture number, all the associated feedback entries, the date, and the lecture topics.
+ * @author CS125Research
+ */
 public class Lecture implements Iterable<FeedbackEntry>{
 
 	private static int AUTO_INCREMENT = 0;
