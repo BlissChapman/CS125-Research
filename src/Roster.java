@@ -79,7 +79,7 @@ public class Roster{
 		if (newSize < max)
 			throw new
 			    IndexOutOfBoundsException("Minimum capacity needed: " + max);
-		newMap = new Student[newSize];
+		Student[] newMap = new Student[newSize];
 		for (int i = 0; i < map.length; ++i)
 			newMap[i] = map[i];
 		map = newMap;
