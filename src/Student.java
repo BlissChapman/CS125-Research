@@ -1,4 +1,4 @@
-import Java.util.ArrayList;
+import java.util.ArrayList;
 
 /**
  * Important: Student class. Stores information regarding a particular Student in class, 
@@ -9,6 +9,9 @@ import Java.util.ArrayList;
  * @todo Implement everything
  */
 public class Student{
+	public static final float WEIGHT_PROPORTIONALITY_CONSTANT = 1;
+	public static final float WEIGHT_THRESHOLD = 10;
+	
 	private int ID;
 	//private boolean female; //One possibility for what we could store here
 	private ArrayList<FeedbackEntry> records;
@@ -32,19 +35,37 @@ public class Student{
 	 * @param entry The first FeedbackEntry made by this student.
 	 */
 	public Student(int code, FeedbackEntry entry){
-		Student(code);
+		this(code); // Pranay: My IDE throws an error if I use the line below instead. (Ref to #9)
+//		Student(code);
 		records.add(entry);
 	}
 
 	/**
 	 * Computes and returns the weight of this Student, used when calculating
 	 * weighted grade distributions for a Lecture. 
-	 * @todo Insert implementation.
+	 *
+	 * Formula: (2 * Number of records by student) / (Number of times the record had a feedback rating of 5 OR 10)
+	 * 	Weight can be a max of WEIGHT_THRESHOLD
 	 *
 	 * @return The weight given to this Student's feedback.
 	 */
 	public double feedbackWeight(){
-		return weight; //Not complete
+		
+		int numberOfCommonResponses = 0; // For now, if the feedback was 5 or 10, it's not important
+		for(int i = 0; i < records.size(); i++){
+			if(records.get(i).getGrade() == 5 || records.get(i).getGrade() == 10){
+				numberOfCommonResponses++;
+			}
+		}
+		if(numberOfCommonResponses > 0)
+			weight = (2*records.size())/numberOfCommonResponses;
+		else
+			weight = WEIGHT_THRESHOLD;
+		
+		if(weight > WEIGHT_THRESHOLD)
+			weight = WEIGHT_THRESHOLD;
+		
+		return WEIGHT_PROPORTIONALITY_CONSTANT*weight;
 	}
 
 	/**
