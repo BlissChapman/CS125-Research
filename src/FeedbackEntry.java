@@ -25,8 +25,8 @@
 		 * cannot represent an entry made by a student. Useful for debugging.]
 		 *
 		 *  @param data  An unprocessed line to parse. Must be formatted in the
-		 *               form "netid1", "netid2", "5", "Strengths", "Weaknesses", 
-		 *               "Date";
+		 *               form "netid1", "netid2", "5", "Strengths", 
+		 *               "Weaknesses", "Date";
 		 *  @param map   A list of all netIDs of students in the class
 		 *               and their corresponding codes.
 		 */
@@ -46,14 +46,45 @@
 			strengths = separated[3];
 			weaknesses = separated[4];
 			try{
-				date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(separated[5]);
+				date = new 
+				    SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(separated[5]);
 			}catch(Exception e){}
 		}
 		
 		/**
-		 *  Returns true if this entry is valid. This implies that both NetID codes
-		 *  were entered and actually represent real students and that the grade was
-		 *  between 1 and 10. We might also want to check that the dates are valid.
+		 * This merge constructor creates a FeedbackEntry whose parameters are
+		 * all the same as those of the last element in the argument, except
+		 * for the written feedback parameters. These parameters are formed
+		 * from a processed concatenation of all elements in the argument.
+		 * 
+		 * @param duplicates An array of FeedbackEntries corresponding to the
+		 *                   same lecture and having the same personID.
+		 */
+		public FeedbackEntry(FeedbackEntry[] duplicates){
+			int last = duplicates.length - 1;
+			personID = duplicates[last].personID;
+			partnerID = duplicates[last].partnerID;
+			grade = duplicates[last].grade;
+			good = duplicates[last].good;
+			if (duplicates.length == 1){
+				strengths = duplicates[0].strengths;
+				weaknesses = duplicates[0].weaknesses;
+				return;
+			}
+			StringBuilder strBuild = new StringBuilder();
+			StringBuilder weakBuild = new StringBuilder();
+			for (FeedbackEntry elem : duplicates){
+				strBuild.append('{' + elem.strengths + '}');
+				weakBuild.append('{' + elem.weaknesses + '}');
+			}
+			strengths = strBuild.toString();
+			weaknesses = weakBuild.toString();
+		}
+		
+		/**
+		 * Returns true if this entry is valid. This implies that both NetID 
+		 * codes were entered and actually represent real students and that the 
+		 * grade was between 1 and 10 and that the date was a valid date.
 		 *
 		 *  @return True for valid entries, false for invalid entries.
 		 */
@@ -86,13 +117,13 @@
 		public String  getWeakness()  { return weaknesses; }
 
 		/**
-		 *  @return The date of this entry.
+		 *  @return A copy of the date of this entry.
 		 */
 		public Date    getDate()      { return new Date(date.getTime()); }
 
 		/**
 		 *  Method that indicates whether this entry has any written
-		 *  feedback information at all. Potentially useful later on?
+		 *  feedback information at all.
 		 *
 		 *  @return True if either weaknesses or strengths is nonempty, false
 		 *          otherwise.
@@ -105,12 +136,12 @@
 		 *  Returns a simple but complete representation of this entry. Note
 		 *  that invalid entries return "INVALID ENTRY". Not for file writing.
 		 *
-		 *  @return "INVALID_ENTRY" for invalid entries or a single-line representation
-		 *          of all data members of this entry.
+		 *  @return "INVALID_ENTRY" for invalid entries or a single-line 
+		 * 			representation of all data members of this entry.
 		 */
 		public String toString(){
-			String result = String.format("Student: %d Partner: %d Grade: %d Good: " + 
-			                     "\"%s\" Bad: \"%s\" Date: %s", 
+			String result = String.format("Student: %d Partner: %d Grade: %d"
+			                  + "Good: \"%s\" Bad: \"%s\" Date: %s", 
 			                     personID, partnerID, grade,
 			                     strengths, weaknesses, date);
 			return (!good ? "INVALID ENTRY: ":"") + result;
@@ -120,8 +151,8 @@
 		 *  Checks to see that a line passed into the constructor could possibly
 		 *  represent an entry (valid or otherwise) made by a student and stored
 		 *  in a CVS file. The method throws an IllegalArgumentException if the
-		 *  line is invalid, namely if it doesn't have the right number of elements
-		 *  or its elements are not surrounded with quotation marks.
+		 *  line is invalid, namely if it doesn't have the right number of
+		 *  elements or its elements are not surrounded with quotation marks.
 		 *
 		 *  @param line The line to be validated. 
 		 */
@@ -137,31 +168,31 @@
 		}
 
 		/**
-		 *  Method that processes written feedback for better representation. 
-		 *  For example, should remove newlines and leading whitespaces.
+		 * Method that processes written feedback for better representation. 
+		 * For example, should remove newlines and leading whitespaces.
 		 *
-		 *  @param An unprocessed string of written feedback.
-		 *  @return A processed string of written feedback.
+		 * @param An unprocessed string of written feedback.
+		 * @return A processed string of written feedback.
 		 */
 		private String process(String unprocessed){
 			if (unprocessed.length() == 0)
 				return unprocessed;
 			unprocessed = unprocessed.replace("\n", " "); //Removes newlines
-			return unprocessed.trim();      //Removes trailing/leading whitespace
+			return unprocessed.trim();     //Removes trailing/leading whitespace
 		}
 	
 
 		 /**
-		  *  Private helper method for constructor. Splits a string into a String[],
-		  *  splitting at (and getting rid of) commas ONLY IF those commas are not 
-		  *  enclosed by quotes. Also converts double-double quotes into ordinary 
-		  *  double quotes and implicitly throws an exception if the number of 
-		  *  partitions is not exactly 6.
+		  * Private helper method for constructor. Splits a String into a 
+		  * String[], splitting at (and getting rid of) commas ONLY IF those 
+		  * commas are not enclosed by quotes. Also converts double-double 
+		  * quotes into ordinary double quotes and implicitly throws an 
+		  * exception if the number of partitions is not exactly 6.
 		  *
 		  *  @params input The string to be parsed from a CVS file.
 		  *
 		  *  @return A String array containing the formatted contents of input, 
-		  *          split at commas only if they are enclosed by quotation marks.
+		  *          split at commas iff they are enclosed by quotation marks.
 		  */
 		private static String[] splitCommas(String input)
 		{
@@ -173,7 +204,8 @@
 		    int i = 0;
 		    char current = '\0';
 		    while (i < input.length()){
-		        while(i < input.length() && (current = input.charAt(i++)) != ',' || !evenQuotes){
+		        while(i < input.length() && 
+		              (current = input.charAt(i++)) != ',' || !evenQuotes){
 		            if (current == '\"'){
 		                evenQuotes = !evenQuotes;
 		                if (lastQuote && !evenQuotes){
@@ -194,13 +226,8 @@
 		        lastQuote = false;
 		    }
 		    partitions[partition++] = build.toString();
-		    if(partition != 6)
+		    if (partition != 6)
 		    	throw new IllegalArgumentException();
 		    return partitions;
 		}
 }
-		
-
-		
-
-
