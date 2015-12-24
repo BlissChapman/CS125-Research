@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
 //A model for a lecture object with a unique id corresponding to the lecture number,
 //all the associated feedback entries, the date, and the lecture topics.
@@ -159,5 +158,24 @@ public class Lecture {
 		+ String.format("\n\tNumber of Entries: %d\n\t"
 		    + "Mean: %f\n\tStandard Deviation: %f",
 		    recordsByTime.size(), ratingMean(), ratingStdDev());	
+	}
+	
+	/**
+	 * @return A chronological iterator through all FeedbackEntries in
+	 *         this Lecture.
+	 */
+	public FeedbackIterator iterator() { return new FeedbackIterator(); }
+	
+	/**
+	 * Iterator that goes through FeedbackEntries in chronological order.
+	 */
+	public class FeedbackIterator implements Iterator<FeedbackEntry>{
+		private int curr;
+		
+		public FeedbackIterator()    { curr = 0; }
+		public FeedbackEntry next()  { return recordsByTime.get(curr++); }
+		public boolean hasNext()     { return curr < recordsByTime.size(); }
+		public void remove()  { throw new UnsupportedOperationException(); }
+																				
 	}
 }
