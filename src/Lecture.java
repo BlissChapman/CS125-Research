@@ -19,8 +19,20 @@ public class Lecture {
 	 */
 	public Lecture(Date d){
 		lectureNumber = AUTO_INCREMENT++;
-		recordsByTime = new ArrayList<>();
-		date = d;
+		recordsByTime = new ArrayList<FeedbackEntry>();
+		date = new Date(d.getTime());
+	}
+	
+	/**
+	 * Constructor that adds one FeedbackEntry object to
+	 * the Lecture object after construction.
+	 * 
+	 * @param d     The time this lecture began.
+	 * @param entry The entry to be added to the new Lecture,
+	 */ 
+	public Lecture(Date d, FeedbackEntry entry){
+		this(d);
+		recordsByTime.add(entry);
 	}
 	
 	/**
@@ -32,7 +44,7 @@ public class Lecture {
 	 */
 	public Lecture(Date d, String[] topics){
 		this(d);
-		this.topics = topics;
+		this.topics = topics.clone();
 	}
 	
 	/**
@@ -56,8 +68,8 @@ public class Lecture {
 	
 	/**
 	 * Static method that uses a right-biased binary search of existing Lectures
-	 * to associate a FeedbackEntry with a Lecture. Runs in logarithmic time with respect to the number of 
-	 * Lectures.
+	 * to associate a FeedbackEntry with a Lecture. Runs in logarithmic time with
+	 * respect to the number of Lectures.
 	 *
 	 * @param key The entry to be associated with a Lecture.
 	 *
@@ -92,7 +104,7 @@ public class Lecture {
 	 * @return An array of ints in which arr[idx] represents the number
 	 *         of FeedbackEntries with ratings of (idx+1) in this Lecture
 	 */
-	public int[] getRatingDistribution() {
+	public int[] ratingDistribution() {
 		int[] values = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		for (FeedbackEntry element : recordsByTime)
 			values[element.getGrade() - 1]++;
@@ -105,7 +117,7 @@ public class Lecture {
 	 * 
 	 * @return The average rating of all FeedbackEntries in this Lecture
 	 */
-	public double getAverage(){
+	public double ratingMean(){
 		if (recordsByTime.isEmpty())
 			return -1;
 		double sum = 0;
@@ -121,14 +133,21 @@ public class Lecture {
 	 * @return The rating standard deviation of all FeedbackEntries in this 
 	 *         Lecture
 	 */
-	public double getStdDev(){
+	public double ratingStdDev(){
 		if (recordsByTime.isEmpty())
 			return -1;
 		double devSq = 0;
-		double mean = getAverage();
+		double mean = ratingMean();
 		for (FeedbackEntry element : recordsByTime)
 			devSq += Math.pow(element.getGrade()-mean,2);
 		return Math.sqrt(devSq/recordsByTime.size());
+	}
+	
+	/**
+	 * @return The number of FeedbackEntries in this Lecture.
+	 */
+	public int entryCount(){
+		return recordsByTime.size();
 	}
 	
 	/**
@@ -136,7 +155,9 @@ public class Lecture {
 	 *         "Mean: %, Standard Deviation: %"
 	 */
 	public String toString(){
-		return String.format("ID: %d\n\tDate: ", lectureNumber) + date + String.format("\n\tNumber of Entries: %d\n\t"
-				+ "Mean: %f\n\tStandard Deviation: %f", recordsByTime.size(), getAverage(), getStdDev());		
-	}	
+		return String.format("ID: %d\n\tDate: ", lectureNumber) + date
+		+ String.format("\n\tNumber of Entries: %d\n\t"
+		    + "Mean: %f\n\tStandard Deviation: %f",
+		    recordsByTime.size(), ratingMean(), ratingStdDev());	
+	}
 }
