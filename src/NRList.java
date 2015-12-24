@@ -1,36 +1,49 @@
 import java.util.ArrayList;
 import java.util.Iterator;
-
-public class NRList implements Iterable{
+/**
+ *  A simple map-like list of NetIDPairs with a file argument constructor.
+ *  Can return the code associated with a particular netID passed into its
+ *  getSecret() method.
+ *  @author CS125 Research
+ */
+public class NRList implements Iterable<NetIDPair>{
 	
 	ArrayList <NetIDPair> pairList = new ArrayList<NetIDPair>();
+	
 	/**
-	 * 
-	 * @param fileName
+	 * File argument constructor. Reads input file and fills up data
+	 * structure with NetIDPair objects from the file.
+	 *
+	 * @param inFile  The name of the file from which we read netIDs.
+	 * @param outFile Debug output file.
+	 * @param range   Range element for NetIDPair random generator.
 	 */
-	public NRList(String readFilePath, String writeFilePath, int randomness){
-		fillList(readFilePath, writeFilePath, randomness);
-		//printList();
-		
+	public NRList(String inFile, String outFile, int range){
+		fillList(inFile, outFile, range);
 	}
 	
-	
-	public void fillList(String readFilePath, String writeFilePath, int randomness)
+	/**
+	 * Helper function for constructor that does all the work.
+	 * Takes in filenames to get a source of NetIDs and a
+	 * range to determine the range of ID codes assigned. Also used
+	 * to add new NetIDPairs to an existing NRList.
+	 * 
+	 * @param readFilePath The source file for all NetIDs.
+	 * @param range        Upper bound on ID code assigned.
+	 */
+	public void fillList(String readFilePath, String writeFilePath, int range)
 	{
 		TextIO.readFile(readFilePath);
 		if (writeFilePath != null)
 			TextIO.writeFile(writeFilePath);
-		
-		
 		while(!TextIO.eof())
 		{
-			
 			String line = TextIO.getln();
 			String netID = line.split(",")[1];
 			NetIDPair potentialPair;
 			
 			do{
-				int randomID = (int)(Math.random()*randomness);
+				int randomID = (int)(Math.random()*range);
 				potentialPair = new NetIDPair(netID,randomID);
 			} while(check(potentialPair));
 	
@@ -38,30 +51,36 @@ public class NRList implements Iterable{
 		}
 	}
 	
-	private boolean check(NetIDPair potentialPair)
-	{
+	/**
+	 *  Private helper function that searches the NRList to ensure that
+	 *  no two NetIDPair instances therein correspond to the same code.
+	 *
+	 *  @param potentialPair  A potential NetIDPair that may be added to the list.
+	 *  @return True if the code of potentialPair isn't already found in
+	 *          the NRList.
+	 */
+	private boolean check(NetIDPair potentialPair){
 		boolean duplicate = false;
-		for(int x = 0; x < pairList.size(); x++)
-		{
+		for(int x = 0; x < pairList.size(); x++){
 			duplicate = pairList.get(x).getRandom()==potentialPair.getRandom();	
 			if(duplicate) break;
 		}
-
 		return duplicate;
 	}
 	
-	//may need to change to for loop
+	/**
+	 *  Returns the code corresponding to a given netID.
+	 *  
+	 *  @param netID  The netID whose code is being searched.
+	 * 
+	 *  @return  The code of the netID argument if it is found or -1 otherwise.
+	 */
 	public int getSecret(String netID)
 	{
-		//System.out.println("Runs getSecret");
 		for(NetIDPair elem : pairList)
-			if (elem.getNetID().equals(netID))
+			if (elem.equals(netID))
 				return elem.getRandom();
 		return -1;
-		//System.out.println(netID);
-		//if(netID.equals("null"))
-		//	return -1;
-		//return Integer.parseInt(netID);
 	}
 	
 	/**

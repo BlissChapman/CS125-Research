@@ -26,9 +26,9 @@ public class Roster{
 		 * should ensure that the range of Student ID codes is relatively small
 		 * or else the array will waste space.
 		 */
-		for (NetIDPair elem : codes.pairList){ //NRList needs a functionality like this
+		for (NetIDPair elem : codes){
 			map[elem.getRandom()] = new Student(elem.getRandom());
-			numStudents = codes.pairList.size(); //NRList needs a functionality like this
+			numStudents = codes.size();
 		}
 	}
 
@@ -63,8 +63,8 @@ public class Roster{
 			throw new IndexOutOfBoundsException(ID + " is out of Roster Range.");
 		if (map[ID] != null)
 			throw new IllegalArgumentException(ID + " is already taken.");
-	map[ID] = new Student(ID);
-	++numStudents;
+		map[ID] = new Student(ID);
+		++numStudents;
 	}
 	 
 	/**
@@ -74,8 +74,14 @@ public class Roster{
 	 * @param newSize New size of Roster.
 	 */
 	public void resize(int newSize){
-	/*
-	 * @todo Implement
-	 */
+		int max = map.length;
+		while (map[--max] == null);
+		if (newSize < max)
+			throw new
+			    IndexOutOfBoundsException("Minimum capacity needed: " + max);
+		Student[] newMap = new Student[newSize];
+		for (int i = 0; i < map.length; ++i)
+			newMap[i] = map[i];
+		map = newMap;
 	}
 }
