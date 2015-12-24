@@ -28,7 +28,7 @@ public class Roster{
 		 */
 		for (NetIDPair elem : codes){
 			map[elem.getRandom()] = new Student(elem.getRandom());
-			numStudents = codes.size();
+			numStudents = codes.pairList.size();
 		}
 	}
 

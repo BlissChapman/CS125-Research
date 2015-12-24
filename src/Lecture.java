@@ -23,18 +23,6 @@ public class Lecture implements Iterable<FeedbackEntry>{
 	}
 	
 	/**
-	 * Constructor that adds one FeedbackEntry object to
-	 * the Lecture object after construction.
-	 * 
-	 * @param d     The time this lecture began.
-	 * @param entry The entry to be added to the new Lecture,
-	 */ 
-	public Lecture(Date d, FeedbackEntry entry){
-		this(d);
-		recordsByTime.add(entry);
-	}
-	
-	/**
 	 * Constructor with argument to assign the topics for
 	 * the Lecture object.
 	 * 
