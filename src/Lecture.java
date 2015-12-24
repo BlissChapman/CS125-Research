@@ -36,6 +36,18 @@ public class Lecture {
 	}
 	
 	/**
+	 * Constructor with argument to assign the topics for
+	 * the Lecture object.
+	 * 
+	 * @param d     The time this lecture began.
+	 * @param entry A Feedback entry that was submitted for this Lecture
+	 */
+	public Lecture(Date d, FeedbackEntry entry){
+		this(d);
+		this.add(entry);
+	}
+	
+	/**
 	 * @return A copy of this Lecture's date.
 	 */
 	public Date getDate(){
@@ -52,6 +64,21 @@ public class Lecture {
 	 */
 	public void add(FeedbackEntry entry){
 		recordsByTime.add(entry);
+	}
+	
+	/**
+	 * Get the distribution of feedback number of entries that had a certain rating
+	 * 
+	 * @return A array where the first element would be the number of Feedback Entries that gave the Lecture a rating of 0, 2nd element -> rating of 1 and so on...
+	 * 
+	 * @param entry The entry to add to this Lecture. This entry should
+	 *              come after the last entry added to the Lecture.
+	 */
+	public int[] getValues() {
+		int[] values = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		for (FeedbackEntry element : recordsByTime)
+			values[element.getGrade() - 1]++;
+		return values;
 	}
 	
 	/**

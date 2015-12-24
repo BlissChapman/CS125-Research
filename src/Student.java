@@ -35,8 +35,7 @@ public class Student{
 	 * @param entry The first FeedbackEntry made by this student.
 	 */
 	public Student(int code, FeedbackEntry entry){
-		this(code); // Pranay: My IDE throws an error if I use the line below instead. (Ref to #9)
-//		Student(code);
+		this(code);
 		records.add(entry);
 	}
 

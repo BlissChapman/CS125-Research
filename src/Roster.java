@@ -26,9 +26,9 @@ public class Roster{
 		 * should ensure that the range of Student ID codes is relatively small
 		 * or else the array will waste space.
 		 */
-		for (NetIDPair elem : codes){ //NRList needs a functionality like this
-			map[elem.getID()] = new Student(elem.getID());
-			numStudents = codes.size(); //NRList needs a functionality like this
+		for (NetIDPair elem : codes.pairList){ //NRList needs a functionality like this
+			map[elem.getRandom()] = new Student(elem.getRandom());
+			numStudents = codes.pairList.size(); //NRList needs a functionality like this
 		}
 	}
 
@@ -42,7 +42,7 @@ public class Roster{
 	 * @return The student associated with the given code.
 	 */
 	public Student get(int ID){
-		if (ID >= map.size() || ID < 0)
+		if (ID >= map.length || ID < 0)
 			return null;
 		else
 			return map[ID];
@@ -59,7 +59,7 @@ public class Roster{
 	 * not be possible.
 	 */
 	public void addStudent(int ID){
-		if (ID < 0 || ID >= map.size())
+		if (ID < 0 || ID >= map.length)
 			throw new IndexOutOfBoundsException(ID + " is out of Roster Range.");
 		if (map[ID] != null)
 			throw new IllegalArgumentException(ID + " is already taken.");
