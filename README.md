@@ -11,12 +11,12 @@ The code base's structure is based on the raw data extracted from the lecture fe
 * **TextIO** is a utility class used extensively throughout CS125 to make reading from a text file much simpler.
 
 * **NetIDPair** is an ultra simple model of a Java object that holds the encrypted and non-encrypted information of a single net id from the roster.
-* **NRList** is a simple map-like list of NetIDPairs that can be passed a file path (to the roster).
-* **CleanFeedbackData** creates an array list of "uncleaned" feedback entries then creates a new "cleaned" list containing only valid FeedbackEntry objects as well as printing stats on the number of valid entries.
+* **NRList** is a simple map-like list of `NetIDPair` s that can be passed a file path (to the roster).
+* **CleanFeedbackData** creates an array list of "uncleaned" feedback entries then creates a new "cleaned" list containing only valid `FeedbackEntry` objects as well as printing stats on the number of valid entries.
 * **FeedbackEntry** is a simple data structure that represents an entry from the CS125 lecture feedback database. It contains a pair of encoded NetIDs, a grade, two feedback strings, and a date string.
 * **Lecture** is a model for a lecture object with a unique id corresponding to the chronological lecture number, all the associated feedback entries, the date, and the lecture topics.
-* **LectureInitializer** it runs through all the Feedback Entries that exist, creates Lecture objects corresponding to the data we have and associates all of the feedback entries linked to that Lecture (The Lecture object contains a list of Entries)
-* **Student** stores information regarding a particular Student including their lecture attendance, possibly grades and gender, and all their feedback interactions. A list of `Student` objects may frequently be iterated over.
+* **LectureInitializer** it runs through all the `FeedbackEntry` objects that exist, creates `Lecture` objects corresponding to the data we have and associates all of the `FeedbackEntry` objects linked to that `Lecture` (The `Lecture` object contains a list of Entries)
+* **Student** stores information regarding a particular `Student` including their lecture attendance, possibly grades and gender, and all their feedback interactions. A list of `Student` objects may frequently be iterated over.
 
 
 
