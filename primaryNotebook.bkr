@@ -48,10 +48,10 @@
             "title": "TextIO",
             "level": 3,
             "evaluatorReader": false,
-            "collapsed": true
+            "collapsed": false
         },
         {
-            "id": "code7ECF0c",
+            "id": "TextIO",
             "type": "code",
             "evaluator": "Java",
             "input": {
@@ -1069,11 +1069,11 @@
             },
             "output": {
                 "state": {},
-                "result": "com.twosigma.beaker.javash.bkrb11fb448.TextIO",
+                "result": "com.twosigma.beaker.javash.bkrab49826f.TextIO",
                 "selectedType": "Text",
                 "pluginName": "Java",
-                "shellId": "b11fb448-b9c9-4d12-bfe7-6c0f46e4d7c8",
-                "elapsedTime": 578
+                "shellId": "ab49826f-65c3-4408-8aaf-80a309bbcac6",
+                "elapsedTime": 573
             },
             "evaluatorReader": true,
             "lineCount": 1008,
@@ -1088,7 +1088,7 @@
             "collapsed": true
         },
         {
-            "id": "codeUp1WEE",
+            "id": "NetIDPair",
             "type": "code",
             "evaluator": "Java",
             "input": {
@@ -1147,11 +1147,11 @@
             },
             "output": {
                 "state": {},
-                "result": "com.twosigma.beaker.javash.bkrb11fb448.NetIDPair",
+                "result": "com.twosigma.beaker.javash.bkrab49826f.NetIDPair",
                 "selectedType": "Text",
                 "pluginName": "Java",
-                "shellId": "b11fb448-b9c9-4d12-bfe7-6c0f46e4d7c8",
-                "elapsedTime": 548
+                "shellId": "ab49826f-65c3-4408-8aaf-80a309bbcac6",
+                "elapsedTime": 557
             },
             "evaluatorReader": true,
             "lineCount": 49,
@@ -1166,7 +1166,7 @@
             "collapsed": true
         },
         {
-            "id": "codebCB7W8",
+            "id": "NRList",
             "type": "code",
             "evaluator": "Java",
             "input": {
@@ -1293,10 +1293,10 @@
             },
             "output": {
                 "state": {},
-                "result": "com.twosigma.beaker.javash.bkrb11fb448.NRList",
+                "result": "com.twosigma.beaker.javash.bkrab49826f.NRList",
                 "selectedType": "Text",
                 "pluginName": "Java",
-                "shellId": "b11fb448-b9c9-4d12-bfe7-6c0f46e4d7c8",
+                "shellId": "ab49826f-65c3-4408-8aaf-80a309bbcac6",
                 "elapsedTime": 552
             },
             "evaluatorReader": true,
@@ -1312,7 +1312,7 @@
             "collapsed": true
         },
         {
-            "id": "codeA8Ll80",
+            "id": "FeedbackEntry",
             "type": "code",
             "evaluator": "Java",
             "input": {
@@ -1555,19 +1555,36 @@
                     "\t\t",
                     "\t}",
                     "}"
-                ]
+                ],
+                "hidden": true
             },
             "output": {
                 "state": {},
-                "result": "com.twosigma.beaker.javash.bkrb11fb448.FeedbackEntry",
+                "result": "com.twosigma.beaker.javash.bkrab49826f.FeedbackEntry",
                 "selectedType": "Text",
                 "pluginName": "Java",
-                "shellId": "b11fb448-b9c9-4d12-bfe7-6c0f46e4d7c8",
-                "elapsedTime": 568
+                "shellId": "ab49826f-65c3-4408-8aaf-80a309bbcac6",
+                "elapsedTime": 549
             },
             "evaluatorReader": true,
             "lineCount": 238,
             "initialization": true
+        },
+        {
+            "id": "Lecture",
+            "type": "code",
+            "evaluator": "Java",
+            "input": {
+                "body": [
+                    ""
+                ]
+            },
+            "output": {
+                "state": {}
+            },
+            "evaluatorReader": true,
+            "initialization": true,
+            "tags": ""
         }
     ],
     "namespace": {}
