@@ -1069,11 +1069,11 @@
             },
             "output": {
                 "state": {},
-                "result": "com.twosigma.beaker.javash.bkr28670c17.TextIO",
+                "result": "com.twosigma.beaker.javash.bkrb11fb448.TextIO",
                 "selectedType": "Text",
                 "pluginName": "Java",
-                "shellId": "28670c17-eed5-4f75-811e-b172fdbb2c75",
-                "elapsedTime": 643
+                "shellId": "b11fb448-b9c9-4d12-bfe7-6c0f46e4d7c8",
+                "elapsedTime": 578
             },
             "evaluatorReader": true,
             "lineCount": 1008,
@@ -1147,11 +1147,11 @@
             },
             "output": {
                 "state": {},
-                "result": "com.twosigma.beaker.javash.bkr28670c17.NetIDPair",
+                "result": "com.twosigma.beaker.javash.bkrb11fb448.NetIDPair",
                 "selectedType": "Text",
                 "pluginName": "Java",
-                "shellId": "28670c17-eed5-4f75-811e-b172fdbb2c75",
-                "elapsedTime": 53
+                "shellId": "b11fb448-b9c9-4d12-bfe7-6c0f46e4d7c8",
+                "elapsedTime": 548
             },
             "evaluatorReader": true,
             "lineCount": 49,
@@ -1163,7 +1163,7 @@
             "title": "NRList",
             "level": 3,
             "evaluatorReader": false,
-            "collapsed": false
+            "collapsed": true
         },
         {
             "id": "codebCB7W8",
@@ -1293,11 +1293,11 @@
             },
             "output": {
                 "state": {},
-                "result": "com.twosigma.beaker.javash.bkr28670c17.NRList",
+                "result": "com.twosigma.beaker.javash.bkrb11fb448.NRList",
                 "selectedType": "Text",
                 "pluginName": "Java",
-                "shellId": "28670c17-eed5-4f75-811e-b172fdbb2c75",
-                "elapsedTime": 57
+                "shellId": "b11fb448-b9c9-4d12-bfe7-6c0f46e4d7c8",
+                "elapsedTime": 552
             },
             "evaluatorReader": true,
             "lineCount": 117,
@@ -1309,10 +1309,10 @@
             "title": "FeebackEntry",
             "level": 3,
             "evaluatorReader": false,
-            "collapsed": false
+            "collapsed": true
         },
         {
-            "id": "codeZ97u4Z",
+            "id": "codeA8Ll80",
             "type": "code",
             "evaluator": "Java",
             "input": {
@@ -1325,7 +1325,7 @@
                     " *  feedback strings, and a date string.",
                     " *  @author CS125 Research",
                     " */",
-                    "\t",
+                    "",
                     "public final class FeedbackEntry{",
                     "\t",
                     "\tprivate boolean good = false;",
@@ -1559,22 +1559,15 @@
             },
             "output": {
                 "state": {},
-                "result": {
-                    "type": "BeakerDisplay",
-                    "innertype": "Error",
-                    "object": [
-                        "ERROR: java.lang.IllegalStateException: illegal start of expression",
-                        "eption {",
-                        "\tpublic fin"
-                    ]
-                },
-                "selectedType": "BeakerDisplay",
+                "result": "com.twosigma.beaker.javash.bkrb11fb448.FeedbackEntry",
+                "selectedType": "Text",
                 "pluginName": "Java",
-                "shellId": "28670c17-eed5-4f75-811e-b172fdbb2c75",
-                "elapsedTime": 746
+                "shellId": "b11fb448-b9c9-4d12-bfe7-6c0f46e4d7c8",
+                "elapsedTime": 568
             },
             "evaluatorReader": true,
-            "lineCount": 238
+            "lineCount": 238,
+            "initialization": true
         }
     ],
     "namespace": {}
