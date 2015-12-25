@@ -15,13 +15,13 @@ The code base's structure is based on the raw data extracted from the lecture fe
 * **CleanFeedbackData** creates an array list of "uncleaned" feedback entries then creates a new "cleaned" list containing only valid FeedbackEntry objects as well as printing stats on the number of valid entries.
 * **FeedbackEntry** is a simple data structure that represents an entry from the CS125 lecture feedback database. It contains a pair of encoded NetIDs, a grade, two feedback strings, and a date string.
 * **Lecture** is a model for a lecture object with a unique id corresponding to the chronological lecture number, all the associated feedback entries, the date, and the lecture topics.
-* **LectureInitializer** is what is run - this will most likely eventually be moved into an "initialize" function within the lecture class.
-* **Student** is still heavily under development. As of now, it stores information regarding a particular Student in class including their lecture attendance, possibly grades, and potentially all their feedback interactions.
+* **LectureInitializer** it runs through all the Feedback Entries that exist, creates Lecture objects corresponding to the data we have and associates all of the feedback entries linked to that Lecture (The Lecture object contains a list of Entries)
+* **Student** stores information regarding a particular Student including their lecture attendance, possibly grades and gender, and all their feedback interactions. A list of `Student` objects may frequently be iterated over.
 
 
 
 ### Running:
--Lecture Initializer
-	-Calls CleanFeedbackData.initialize()
-		-Uses NRList constructor to read from the roster data.
-		-Uses FeedbackEntry constructors and state to create a raw and a cleaned list of entries.
+* Lecture Initializer
+	* Calls CleanFeedbackData.initialize()
+		* Uses NRList constructor to read from the roster data.
+		* Uses FeedbackEntry constructors and state to create a raw and a cleaned list of entries.
