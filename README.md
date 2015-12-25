@@ -21,7 +21,7 @@ The code base's structure is based on the raw data extracted from the lecture fe
 
 
 ### Running:
-* Lecture Initializer
-	* Calls CleanFeedbackData.initialize()
-		* Uses NRList constructor to read from the roster data.
-		* Uses FeedbackEntry constructors and state to create a raw and a cleaned list of entries.
+* `LectureInitializer`
+	* Calls `CleanFeedbackData.initialize()`
+		* Uses `NRList` constructor to read from the roster data.
+		* Uses `FeedbackEntry` constructors and state to create a raw and a cleaned list of entries.
