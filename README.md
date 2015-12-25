@@ -20,7 +20,7 @@ From this data we attempt to identify relationships and provide answers to quest
 * Do students of one gender report they have more productive lecture sessions with someone of the same or opposite gender?
 * Do students who work with a large variety of student partners from a larger set of skill levels perform better or worse in the course overall than peers who primarily work with those of similar skill levels?
 * Does performance on subsequent quizzes validate these opinions, or oppose them?
-* **Optimal Pairing** - Is there such an algorithm that can use the data we have as inputs and pair students together every lecture such that the average performance of the class is as high as possible at the end of the semester.
+* **Optimal Pairing** - Is there such an algorithm that can use the data we have as inputs and pair students together every lecture such that the average performance of the class is as high as possible at the end of the semester? __If yes, can we find it?__
 
 We provide a summary of these and other research questions in this work.
 
