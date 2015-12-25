@@ -11,7 +11,9 @@ Daily lecture feedback takes just seconds for students to submit with these tool
 	3. means they will work with a variety of students of varying skill levels - experiencing both mentor and apprentice roles throughout the duration of the course.
 	
 While participating in the lecture feedback process has obvious benefits for the students and the course it also provides us with a rich dataset we use to mine for answers to important questions related to large-lecture course outcomes. We cross-reference the contributed lecture productivity ratings with student roster and performance information such as the **student’s major, college, year-in-school, gender, grades on weekly quizzes, and cumulative semester grades**.
+
 From this data we attempt to identify relationships and provide answers to questions such as:
+
 	* Do students perform better on weekly quizzes when they work the prior week with students at higher, lower or about the same skill level as themselves?
 	* Do students claim their lecture sessions are more productive when they work with students at a higher, lower or about the same skill level?
 	* Do students of one gender report they have more productive lecture sessions with someone of the same or opposite gender?
