@@ -41,7 +41,7 @@ public class LectureInitializer {
 		int counter = 0;
 				
 		for(int i = 0; i < CleanFeedbackData.clean_data.size(); i++){
-			
+		
 			while(CleanFeedbackData.clean_data.get(i).getDate().after(lectureDates[currTimeIndex + 1]))
 				currTimeIndex++;
 			
@@ -65,11 +65,10 @@ public class LectureInitializer {
 			System.out.println("\tRating Distribution:");
 			System.out.print("\t\t");
 			
-			//Perhaps this is what you meant? -Bliss
-			//int[] values = lectures.get(j).getRatingDistribution();
-			int[] values = lectures.get(j).getValues();
-			for(int i = 0; i < values.length; i++) {
-				System.out.print((i + 1) + ": " + values[i] + ", ");
+			int[] distribution = lectures.get(j).ratingDistribution();
+			//int[] values = lectures.get(j).getValues(); //Method name change
+			for(int i = 0; i < distribution.length; i++) {
+				System.out.print((i + 1) + ": " + distribution[i] + ", ");
 			}
 			System.out.println();
 		}
