@@ -14,11 +14,23 @@ public class Roster{
 	
 	/**
 	 * Constructor for the Roster class. Creates an array of specified capacity
+	 * and keeps it empty. Students can be manually added later to the Roster
+	 * via the addStudent(int) method.
+	 */
+	public Roster(int capacity){
+		map = new Student[capacity];
+	}
+	
+	/**
+	 * Constructor for the Roster class. Creates an array of specified capacity
 	 * and fills it up with new Student objects. The Students are initialized
 	 * based off the ID codes in the NRList argument.
+	 * 
+	 * @codes    An NRList containing all the encoded netIDs in the class roster.
+	 * @capacity The maximum number of students that can be added (can be changed).
 	 */
 	public Roster(NRList codes, int capacity){
-		map = new Student[capacity];
+		this(capacity);
 		/* Goes through all the ID codes in the NRList argument and creates a
 		 * Student object for each one. The Students created are stored in an
 		 * array at the index corresponding to their ID codes. So map[154] would
