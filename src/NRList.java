@@ -8,6 +8,7 @@ import java.util.Iterator;
  */
 public class NRList implements Iterable<NetIDPair>{
 	
+	/** A list of all NetIDPairs extracted from the roster */
 	ArrayList <NetIDPair> pairList = new ArrayList<NetIDPair>();
 	
 	/**
@@ -34,8 +35,10 @@ public class NRList implements Iterable<NetIDPair>{
 	public void fillList(String readFilePath, String writeFilePath, int range)
 	{
 		TextIO.readFile(readFilePath);
+		
 		if (writeFilePath != null)
 			TextIO.writeFile(writeFilePath);
+		
 		while(!TextIO.eof())
 		{
 			String line = TextIO.getln();
@@ -90,7 +93,6 @@ public class NRList implements Iterable<NetIDPair>{
 	public void printList() {
 		for (int i = 0; i < pairList.size(); i++) {
 			System.out.println(pairList.get(i));
-//			TextIO.putln(pairList.get(i));
 		}
 	}
 	

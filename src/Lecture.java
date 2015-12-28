@@ -1,7 +1,9 @@
 import java.util.*;
 
-//A model for a lecture object with a unique id corresponding to the lecture number,
-//all the associated feedback entries, the date, and the lecture topics.
+/**
+ * A model for a lecture object with a unique id corresponding to the lecture number, all the associated feedback entries, the date, and the lecture topics.
+ * @author CS125Research
+ */
 public class Lecture implements Iterable<FeedbackEntry>{
 
 	private static int AUTO_INCREMENT = 0;
@@ -20,18 +22,6 @@ public class Lecture implements Iterable<FeedbackEntry>{
 		lectureNumber = AUTO_INCREMENT++;
 		recordsByTime = new ArrayList<FeedbackEntry>();
 		date = new Date(d.getTime());
-	}
-	
-	/**
-	 * Constructor that adds one FeedbackEntry object to
-	 * the Lecture object after construction.
-	 * 
-	 * @param d     The time this lecture began.
-	 * @param entry The entry to be added to the new Lecture,
-	 */ 
-	public Lecture(Date d, FeedbackEntry entry){
-		this(d);
-		recordsByTime.add(entry);
 	}
 	
 	/**

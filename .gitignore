@@ -1,26 +1,49 @@
-+# Compiled source #
-+###################
-+.com
-+.class
-+.dll
-+.exe
-+.o
-+.so
-+
-+# Mobile Tools for Java (J2ME)
-+.mtj.tmp/
-+
-+# Package Files #
-+.jar
-+.war
-+.ear
-+
-+# OS generated files #
-+######################
-+.DS_Store
-+.DS_Store?
-+._
-+.Spotlight-V100
-+.Trashes
-+ehthumbs.db
-+Thumbs.db
+# Compiled source #
+###################
+.com
+.class
+.dll
+.exe
+.o
+.so
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+.jar
+.war
+.ear
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+### Eclipse ###
+*.pydevproject
+.metadata
+.gradle
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+
+# Eclipse Core
+.project
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch

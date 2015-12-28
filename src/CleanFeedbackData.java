@@ -1,17 +1,19 @@
 import java.util.*;
 public class CleanFeedbackData {
 
+	///TODO - document each of these array lists
 	public static ArrayList<FeedbackEntry> our_data;
 	public static ArrayList<FeedbackEntry> clean_data;
 
 	public static void initialize() 
 	{
 		System.out.println("Calling CleanFeedbackData.initialize()");
+		
 		NRList awesomeList= new NRList("/Users/chapman/Documents/workspaceResearch/EncodeNetID/src/roster.txt",null,9000);
 		TextIO.readFile("/Users/chapman/Documents/workspaceResearch/secretText.txt");
+		
 		our_data = new ArrayList<FeedbackEntry>();
 		clean_data = new ArrayList<FeedbackEntry>();
-		//TextIO.putln(our_data.size()); 
 		
 		TextIO.readFile("/Users/chapman/Documents/workspaceResearch/CleanFeedBackData/src/peerInteractions.fa2015.final.csv");
 		while (!TextIO.eof())
@@ -21,7 +23,6 @@ public class CleanFeedbackData {
 
 		for (FeedbackEntry elem : our_data){
 			++count;
-//			TextIO.putln(elem);
 			if (elem.valid()){
 				++num_valid;
 				clean_data.add(elem);
