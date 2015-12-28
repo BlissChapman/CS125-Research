@@ -1,4 +1,4 @@
-	import java.text.SimpleDateFormat;
+import java.text.SimpleDateFormat;
 	
 /**
 	 *  This class is a simple data structure that represents an entry from the CS125
@@ -18,9 +18,47 @@
 		private Date date;
 		
 		/**
+		 * Map-less String constructor. Takes an unprocessed line from a CSV
+		 * and parses it as a valid FeedbackEntry without using an NRList to
+		 * verify NetIDs. The constructor marks the entry as bad if the
+		 * NetIDs cannot be parsed as integers (It also throws an exception if
+		 * the data clearly cannot represent an entry made by a student.
+		 * Useful for debugging).
+		 * 
+		 * @param data An unprocessed line to parse. Must be formatted in the
+		 *             form "netid1", "netid2", "5", "Strengths",
+		 *             "Weaknesses", "Date";
+		 */
+		public FeedbackEntry(String data){
+			good = true;
+			checkCorruptData(data);
+			String[] separated = splitCommas(data);
+			for (int i = 0; i < separated.length; ++i)
+				separated[i] = process(separated[i]);
+			personID = partnerID = -1;
+			try{
+				personID = Integer.parseInt(separated[0]);
+			}catch(Exception e){}
+			try{
+				partnerID = Integer.parseInt(separated[1]);
+			}catch(Exception e){}
+			grade = Integer.parseInt(separated[2]);
+			if (personID == -1 || partnerID == -1 || grade > 10 || grade < 1 || 
+			    personID == partnerID){
+				good = false;
+			}
+			strengths = separated[3];
+			weaknesses = separated[4];
+			try{
+				date = new 
+				    SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(separated[5]);
+			}catch(Exception e){}
+		}
+		
+		/**
 		 * String constructor. Takes an unprocessed line from a CSV file and
 		 * parses it as a valid FeedbackEntry using a passed-in NRList to
-		 * verify NetIDs. The constructor exits early and marks the entry as
+		 * verify NetIDs. The constructor marks the entry as
 		 * bad if any NetIDs are missing or do not belong to any students in
 		 * the NRList. [It also throws an exception if the data clearly
 		 * cannot represent an entry made by a student. Useful for debugging.]
@@ -40,10 +78,8 @@
 			personID = map.getSecret(separated[0]);
 			partnerID = map.getSecret(separated[1]);
 			grade = Integer.parseInt(separated[2]);
-			if (personID == -1 || partnerID == -1 || grade > 10 || grade < 1 || 
-			    personID == partnerID){
+			if (grade > 10 || grade < 1 || personID == partnerID)
 				good = false;
-			}
 			strengths = separated[3];
 			weaknesses = separated[4];
 			try{
