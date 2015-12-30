@@ -1,11 +1,70 @@
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.*;
 
 /**
  * A model for a lecture object with a unique id corresponding to the lecture number, all the associated feedback entries, the date, and the lecture topics.
+ * This class also contains static properties and methods involved with initializing lectures and analyzing the result.
  * @author CS125Research
  */
 public class Lecture implements Iterable<FeedbackEntry>{
 
+//LECTURE ANALYSIS:
+	///TODO - document these properties
+	public static double mean, stdDev;
+	public static ArrayList<Lecture> lectures;
+	
+	///TODO - document this method
+	public static void initialize() {
+		System.out.println("Calling LectureInitializer.initialize()");
+		
+		lectures = new ArrayList<>();
+		int[] months = {9,  9,  9,  9,  9,   9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12};
+		int[] days =   {18, 21, 23, 25, 28, 30, 2 ,  5,  7,  9, 12, 14, 16, 19, 21, 23, 26, 28, 30, 02, 04, 06, 9,  11, 13, 16, 18, 20, 30, 2,   4,  7,  9, 31};
+		Date[] lectureDates = new Date[months.length];
+		try {
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+			for (int i = 0; i < months.length; ++i){
+				String toParse = String.format("%d-%d-%02d 09:00:00", 2015, months[i], days[i]);
+				lectureDates[i] = df.parse(toParse);
+			}
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+		int currTimeIndex = 0;
+		double sum = 0;
+		double sumSq = 0;
+		int counter = 0;
+		
+		ArrayList<FeedbackEntry> cleanedData = CleanFeedbackData.clean_data;
+		for(int i = 0; i < cleanedData.size(); i++){
+		
+			while(cleanedData.get(i).getDate().after(lectureDates[currTimeIndex + 1]))
+				currTimeIndex++;
+			
+			addToLecture(lectureDates[currTimeIndex], cleanedData.get(i));
+			double temp = cleanedData.get(i).getGrade();
+			sum += temp;
+			sumSq += temp*temp;
+			++counter;
+		}
+		
+		mean = sum/counter;
+		stdDev = Math.sqrt(sumSq/counter - sum*sum/(counter*counter));
+	}
+	
+	private static void addToLecture(Date d, FeedbackEntry entry){
+		if(lectures.size()>0 && lectures.get(lectures.size()-1).getDate().equals(d)){
+			lectures.get(lectures.size()-1).add(entry);
+		} else {
+			lectures.add(new Lecture(d, entry));
+		}	
+	}
+
+//----------------------------------------------------------------------------	
+	//LECTURE OBJECT MODEL:
 	private static int AUTO_INCREMENT = 0;
 	private int lectureNumber; //TODO: Discuss this name
 	public ArrayList<FeedbackEntry> recordsByTime;
@@ -77,7 +136,7 @@ public class Lecture implements Iterable<FeedbackEntry>{
 	 * @return The Lecture corresponding to an entry.
 	 */
 	public static Lecture get(FeedbackEntry key){
-		ArrayList<Lecture> lecs = LectureInitializer.lectures;
+		ArrayList<Lecture> lecs = lectures;
 		int lo = 0;
 		int hi = lecs.size()-1;
 		Date search = key.getDate();
@@ -110,6 +169,14 @@ public class Lecture implements Iterable<FeedbackEntry>{
 		for (FeedbackEntry element : recordsByTime)
 			values[element.getGrade() - 1]++;
 		return values;
+	}
+	
+	public String ratingDistributionString() {
+		String stringRepresentation = "";
+		int[] distribution = ratingDistribution();
+		for(int i = 0; i < distribution.length; i++)
+			stringRepresentation += ((i + 1) + ": " + distribution[i] + ", ");
+		return stringRepresentation;
 	}
 	
 	/**
@@ -159,7 +226,8 @@ public class Lecture implements Iterable<FeedbackEntry>{
 		return String.format("ID: %d\n\tDate: ", lectureNumber) + date
 		+ String.format("\n\tNumber of Entries: %d\n\t"
 		    + "Mean: %f\n\tStandard Deviation: %f",
-		    recordsByTime.size(), ratingMean(), ratingStdDev());	
+		    recordsByTime.size(), ratingMean(), ratingStdDev())
+		+ "\n\t Rating Distribution: " + ratingDistributionString();	
 	}
 	
 	/**
