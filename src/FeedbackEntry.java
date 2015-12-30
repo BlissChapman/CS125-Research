@@ -1,5 +1,6 @@
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.*;
 	
 /**
 	 *  This class is a simple data structure that represents an entry from the CS125
@@ -7,7 +8,6 @@ import java.text.SimpleDateFormat;
 	 *  feedback strings, and a date string.
 	 *  @author CS125 Research
 	 */
-	import java.util.*;
 	public final class FeedbackEntry{
 		
 		private boolean good = false;
@@ -36,24 +36,44 @@ import java.text.SimpleDateFormat;
 			String[] separated = splitCommas(data);
 			for (int i = 0; i < separated.length; ++i)
 				separated[i] = process(separated[i]);
-			personID = partnerID = -1;
+			
+			//parse out personID
+			personID = -1;
 			try{
 				personID = Integer.parseInt(separated[0]);
-			}catch(Exception e){}
+			}catch(Exception e){
+			}
+			
+			//parse out the partnerID
+			partnerID = -1;
 			try{
 				partnerID = Integer.parseInt(separated[1]);
-			}catch(Exception e){}
-			grade = Integer.parseInt(separated[2]);
+			}catch(Exception e){
+			}
+			
+			//parse out the grade
+			grade = -1;
+			try{
+				grade = Integer.parseInt(separated[2]);
+			}catch(Exception e){
+			}
+			
+			//check validity of parsed values that are critical
 			if (personID == -1 || partnerID == -1 || grade > 10 || grade < 1 || 
-			    personID == partnerID){
+			    personID == partnerID) {
 				good = false;
 			}
+			
+			//parse strengths and weakness optional text
 			strengths = separated[3];
 			weaknesses = separated[4];
+			
+			//create a java date object from the csv file's timestamp
 			try{
 				date = new 
 				    SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(separated[5]);
-			}catch(Exception e){}
+			}catch(Exception e){
+			}
 		}
 		
 		/**
@@ -187,7 +207,7 @@ import java.text.SimpleDateFormat;
 		/**
 		 *  Checks to see that a line passed into the constructor could possibly
 		 *  represent an entry (valid or otherwise) made by a student and stored
-		 *  in a CVS file. The method throws an IllegalArgumentException if the
+		 *  in a CSV file. The method throws an IllegalArgumentException if the
 		 *  line is invalid, namely if it doesn't have the right number of
 		 *  elements or its elements are not surrounded with quotation marks.
 		 *
