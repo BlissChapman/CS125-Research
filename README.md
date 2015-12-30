@@ -35,14 +35,13 @@ The code base's structure is based on the raw data extracted from the lecture fe
 * **NRList** is a simple map-like list of `NetIDPair` s that can be passed a file path (to the roster).
 * **CleanFeedbackData** creates an array list of "uncleaned" feedback entries then creates a new "cleaned" list containing only valid `FeedbackEntry` objects as well as printing stats on the number of valid entries.
 * **FeedbackEntry** is a simple data structure that represents an entry from the CS125 lecture feedback database. It contains a pair of encoded NetIDs, a grade, two feedback strings, and a date string.
-* **Lecture** is a model for a lecture object with a unique id corresponding to the chronological lecture number, all the associated feedback entries, the date, and the lecture topics.
-* **LectureInitializer** it runs through all the `FeedbackEntry` objects that exist, creates `Lecture` objects corresponding to the data we have and associates all of the `FeedbackEntry` objects linked to that `Lecture` (The `Lecture` object contains a list of Entries)
+* **Lecture** is a model for a lecture object with a unique id corresponding to the chronological lecture number, all the associated feedback entries, the date, and the lecture topics.  Static methods within the lecture class run through all the `FeedbackEntry` objects that exist, creates `Lecture` objects corresponding to the data we have and associates all of the `FeedbackEntry` objects linked to that `Lecture` (The `Lecture` object model contains a list of Entries).
 * **Student** stores information regarding a particular `Student` including their lecture attendance, possibly grades and gender, and all their feedback interactions. A list of `Student` objects may frequently be iterated over.
 
 
 
 ### Running:
-* `LectureInitializer`
+* `Main`
 	* Calls `CleanFeedbackData.initialize()`
-		* Uses `NRList` constructor to read from the roster data.
 		* Uses `FeedbackEntry` constructors and state to create a raw and a cleaned list of entries.
+	* Initializes lectures via the static method `Lecture.initialize()`
