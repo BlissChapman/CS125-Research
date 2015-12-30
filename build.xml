@@ -62,7 +62,7 @@
             <classpath refid="CS125-Research.classpath"/>
         </java>
     </target>
-    <target name="Tests">
+    <target name="test">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
             <formatter type="xml"/>
