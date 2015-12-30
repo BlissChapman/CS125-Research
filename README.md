@@ -44,4 +44,4 @@ The code base's structure is based on the raw data extracted from the lecture fe
 * `Main`
 	* Calls `CleanFeedbackData.initialize()`
 		* Uses `FeedbackEntry` constructors and state to create a raw and a cleaned list of entries.
-	* Initializes lectures via the static method `Lectures.initialize()`
+	* Initializes lectures via the static method `Lecture.initialize()`
