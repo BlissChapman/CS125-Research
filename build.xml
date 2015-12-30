@@ -1,0 +1,55 @@
+<project name="CS125-Research" default="dist" basedir=".">
+    <description>
+        http://github.com/togira/CS125-Research
+    </description>
+ 
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="test"  location="src"/>
+  <property name="junit" location="lib/junit.jar"/>
+ 
+  <path id="classpath.test">
+    <pathelement location="${junit}" />
+    <pathelement location="${test}" />
+    <pathelement location="${build}/main"/>
+    <pathelement location="${build}/test"/>
+  </path>
+ 
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${build}"/>
+    <mkdir dir="${build}/test"/>
+    <mkdir dir="${build}/main"/>
+  </target>
+ 
+  <target name="compile" depends="init" description="compile">
+    <javac srcdir="${src}" destdir="${build}/main">
+        <classpath>
+        <pathelement location="${junit}"/>
+      </classpath>
+    </javac>
+  </target>
+ 
+  <target name="dist" depends="compile">
+    <mkdir dir="${dist}/lib"/>
+    <jar jarfile="${dist}/lib/CS125-Research-${DSTAMP}.jar" basedir="${build}"/>
+  </target>
+ 
+  <target name="test" depends="compile">
+    <junit fork="yes" haltonfailure="true">
+      <classpath refid="classpath.test" />
+      <batchtest fork="yes" todir="tres">
+        <formatter type="brief" usefile="false"/>
+        <fileset dir="${test}">
+          <include name="**/*Test*.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+ 
+  <target name="clean" description="clean up" >
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>
