@@ -2,8 +2,8 @@ import java.util.Arrays;
 
 /**
  *  A simple pair POD that assigns a random number to a NetID
- *  and stores the two.
- *  @author CS125 Research
+ *  and stores the two for use in encrypting data.
+ *  @author CS125Research
  */
 public class NetIDPair {
 	private String netID;

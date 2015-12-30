@@ -3,7 +3,7 @@ import java.util.ArrayList;
 /**
  * Important: Student class. Stores information regarding a particular Student in class, 
  * including their lecture attendance and possibly grades. Each Student should probably
- * contain all the FeedbackEntries made by the student.
+ * contain all the PeerInteractions made by the student.
  *
  * @author CS125 Research
  * @todo Implement everything
@@ -14,7 +14,7 @@ public class Student{
 	
 	private int ID;
 	//private boolean female; //One possibility for what we could store here
-	private ArrayList<FeedbackEntry> records;
+	private ArrayList<PeerInteraction> records;
 	private double weight;
  
 
@@ -25,16 +25,16 @@ public class Student{
  	 */
 	public Student(int code){
 		ID = code;
-		records = new ArrayList<FeedbackEntry>();
+		records = new ArrayList<PeerInteraction>();
 	}
 	
 	/**
 	 * ID and one-entry Ctor. Is this useful?
 	 * 
 	 * @param code  The ID of the Student
-	 * @param entry The first FeedbackEntry made by this student.
+	 * @param entry The first PeerInteraction made by this student.
 	 */
-	public Student(int code, FeedbackEntry entry){
+	public Student(int code, PeerInteraction entry){
 		this(code);
 		records.add(entry);
 	}
@@ -68,13 +68,13 @@ public class Student{
 	}
 
 	/**
-	 * Add a FeedbackEntry to this Student's record thereof. This method 
+	 * Add a PeerInteraction to this Student's record thereof. This method 
 	 * imposes a chronologial precondition.
 	 * @todo Implement.
 	 *
-	 * @param entry FeedbackEntry made by this Student
+	 * @param entry PeerInteraction made by this Student
 	 */
-	public void addEntry(FeedbackEntry entry){
+	public void addEntry(PeerInteraction entry){
 		records.add(entry);
 	}
 
@@ -93,7 +93,7 @@ public class Student{
 	}
 
 	/**
-	 * @return Number of valid feedback data points given by this Student.
+	 * @return Number of valid peer interaction data points given by this Student.
 	 * @todo Implement.
 	 */
 	public int feedbackGiven(){

@@ -5,11 +5,11 @@ import java.util.Date;
 import java.util.*;
 
 /**
- * A model for a lecture object with a unique id corresponding to the lecture number, all the associated feedback entries, the date, and the lecture topics.
+ * A model for a lecture object with a unique id corresponding to the lecture number, all the associated peer interactions, the date, and the lecture topics.
  * This class also contains static properties and methods involved with initializing lectures and analyzing the result.
  * @author CS125Research
  */
-public class Lecture implements Iterable<FeedbackEntry>{
+public class Lecture implements Iterable<PeerInteraction>{
 
 //LECTURE ANALYSIS:
 	///TODO - document these properties
@@ -38,7 +38,7 @@ public class Lecture implements Iterable<FeedbackEntry>{
 		double sumSq = 0;
 		int counter = 0;
 		
-		ArrayList<FeedbackEntry> cleanedData = PeerInteractionsData.cleanData;
+		ArrayList<PeerInteraction> cleanedData = PeerInteractionsData.cleanData;
 		for(int i = 0; i < cleanedData.size(); i++){
 		
 			while(cleanedData.get(i).getDate().after(lectureDates[currTimeIndex + 1]))
@@ -55,7 +55,7 @@ public class Lecture implements Iterable<FeedbackEntry>{
 		stdDev = Math.sqrt(sumSq/counter - sum*sum/(counter*counter));
 	}
 	
-	private static void addToLecture(Date d, FeedbackEntry entry){
+	private static void addToLecture(Date d, PeerInteraction entry){
 		if(lectures.size()>0 && lectures.get(lectures.size()-1).getDate().equals(d)){
 			lectures.get(lectures.size()-1).add(entry);
 		} else {
@@ -67,7 +67,7 @@ public class Lecture implements Iterable<FeedbackEntry>{
 	//LECTURE OBJECT MODEL:
 	private static int AUTO_INCREMENT = 0;
 	private int lectureNumber; //TODO: Discuss this name
-	public ArrayList<FeedbackEntry> recordsByTime;
+	public ArrayList<PeerInteraction> recordsByTime;
 	private Date date;
 	private String[] topics;// OR ArrayList<String>
 	
@@ -79,7 +79,7 @@ public class Lecture implements Iterable<FeedbackEntry>{
 	 */
 	public Lecture(Date d){
 		lectureNumber = AUTO_INCREMENT++;
-		recordsByTime = new ArrayList<FeedbackEntry>();
+		recordsByTime = new ArrayList<PeerInteraction>();
 		date = new Date(d.getTime());
 	}
 	
@@ -100,9 +100,9 @@ public class Lecture implements Iterable<FeedbackEntry>{
 	 * the Lecture object.
 	 * 
 	 * @param d     The time this lecture began.
-	 * @param entry A Feedback entry that was submitted for this Lecture
+	 * @param entry A PeerInteraction that was submitted for this Lecture
 	 */
-	public Lecture(Date d, FeedbackEntry entry){
+	public Lecture(Date d, PeerInteraction entry){
 		this(d);
 		this.add(entry);
 	}
@@ -115,27 +115,27 @@ public class Lecture implements Iterable<FeedbackEntry>{
 	}
 	
 	/**
-	 * This method adds a FeedbackEntry to this Lecture. As a 
+	 * This method adds a PeerInteraction to this Lecture. As a 
 	 * precondition, entries should be added in chronological 
 	 * order.
 	 * 
 	 * @param entry The entry to add to this Lecture. This entry should
 	 *              come after the last entry added to the Lecture.
 	 */
-	public void add(FeedbackEntry entry){
+	public void add(PeerInteraction entry){
 		recordsByTime.add(entry);
 	}
 	
 	/**
 	 * Static method that uses a right-biased binary search of existing Lectures
-	 * to associate a FeedbackEntry with a Lecture. Runs in logarithmic time with
+	 * to associate a PeerInteraction with a Lecture. Runs in logarithmic time with
 	 * respect to the number of Lectures.
 	 *
 	 * @param key The entry to be associated with a Lecture.
 	 *
 	 * @return The Lecture corresponding to an entry.
 	 */
-	public static Lecture get(FeedbackEntry key){
+	public static Lecture get(PeerInteraction key){
 		ArrayList<Lecture> lecs = lectures;
 		int lo = 0;
 		int hi = lecs.size()-1;
@@ -157,16 +157,16 @@ public class Lecture implements Iterable<FeedbackEntry>{
 	
 	/**
 	 * Method that returns the unadjusted rating distribution of all
-	 * FeedbackEntries for this Lecture. The 0th element of this
+	 * PeerInteractions for this Lecture. The 0th element of this
 	 * array corresponds to the number of entries with ratings of
 	 * 1, and the 9th to the number of entries with ratings of 10.
 	 * 
 	 * @return An array of ints in which arr[idx] represents the number
-	 *         of FeedbackEntries with ratings of (idx+1) in this Lecture
+	 *         of PeerInteractions with ratings of (idx+1) in this Lecture
 	 */
 	public int[] ratingDistribution() {
 		int[] values = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		for (FeedbackEntry element : recordsByTime)
+		for (PeerInteraction element : recordsByTime)
 			values[element.getGrade() - 1]++;
 		return values;
 	}
@@ -181,24 +181,24 @@ public class Lecture implements Iterable<FeedbackEntry>{
 	
 	/**
 	 * Calculates and returns the unadjusted average rating given by
-	 * all FeedbackEntries for this lecture.
+	 * all PeerInteractions for this lecture.
 	 * 
-	 * @return The average rating of all FeedbackEntries in this Lecture
+	 * @return The average rating of all PeerInteractions in this Lecture
 	 */
 	public double ratingMean(){
 		if (recordsByTime.isEmpty())
 			return -1;
 		double sum = 0;
-		for (FeedbackEntry element : recordsByTime)
+		for (PeerInteraction element : recordsByTime)
 			sum += element.getGrade();
 		return sum/recordsByTime.size();
 	}
 	
 	/**
 	 * Calculates and returns the unadjusted standard deviation of ratings
-	 * given by all FeedbackEntries for this lecture.
+	 * given by all PeerInteractions for this lecture.
 	 * 
-	 * @return The rating standard deviation of all FeedbackEntries in this 
+	 * @return The rating standard deviation of all PeerInteractions in this 
 	 *         Lecture
 	 */
 	public double ratingStdDev(){
@@ -206,13 +206,13 @@ public class Lecture implements Iterable<FeedbackEntry>{
 			return -1;
 		double devSq = 0;
 		double mean = ratingMean();
-		for (FeedbackEntry element : recordsByTime)
+		for (PeerInteraction element : recordsByTime)
 			devSq += Math.pow(element.getGrade()-mean,2);
 		return Math.sqrt(devSq/recordsByTime.size());
 	}
 	
 	/**
-	 * @return The number of FeedbackEntries in this Lecture.
+	 * @return The number of PeerInteractions in this Lecture.
 	 */
 	public int entryCount(){
 		return recordsByTime.size();
@@ -231,7 +231,7 @@ public class Lecture implements Iterable<FeedbackEntry>{
 	}
 	
 	/**
-	 * @return A chronological iterator through all FeedbackEntries in
+	 * @return A chronological iterator through all PeerInteractions in
 	 *         this Lecture.
 	 */
 	public FeedbackIterator iterator() { return new FeedbackIterator(); }
@@ -239,11 +239,11 @@ public class Lecture implements Iterable<FeedbackEntry>{
 	/**
 	 * Iterator that goes through FeedbackEntries in chronological order.
 	 */
-	public class FeedbackIterator implements Iterator<FeedbackEntry>{
+	public class FeedbackIterator implements Iterator<PeerInteraction>{
 		private int curr;
 		
 		public FeedbackIterator()    { curr = 0; }
-		public FeedbackEntry next()  { return recordsByTime.get(curr++); }
+		public PeerInteraction next()  { return recordsByTime.get(curr++); }
 		public boolean hasNext()     { return curr < recordsByTime.size(); }
 		public void remove()  { throw new UnsupportedOperationException(); }
 																				

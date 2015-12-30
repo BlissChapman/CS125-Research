@@ -8,7 +8,7 @@ import java.util.*;
 	 *  feedback strings, and a date string.
 	 *  @author CS125 Research
 	 */
-	public final class FeedbackEntry{
+	public final class PeerInteraction {
 		
 		private boolean good = false;
 		private int grade = -1;
@@ -20,7 +20,7 @@ import java.util.*;
 		
 		/**
 		 * Map-less String constructor. Takes an unprocessed line from a CSV
-		 * and parses it as a valid FeedbackEntry without using an NRList to
+		 * and parses it as a valid PeerInteraction without using an NRList to
 		 * verify NetIDs. The constructor marks the entry as bad if the
 		 * NetIDs cannot be parsed as integers (It also throws an exception if
 		 * the data clearly cannot represent an entry made by a student.
@@ -30,7 +30,7 @@ import java.util.*;
 		 *             form "netid1", "netid2", "5", "Strengths",
 		 *             "Weaknesses", "Date";
 		 */
-		public FeedbackEntry(String data){
+		public PeerInteraction(String data){
 			good = true;
 			checkCorruptData(data);
 			String[] separated = splitCommas(data);
@@ -78,7 +78,7 @@ import java.util.*;
 		
 		/**
 		 * String constructor. Takes an unprocessed line from a CSV file and
-		 * parses it as a valid FeedbackEntry using a passed-in NRList to
+		 * parses it as a valid PeerInteraction using a passed-in NRList to
 		 * verify NetIDs. The constructor marks the entry as
 		 * bad if any NetIDs are missing or do not belong to any students in
 		 * the NRList. [It also throws an exception if the data clearly
@@ -90,7 +90,7 @@ import java.util.*;
 		 *  @param map   A list of all netIDs of students in the class
 		 *               and their corresponding codes.
 		 */
-		public FeedbackEntry(String data, NRList map){
+		public PeerInteraction(String data, NRList map){
 			good = true;
 			String[] separated = checkCorruptData(data);
 			for (int i = 0; i < separated.length; ++i)
@@ -109,15 +109,15 @@ import java.util.*;
 		}
 		
 		/**
-		 * This merge constructor creates a FeedbackEntry whose parameters are
+		 * This merge constructor creates a PeerInteraction whose parameters are
 		 * all the same as those of the last element in the argument, except
 		 * for the written feedback parameters. These parameters are formed
 		 * from a processed concatenation of all elements in the argument.
 		 * 
-		 * @param duplicates An array of FeedbackEntries corresponding to the
+		 * @param duplicates An array of PeerInteractions corresponding to the
 		 *                   same lecture and having the same personID.
 		 */
-		public FeedbackEntry(FeedbackEntry[] duplicates){
+		public PeerInteraction(PeerInteraction[] duplicates){
 			int last = duplicates.length - 1;
 			personID = duplicates[last].personID;
 			partnerID = duplicates[last].partnerID;
@@ -130,7 +130,7 @@ import java.util.*;
 			}
 			StringBuilder strBuild = new StringBuilder();
 			StringBuilder weakBuild = new StringBuilder();
-			for (FeedbackEntry elem : duplicates){
+			for (PeerInteraction elem : duplicates){
 				strBuild.append('{' + elem.strengths + '}');
 				weakBuild.append('{' + elem.weaknesses + '}');
 			}
@@ -180,7 +180,7 @@ import java.util.*;
 
 		/**
 		 *  Method that indicates whether this entry has any written
-		 *  feedback information at all.
+		 *  PeerInteraction information at all.
 		 *
 		 *  @return True if either weaknesses or strengths is nonempty, false
 		 *          otherwise.
@@ -236,7 +236,7 @@ import java.util.*;
 
 		/**
 		 * Method that processes written feedback for better representation. 
-		 * For example, should remove newlines and leading whitespaces.
+		 * For example, should remove newlines and leading white spaces.
 		 *
 		 * @param An unprocessed string of written feedback.
 		 * @return A processed string of written feedback.
@@ -302,8 +302,8 @@ import java.util.*;
 			return partitions;
 		}
 
-	/**A runner for FeedbackEntry that reads from the raw csv data and constructs
-	 *  corresponding feedback entry objects as well as printing the number of 
+	/**A runner for PeerInteraction that reads from the raw csv data and constructs
+	 *  corresponding peer interaction objects as well as printing the number of 
 	 *  valid and corrupt lines.
 	 */ 
 	public static void main(String[] args){
@@ -322,7 +322,7 @@ import java.util.*;
 			++line;
 			String currentLine = TextIO.getln();
 			try {
-				FeedbackEntry test = new FeedbackEntry(currentLine);
+				PeerInteraction test = new PeerInteraction(currentLine);
 				++valid;
 			} catch(IllegalArgumentException e){
 				++invalid;
