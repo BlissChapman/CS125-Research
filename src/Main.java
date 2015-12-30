@@ -22,5 +22,6 @@ public class Main {
 		System.out.printf("Average: %f, Standard Deviation: %f\n", Lecture.mean, Lecture.stdDev);
 		System.out.println("Number of lectures: " + lectures.size());
 		System.out.println("======================================================================================\n");
+		System.out.println("ANALYSIS COMPLETE");
 	}
 }
