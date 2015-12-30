@@ -14,7 +14,6 @@ public class CleanFeedbackData {
 
 		TextIO.readFile("./src/peerInteractions.fa2015.final.csv");
 		while (!TextIO.eof())
-			//our_data.add(new FeedbackEntry(TextIO.getln(),awesomeList));
 			our_data.add(new FeedbackEntry(TextIO.getln()));
 		double num_valid = 0.0;
 		double count = 0.0;
