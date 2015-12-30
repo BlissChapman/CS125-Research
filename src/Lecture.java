@@ -68,21 +68,6 @@ public class Lecture implements Iterable<FeedbackEntry>{
 	}
 	
 	/**
-	 * Get the distribution of feedback number of entries that had a certain rating
-	 * 
-	 * @return A array where the first element would be the number of Feedback Entries that gave the Lecture a rating of 0, 2nd element -> rating of 1 and so on...
-	 * 
-	 * @param entry The entry to add to this Lecture. This entry should
-	 *              come after the last entry added to the Lecture.
-	 */
-	public int[] getValues() {
-		int[] values = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		for (FeedbackEntry element : recordsByTime)
-			values[element.getGrade() - 1]++;
-		return values;
-	}
-	
-	/**
 	 * Static method that uses a right-biased binary search of existing Lectures
 	 * to associate a FeedbackEntry with a Lecture. Runs in logarithmic time with
 	 * respect to the number of Lectures.
