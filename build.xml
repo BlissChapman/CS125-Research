@@ -24,9 +24,8 @@
   </target>
  
   <target name="compile" depends="init" description="compile">
-    <javac srcdir="${src}" destdir="${build}/main"/>
-    <javac srcdir="${test}" destdir="${build}/test">
-      <classpath>
+    <javac srcdir="${src}" destdir="${build}/main">
+        <classpath>
         <pathelement location="${junit}"/>
       </classpath>
     </javac>
