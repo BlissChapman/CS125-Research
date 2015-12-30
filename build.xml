@@ -6,7 +6,7 @@
   <property name="src" location="src"/>
   <property name="build" location="build"/>
   <property name="dist"  location="dist"/>
-  <property name="test"  location=""/>
+  <property name="test"  location="src"/>
   <property name="junit" location="lib/junit.jar"/>
  
   <path id="classpath.test">
