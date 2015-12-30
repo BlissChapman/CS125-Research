@@ -6,6 +6,7 @@ import junit.framework.TestCase;
 public class MainTest extends TestCase {
 	
 	public void tearDown() {
+		CheckInputOutput.resetInputOutput();
 	}
 	public void setUp() throws Exception{
 		CheckInputOutput.setUp();
@@ -13,7 +14,11 @@ public class MainTest extends TestCase {
 	}
 	
 	public void testBuildRanCompletely() {
+		CheckInputOutput.resetInputOutput();
+
 		Main.main(new String[0]);
-		CheckInputOutput.checkOutputContains("ANALYSIS COMPLETE");
+
+		if (!Main.buildSucceeded)
+			fail("Build did not complete.");
 	}
 }

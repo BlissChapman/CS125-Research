@@ -6,6 +6,8 @@ import java.util.ArrayList;
  */
 public class Main {
 
+	public static boolean buildSucceeded = false;
+	
 	public static void main(String[] args) {
 		CleanFeedbackData.initialize();
 		System.out.printf("Percentage of entries valid: %f%%\nNumber of valid entries: %d\nNumber of entries: %d\n", CleanFeedbackData.percentValid, CleanFeedbackData.numberOfValidEntries, CleanFeedbackData.numberOfEntries);
@@ -22,6 +24,7 @@ public class Main {
 		System.out.printf("Average: %f, Standard Deviation: %f\n", Lecture.mean, Lecture.stdDev);
 		System.out.println("Number of lectures: " + lectures.size());
 		System.out.println("======================================================================================\n");
-		System.out.println("ANALYSIS COMPLETE");
+		System.out.println("BUILD SUCCEEDED");
+		buildSucceeded = true;
 	}
 }
