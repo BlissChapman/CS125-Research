@@ -171,6 +171,14 @@ public class Lecture implements Iterable<FeedbackEntry>{
 		return values;
 	}
 	
+	public String ratingDistributionString() {
+		String stringRepresentation = "";
+		int[] distribution = ratingDistribution();
+		for(int i = 0; i < distribution.length; i++)
+			stringRepresentation += ((i + 1) + ": " + distribution[i] + ", ");
+		return stringRepresentation;
+	}
+	
 	/**
 	 * Calculates and returns the unadjusted average rating given by
 	 * all FeedbackEntries for this lecture.
@@ -218,7 +226,8 @@ public class Lecture implements Iterable<FeedbackEntry>{
 		return String.format("ID: %d\n\tDate: ", lectureNumber) + date
 		+ String.format("\n\tNumber of Entries: %d\n\t"
 		    + "Mean: %f\n\tStandard Deviation: %f",
-		    recordsByTime.size(), ratingMean(), ratingStdDev());	
+		    recordsByTime.size(), ratingMean(), ratingStdDev())
+		+ "\n\t Rating Distribution: " + ratingDistributionString();	
 	}
 	
 	/**
