@@ -18,7 +18,7 @@ public class Lecture implements Iterable<FeedbackEntry>{
 	
 	///TODO - document this method
 	public static void initialize() {
-		System.out.println("Calling LectureInitializer.initialize()");
+		System.out.println("Calling Lecture.initialize()");
 		
 		lectures = new ArrayList<>();
 		int[] months = {9,  9,  9,  9,  9,   9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12};
@@ -38,7 +38,7 @@ public class Lecture implements Iterable<FeedbackEntry>{
 		double sumSq = 0;
 		int counter = 0;
 		
-		ArrayList<FeedbackEntry> cleanedData = CleanFeedbackData.clean_data;
+		ArrayList<FeedbackEntry> cleanedData = PeerInteractionsData.cleanData;
 		for(int i = 0; i < cleanedData.size(); i++){
 		
 			while(cleanedData.get(i).getDate().after(lectureDates[currTimeIndex + 1]))

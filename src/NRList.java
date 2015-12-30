@@ -4,7 +4,7 @@ import java.util.Iterator;
  *  A simple map-like list of NetIDPairs with a file argument constructor.
  *  Can return the code associated with a particular netID passed into its
  *  getSecret() method.
- *  @author CS125 Research
+ *  @author CS125Research
  */
 public class NRList implements Iterable<NetIDPair>{
 	

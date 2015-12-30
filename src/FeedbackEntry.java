@@ -302,33 +302,35 @@ import java.util.*;
 			return partitions;
 		}
 
+	/**A runner for FeedbackEntry that reads from the raw csv data and constructs
+	 *  corresponding feedback entry objects as well as printing the number of 
+	 *  valid and corrupt lines.
+	 */ 
 	public static void main(String[] args){
-		TextIO.readFile("ENCODEDpeerInteractions.fa2015.final");
-		TextIO.writeFile("invalid_entries.txt");
-		TextIO.putln("Verifying integrity of "
+		TextIO.readFile("ENCODEDpeerInteractions.fa2015.final.csv");
+		System.out.println("Verifying integrity of "
 			      + "ENCODEDpeerInteractions.fa2015.final on " + new Date()
 			      + '\n');
-		FeedbackEntry test;
+		
+		//results
 		int invalid = 0, valid = 0;
+		
+		//testing
 		int line = 0;
-		String out;
-		while(!TextIO.eof()){
+		
+		while (!TextIO.eof()) {
 			++line;
-			String thisLine = TextIO.getln();
-			try{
-				test = new FeedbackEntry(thisLine);
+			String currentLine = TextIO.getln();
+			try {
+				FeedbackEntry test = new FeedbackEntry(currentLine);
 				++valid;
-			}catch(IllegalArgumentException e){
+			} catch(IllegalArgumentException e){
 				++invalid;
-				out = String.format("Line %d: %s\n", line, e.getMessage());
-				System.out.print(out);
-				TextIO.put(out);
+				System.out.print(String.format("Line %d: %s\n", line, e.getMessage()));
 			}
 		}
 		System.out.println("Done.");
-		out = String.format("There were %d clean and %d corrupt lines.\n", 
-				            valid, invalid);
-		System.out.print(out);
-		TextIO.putln(out);
+		System.out.println(String.format("There were %d clean and %d corrupt lines.\n", 
+				            valid, invalid));
 	}
 }
