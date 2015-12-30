@@ -47,3 +47,6 @@ local.properties
 
 # Locally stored "Eclipse launch configurations"
 *.launch
+
+# Add an exception to always track the travis file
+!*.travis.yml
