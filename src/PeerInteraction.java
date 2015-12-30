@@ -302,7 +302,7 @@ import java.util.*;
 			return partitions;
 		}
 
-	/**A runner for PeerInteraction that reads from the raw csv data and constructs
+	/**A runner for PeerInteraction that reads from the raw CSV data and constructs
 	 *  corresponding peer interaction objects as well as printing the number of 
 	 *  valid and corrupt lines.
 	 */ 

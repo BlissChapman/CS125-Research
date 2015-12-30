@@ -13,16 +13,16 @@ public class Main {
 		System.out.printf("Percentage of entries valid: %f%%\nNumber of valid entries: %d\nNumber of entries: %d\n", PeerInteractionsData.percentValid, PeerInteractionsData.numberOfValidEntries, PeerInteractionsData.numberOfEntries);
 		System.out.println("======================================================================================\n");
 		
-		Lecture.initialize();
+		LectureData.initialize();
 		
 		//Print each lecture object:
-		ArrayList<Lecture> lectures = Lecture.lectures;
+		ArrayList<Lecture> lectures = LectureData.lectures;
 		for(int j = 0; j < lectures.size(); j++) {
 			System.out.println(lectures.get(j));
 		}
 		
 		//Print stats:
-		System.out.printf("Average: %f, Standard Deviation: %f\n", Lecture.mean, Lecture.stdDev);
+		System.out.printf("Average: %f, Standard Deviation: %f\n", LectureData.mean, LectureData.stdDev);
 		System.out.println("Number of lectures: " + lectures.size());
 		System.out.println("======================================================================================\n");
 		System.out.println("BUILD FINISHED");
