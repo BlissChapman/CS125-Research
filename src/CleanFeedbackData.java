@@ -4,7 +4,14 @@ public class CleanFeedbackData {
 	///TODO - document each of these array lists
 	public static ArrayList<FeedbackEntry> our_data;
 	public static ArrayList<FeedbackEntry> clean_data;
+	
+	///TODO - document each of these properties
+	public static double percentValid;
+	public static int numberOfValidEntries;
+	public static int numberOfEntries;
 
+
+	///TODO - document and possibly rename
 	public static void initialize() 
 	{
 		System.out.println("Calling CleanFeedbackData.initialize()");
@@ -15,18 +22,16 @@ public class CleanFeedbackData {
 		TextIO.readFile("./src/peerInteractions.fa2015.final.csv");
 		while (!TextIO.eof())
 			our_data.add(new FeedbackEntry(TextIO.getln()));
-		double num_valid = 0.0;
-		double count = 0.0;
 
 		for (FeedbackEntry elem : our_data){
-			++count;
+			numberOfEntries++;
 			if (elem.valid()){
-				++num_valid;
+				++numberOfValidEntries;
 				clean_data.add(elem);
 			}
 		}
-		System.out.printf("Percentage of entries valid: %f%%\nNumber of valid entries: %d\nNumber of entries: %d\n", 100*num_valid/count, (int) num_valid, (int) count);
-		System.out.println("======================================================================================\n");
+		
+		percentValid = 100*((double)numberOfValidEntries/(double)numberOfEntries);
 	}
 }
 
