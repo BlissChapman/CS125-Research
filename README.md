@@ -28,27 +28,27 @@ We provide a summary of these and other research questions in this work.
 The code base's structure is based on the raw data extracted from the lecture feedback database and the majority of the code so far is focused on manipulating this data into an easily analyzable state.  As you move down the list of classes described below, we move farther and farther away from the raw data, building off previous classes' abstractions.
 
 ## Summary by class:
-#### Utilities:
+###### Utilities:
 * **TextIO** is a utility class used extensively throughout CS125 to make reading from a text file much simpler.
 
 * **NetIDPair** is an ultra simple model of a Java object that holds the encrypted and non-encrypted information of a single net id from the roster.
 * **NRList** is a simple map-like list of `NetIDPair` s that can be passed a file path (to the roster).
 
-#### Peer Interaction Data:
+###### Peer Interaction Data:
 * **PeerInteraction** is a simple data structure that represents an entry from the CS125 lecture feedback database. It contains a pair of encoded NetIDs, a grade, two feedback strings, and a date string.
 * **PeerInteractionsData** creates an array list of "uncleaned" feedback entries then creates a new "cleaned" list containing only valid `PeerInteraction` objects as well as printing stats on the number of valid entries.
 * **Lecture** is a model for a lecture object with a unique id corresponding to the chronological lecture number, all the associated feedback entries, the date, and the lecture topics.  Static methods within the lecture class run through all the `PeerInteraction` objects that exist, creates `Lecture` objects corresponding to the data we have and associates all of the `PeerInteraction` objects linked to that `Lecture` (The `Lecture` object model contains a list of Entries).
 * **LectureData** creates an array list of lectures by date and does basic analysis like finding the mean and standard deviation of the associated interactions.
 
-#### Other:
+###### Other:
 * **Student** stores information regarding a particular `Student` including their lecture attendance, possibly grades and gender, and all their feedback interactions. A list of `Student` objects may frequently be iterated over.
 
 
 
 ### Running:
 * `Main`
-	* Calls `CleanFeedbackData.initialize()`
-		* Uses `FeedbackEntry` constructors and state to create a raw and a cleaned list of entries.
+	* Calls `PeerInteractionsData.initialize()`
+		* Uses `PeerInteraction` constructors and state to create a raw and a cleaned list of entries.
 	* Initializes lectures via the static method `LectureData.initialize()`
 	 	* Uses `Lecture` constructors and state to create a list of lectures and do some basic analysis.
 
