@@ -303,10 +303,10 @@ import java.util.*;
 		}
 
 	/**
-	 *  A test runner for FeedbackEntry that reads from a raw CSV file and 
-	 *  constructs corresponding FeedbackEntry objects if possible. The 
+	 *  A test runner for PeerInteraction that reads from a raw CSV file and 
+	 *  constructs corresponding PeerInteraction objects if possible. The 
 	 *  method then prints out all corrupt lines in the file with their
-	 *  line numbers, all FeedbackEntry objects via FeedbackEntry.toString(),
+	 *  line numbers, all PeerInteraction objects via PeerInteraction.toString(),
 	 *  and finally the number of corrupt and clean lines in the file.
 	 *  The user may opt to use an NRList in this testing. Note that valid
 	 *  entries are required to have integer netID fields if no NRList is
@@ -316,10 +316,10 @@ import java.util.*;
 	 *              1) *empty*: method prompts user to enter feedback source file 
 	 *                  and (optional) NRList source file
 	 *              2) {encoded feedback source file}: uses the
-	 *                  FeedbackEntry(String) constructor to construct entries
+	 *                  PeerInteraction(String) constructor to construct entries
 	 *                  from the given source file (uses no NRList)
 	 *              3) {feedback source file, roster source file}: uses the
-	 *                  FeedbackEntry(String, NRList) constructor to construct
+	 *                  PeerInteraction(String, NRList) constructor to construct
 	 *                  entries from the feedback file and uses the roster
 	 *                  file to create the needed NRList
 	 */ 
@@ -389,9 +389,9 @@ import java.util.*;
 			String currentLine = TextIO.getln();
 			try {
 				//Call appropriate constructor
-				FeedbackEntry test = (encryptor == null) ?
-				    new FeedbackEntry(currentLine) :
-				    new FeedbackEntry(currentLine, encryptor);
+				PeerInteraction test = (encryptor == null) ?
+				    new PeerInteraction(currentLine) :
+				    new PeerInteraction(currentLine, encryptor);
 				++valid;
 				out = test.toString();
 				System.out.println(out);
@@ -408,4 +408,5 @@ import java.util.*;
 		System.out.println(out);
 		if (log) TextIO.putln(out);
 		System.out.println("Done.");
+	}
 	}
