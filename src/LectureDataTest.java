@@ -15,6 +15,7 @@ public class LectureDataTest extends TestCase {
 	
 	public void testValidAnalysisResults() {
 		assertNotNull(LectureData.lectures);
+		assertTrue(LectureData.lectures.size() > 0);
 		assertTrue(LectureData.mean > 0 && LectureData.mean < 10);
 		assertTrue(LectureData.stdDev > 0);
 	}
