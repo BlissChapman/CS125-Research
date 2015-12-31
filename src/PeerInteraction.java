@@ -302,35 +302,111 @@ import java.util.*;
 			return partitions;
 		}
 
-	/**A runner for PeerInteraction that reads from the raw CSV data and constructs
-	 *  corresponding peer interaction objects as well as printing the number of 
-	 *  valid and corrupt lines.
+	/**
+	 *  A test runner for PeerInteraction that reads from a raw CSV file and 
+	 *  constructs corresponding PeerInteraction objects if possible. The 
+	 *  method then prints out all corrupt lines in the file with their
+	 *  line numbers, all PeerInteraction objects via PeerInteraction.toString(),
+	 *  and finally the number of corrupt and clean lines in the file.
+	 *  The user may opt to use an NRList in this testing. Note that valid
+	 *  entries are required to have integer netID fields if no NRList is
+	 *  used, otherwise the netIDs must both be found in the NRList.
+	 * 
+	 *  @param args Three possibilities::
+	 *              1) *empty*: method prompts user to enter feedback source file 
+	 *                  and (optional) NRList source file
+	 *              2) {encoded feedback source file}: uses the
+	 *                  PeerInteraction(String) constructor to construct entries
+	 *                  from the given source file (uses no NRList)
+	 *              3) {feedback source file, roster source file}: uses the
+	 *                  PeerInteraction(String, NRList) constructor to construct
+	 *                  entries from the feedback file and uses the roster
+	 *                  file to create the needed NRList
 	 */ 
-	public static void main(String[] args){
-		TextIO.readFile("ENCODEDpeerInteractions.fa2015.final.csv");
-		System.out.println("Verifying integrity of "
-			      + "ENCODEDpeerInteractions.fa2015.final on " + new Date()
-			      + '\n');
+	public static void testIntegrity(String[] args){
+		String feedbackSrcFile = null;
+		String rosterSrcFile = null;
+		boolean requestRoster = false;
+		switch (args.length){
+		case 2: //Set iff argc == 2
+			rosterSrcFile = args[2]; 
+		case 1: //Set iff argc == 1 or 2
+			feedbackSrcFile = args[1];
+			break;
+		case 0: //Set iff argc == 0
+			requestRoster = true;
+			break;
+		default: //Anything else is erroneous
+			System.out.println("Invalid arg count.");
+			return;
+		}
+		if (feedbackSrcFile == null){
+			System.out.print("Enter feedback source file name: ");
+			feedbackSrcFile = TextIO.getln();
+		}
+		if (requestRoster){
+			System.out.print("Enter YES to use an NRList: ");
+			if (TextIO.getln().toUpperCase().equals("YES")){
+				System.out.print("Enter roster source file name: ");
+				rosterSrcFile = TextIO.getln();
+			}
+		}
+		NRList encryptor = null;
+		if (rosterSrcFile != null){
+			try{
+				encryptor = new NRList(rosterSrcFile);
+			}catch (Exception e){
+				System.out.printf("Problem with file: %s\n", rosterSrcFile);
+				return;
+			}
+		}
 		
+		//Request log file from user.
+		System.out.println("Enter the name of a file to log this test's "
+		                 + "results, or enter nothing to skip logging.");
+		String logFile = TextIO.getln().trim();
+		boolean log;
+		if (logFile.length() != 0){
+			TextIO.writeFile(logFile);
+			log = true;
+		}
+		String temp = "";
+		String out = "";
+		if (rosterSrcFile != null)
+		    temp = " using NRList from " + rosterSrcFile;
+		out = String.format("\n\nVerifying integrity of %s%s on " 
+		                  + new Date() + '\n', feedbackSrcFile, temp);
+		System.out.println(out);
+		if (log) TextIO.putln(out); //For compactness and readability
+		TextIO.readFile(feedbackSrcFile);
 		//results
 		int invalid = 0, valid = 0;
 		
 		//testing
 		int line = 0;
-		
 		while (!TextIO.eof()) {
 			++line;
 			String currentLine = TextIO.getln();
 			try {
-				PeerInteraction test = new PeerInteraction(currentLine);
+				//Call appropriate constructor
+				PeerInteraction test = (encryptor == null) ?
+				    new PeerInteraction(currentLine) :
+				    new PeerInteraction(currentLine, encryptor);
 				++valid;
+				out = test.toString();
+				System.out.println(out);
+				if (log) TextIO.putln(out);
 			} catch(IllegalArgumentException e){
 				++invalid;
-				System.out.print(String.format("Line %d: %s\n", line, e.getMessage()));
+				out = String.format("Line %d: %s\n", line, e.getMessage());
+				System.out.println(out);
+				if (log) TextIO.putln(out);
 			}
 		}
+		out = String.format("There were %d clean and %d corrupt lines.\n", 
+		                    valid, invalid);
+		System.out.println(out);
+		if (log) TextIO.putln(out);
 		System.out.println("Done.");
-		System.out.println(String.format("There were %d clean and %d corrupt lines.\n", 
-				            valid, invalid));
 	}
-}
+	}
