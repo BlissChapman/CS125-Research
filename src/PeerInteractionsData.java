@@ -14,13 +14,13 @@ public class PeerInteractionsData {
 	
 	/** The percent of valid PeerInteraction objects constructed
 	 *  from the CSV file and held in the cleanData list. */
-	public static double percentValid;
+	public static double percentValid = -1;
 	/** The number of valid PeerInteraction objects constructed
 	 *  from the CSV file and held in the cleanData list. */
-	public static int numberOfValidEntries;
+	public static int numberOfValidEntries = -1;
 	/** The number of PeerInteraction objects constructed
 	 *  from the CSV file and held in the rawData list. */
-	public static int numberOfEntries;
+	public static int numberOfEntries = -1;
 
 
 	/** Initialize reads through the "peerInteractions.fa2015.final.csv"
