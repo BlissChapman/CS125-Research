@@ -356,11 +356,15 @@ import java.util.*;
 				return;
 			}
 		}
-		
-		//Request log file from user.
+		String logFile = "";
+		//Request log file from user. This functionality is disabled
+		//by the multi-line comments below. Uncomment to create a log 
+		//file. Useful if testing from your own machine.
+		/*
 		System.out.println("Enter the name of a file to log this test's "
 		                 + "results, or enter nothing to skip logging.");
-		String logFile = TextIO.getln().trim();
+		logFile = TextIO.getln().trim();
+		*/
 		boolean log = false;
 		if (logFile.length() != 0){
 			TextIO.writeFile(logFile);
