@@ -45,3 +45,6 @@ The code base's structure is based on the raw data extracted from the lecture fe
 	* Calls `CleanFeedbackData.initialize()`
 		* Uses `FeedbackEntry` constructors and state to create a raw and a cleaned list of entries.
 	* Initializes lectures via the static method `Lecture.initialize()`
+	
+### Other:
+* Travis CI current: https://travis-ci.org/Togira/CS125-Research
