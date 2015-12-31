@@ -54,6 +54,13 @@ public class Lecture implements Iterable<PeerInteraction>{
 	}
 	
 	/**
+	 * @return the lecture number.
+	 */
+	public int getLectureNumber(){
+		return lectureNumber;
+	}
+	
+	/**
 	 * @return A copy of this Lecture's date.
 	 */
 	public Date getDate(){
