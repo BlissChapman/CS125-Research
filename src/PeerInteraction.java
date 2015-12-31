@@ -41,22 +41,19 @@ import java.util.*;
 			personID = -1;
 			try{
 				personID = Integer.parseInt(separated[0]);
-			}catch(Exception e){
-			}
+			}catch(Exception e) {/*Do nothing*/}
 			
 			//parse out the partnerID
 			partnerID = -1;
 			try{
 				partnerID = Integer.parseInt(separated[1]);
-			}catch(Exception e){
-			}
+			}catch(Exception e) {/*Do nothing*/}
 			
 			//parse out the grade
 			grade = -1;
 			try{
 				grade = Integer.parseInt(separated[2]);
-			}catch(Exception e){
-			}
+			}catch(Exception e){/*Do nothing*/}
 			
 			//check validity of parsed values that are critical
 			if (personID == -1 || partnerID == -1 || grade > 10 || grade < 1 || 
@@ -72,8 +69,7 @@ import java.util.*;
 			try{
 				date = new 
 				    SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(separated[5]);
-			}catch(Exception e){
-			}
+			}catch(Exception e) {/*Do nothing*/}
 		}
 		
 		/**
@@ -105,7 +101,7 @@ import java.util.*;
 			try{
 				date = new 
 				    SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(separated[5]);
-			}catch(Exception e){}
+			}catch(Exception e) {/*Do nothing*/}
 		}
 		
 		/**
@@ -303,10 +299,10 @@ import java.util.*;
 		}
 
 	/**
-	 *  A test runner for PeerInteraction that reads from a raw CSV file and 
-	 *  constructs corresponding PeerInteraction objects if possible. The 
+	 *  A test runner for FeedbackEntry that reads from a raw CSV file and 
+	 *  constructs corresponding FeedbackEntry objects if possible. The 
 	 *  method then prints out all corrupt lines in the file with their
-	 *  line numbers, all PeerInteraction objects via PeerInteraction.toString(),
+	 *  line numbers, all FeedbackEntry objects via FeedbackEntry.toString(),
 	 *  and finally the number of corrupt and clean lines in the file.
 	 *  The user may opt to use an NRList in this testing. Note that valid
 	 *  entries are required to have integer netID fields if no NRList is
@@ -316,14 +312,14 @@ import java.util.*;
 	 *              1) *empty*: method prompts user to enter feedback source file 
 	 *                  and (optional) NRList source file
 	 *              2) {encoded feedback source file}: uses the
-	 *                  PeerInteraction(String) constructor to construct entries
+	 *                  FeedbackEntry(String) constructor to construct entries
 	 *                  from the given source file (uses no NRList)
 	 *              3) {feedback source file, roster source file}: uses the
-	 *                  PeerInteraction(String, NRList) constructor to construct
+	 *                  FeedbackEntry(String, NRList) constructor to construct
 	 *                  entries from the feedback file and uses the roster
 	 *                  file to create the needed NRList
 	 */ 
-	public static void testIntegrity(String[] args){
+	public static void main(String[] args){
 		String feedbackSrcFile = null;
 		String rosterSrcFile = null;
 		boolean requestRoster = false;
@@ -354,7 +350,7 @@ import java.util.*;
 		NRList encryptor = null;
 		if (rosterSrcFile != null){
 			try{
-				encryptor = new NRList(rosterSrcFile);
+				encryptor = new NRList(rosterSrcFile, null, 10000);
 			}catch (Exception e){
 				System.out.printf("Problem with file: %s\n", rosterSrcFile);
 				return;
@@ -365,7 +361,7 @@ import java.util.*;
 		System.out.println("Enter the name of a file to log this test's "
 		                 + "results, or enter nothing to skip logging.");
 		String logFile = TextIO.getln().trim();
-		boolean log;
+		boolean log = false;
 		if (logFile.length() != 0){
 			TextIO.writeFile(logFile);
 			log = true;
@@ -384,6 +380,7 @@ import java.util.*;
 		
 		//testing
 		int line = 0;
+		ArrayList<String> failures = new ArrayList<String>();
 		while (!TextIO.eof()) {
 			++line;
 			String currentLine = TextIO.getln();
@@ -399,14 +396,20 @@ import java.util.*;
 			} catch(IllegalArgumentException e){
 				++invalid;
 				out = String.format("Line %d: %s\n", line, e.getMessage());
-				System.out.println(out);
-				if (log) TextIO.putln(out);
+				failures.add(out);
 			}
 		}
-		out = String.format("There were %d clean and %d corrupt lines.\n", 
+		if (failures.size() != 0 && log){			
+			TextIO.putf("\n\nWARNING: %d CORRUPT LINES!\n\n\n", failures.size());
+		}
+		for (String elem : failures){
+			System.out.print(elem);
+			if (log) TextIO.put(elem);
+		}
+		out = String.format("\n\nThere were %d clean and %d corrupt lines.\n", 
 		                    valid, invalid);
 		System.out.println(out);
 		if (log) TextIO.putln(out);
 		System.out.println("Done.");
 	}
-	}
+}
