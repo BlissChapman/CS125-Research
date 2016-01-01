@@ -8,16 +8,31 @@ import java.util.ArrayList;
  * @author CS125 Research
  * @todo Implement everything
  */
-public class Student{
+class Student{
 	public static final float WEIGHT_PROPORTIONALITY_CONSTANT = 1;
 	public static final float WEIGHT_THRESHOLD = 10;
 	
-	private int ID;
+	/**
+	 * ID of this Student. This value is immutable.
+	 */
+	private final int ID;
 	//private boolean female; //One possibility for what we could store here
+	
+	/**
+	 * The collection of all PeerInteractions made by the Student, sorted
+	 * in chronological order.
+	 */
 	private ArrayList<PeerInteraction> records;
-	private double weight;
+	
+	private float weight = Float.NaN;
+	
+	
+	/**
+	 * True if this Student has been mutated since the last
+	 * immutable function call. Indicates when to refresh cache.
+	 */
+	private boolean mutated = false;
  
-
  	/**
  	 * ID Ctor. Needs work?
  	 * 
@@ -31,11 +46,10 @@ public class Student{
 	/**
 	 * ID and one-entry Ctor. Is this useful?
 	 * 
-	 * @param code  The ID of the Student
 	 * @param entry The first PeerInteraction made by this student.
 	 */
-	public Student(int code, PeerInteraction entry){
-		this(code);
+	public Student(PeerInteraction entry){
+		this(entry.getPersonID());
 		records.add(entry);
 	}
 
@@ -49,7 +63,8 @@ public class Student{
 	 * @return The weight given to this Student's feedback.
 	 */
 	public double feedbackWeight(){
-		
+		if (records.size() == 0)
+			return Float.NaN;
 		int numberOfCommonResponses = 0; // For now, if the feedback was 5 or 10, it's not important
 		for(int i = 0; i < records.size(); i++){
 			if(records.get(i).getGrade() == 5 || records.get(i).getGrade() == 10){
@@ -69,12 +84,16 @@ public class Student{
 
 	/**
 	 * Add a PeerInteraction to this Student's record thereof. This method 
-	 * imposes a chronologial precondition.
-	 * @todo Implement.
+	 * imposes a chronologial precondition. Throws an exception if an
+	 * entry passed in has a personID which differs from this.ID .
 	 *
 	 * @param entry PeerInteraction made by this Student
 	 */
 	public void addEntry(PeerInteraction entry){
+		if (entry.getPersonID() != ID)
+			throw new IllegalArgumentException(
+				String.format("Student %d given entry by %d",
+				              ID, entry.getPersonID()));
 		records.add(entry);
 	}
 
@@ -86,37 +105,38 @@ public class Student{
 	}
 
 	/**
-	 * Setter for ID (is this really useful?)
-	 */
-	public void setID(int code){
-		ID = code;
-	}
-
-	/**
 	 * @return Number of valid peer interaction data points given by this Student.
 	 * @todo Implement.
 	 */
 	public int feedbackGiven(){
-		return -1;
+		return records.size();
 	}
 
 	/**
 	 * @return The average rating given by this Student for all lectures 
 	 *         so far in the semester.
-	 * @todo Implement if needed.
 	 */
-	public double ratingMean(){
-		return -1;
+	public float ratingMean(){
+		if (records.size() == 0)
+			return Float.NaN;
+		long sum = 0;
+		for (PeerInteraction elem : records)
+			sum += elem.getGrade();
+		return ((float) sum)/records.size();
 	}
 
 	/**
 	 * @return The standard deviation of all ratings given by this
 	 *         Student throughout the semester
-	 * @todo Implement if needed.
 	 */
-	public double ratingStdDev(){
-		return -1;
+	public float ratingStdDev(){
+		if (records.size() == 0)
+			return Float.NaN;
+		long sumSquared = 0;
+		float ratingMean = ratingMean();
+		for (PeerInteraction elem : records)
+			sumSquared += (elem.getGrade()*elem.getGrade());
+		float meanSquared = ((float) sumSquared)/records.size();
+		return Math.sqrt(meanSquared-ratingMean*ratingMean);
 	}
-
-        
 }
