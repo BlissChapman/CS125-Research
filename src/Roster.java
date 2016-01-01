@@ -39,7 +39,7 @@ public class Roster{
 		 * or else the array will waste space.
 		 */
 		for (NetIDPair elem : codes){
-			map[elem.getRandom()] = new Student(elem.getRandom());
+			map[elem.getCode()] = new Student(elem.getCode());
 			numStudents = codes.pairList.size();
 		}
 	}
