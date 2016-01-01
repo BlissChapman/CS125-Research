@@ -24,15 +24,9 @@ class Student{
 	 */
 	private ArrayList<PeerInteraction> records;
 	
-	private float weight = Float.NaN;
+	private double weight = Double.NaN;
 	
 	
-	/**
-	 * True if this Student has been mutated since the last
-	 * immutable function call. Indicates when to refresh cache.
-	 */
-	private boolean mutated = false;
- 
  	/**
  	 * ID Ctor. Needs work?
  	 * 
@@ -64,7 +58,7 @@ class Student{
 	 */
 	public double feedbackWeight(){
 		if (records.size() == 0)
-			return Float.NaN;
+			return Double.NaN;
 		int numberOfCommonResponses = 0; // For now, if the feedback was 5 or 10, it's not important
 		for(int i = 0; i < records.size(); i++){
 			if(records.get(i).getGrade() == 5 || records.get(i).getGrade() == 10){
@@ -116,27 +110,27 @@ class Student{
 	 * @return The average rating given by this Student for all lectures 
 	 *         so far in the semester.
 	 */
-	public float ratingMean(){
+	public double ratingMean(){
 		if (records.size() == 0)
-			return Float.NaN;
+			return Double.NaN;
 		long sum = 0;
 		for (PeerInteraction elem : records)
 			sum += elem.getGrade();
-		return ((float) sum)/records.size();
+		return ((double) sum)/records.size();
 	}
 
 	/**
 	 * @return The standard deviation of all ratings given by this
 	 *         Student throughout the semester
 	 */
-	public float ratingStdDev(){
+	public double ratingStdDev(){
 		if (records.size() == 0)
-			return Float.NaN;
+			return Double.NaN;
 		long sumSquared = 0;
-		float ratingMean = ratingMean();
+		double ratingMean = ratingMean();
 		for (PeerInteraction elem : records)
 			sumSquared += (elem.getGrade()*elem.getGrade());
-		float meanSquared = ((float) sumSquared)/records.size();
+		double meanSquared = ((double) sumSquared)/records.size();
 		return Math.sqrt(meanSquared-ratingMean*ratingMean);
 	}
 }
