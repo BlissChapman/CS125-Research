@@ -1,23 +1,38 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
- * Important: Student class. Stores information regarding a particular Student in class, 
- * including their lecture attendance and possibly grades. Each Student should probably
- * contain all the FeedbackEntries made by the student.
+ * Student class. Stores information regarding a particular Student in class, 
+ * including their lecture attendance and possibly grades. Each Student
+ * will contain all the proper PeerInteractions made by the student.
  *
  * @author CS125 Research
- * @todo Implement everything
+ * @todo Implement more.
  */
-public class Student{
+class Student{
 	public static final float WEIGHT_PROPORTIONALITY_CONSTANT = 1;
 	public static final float WEIGHT_THRESHOLD = 10;
 	
-	private int ID;
+	/* ID of this Student. This value is immutable. */
+	private final int ID;
+	
 	//private boolean female; //One possibility for what we could store here
-	private ArrayList<FeedbackEntry> records;
-	private double weight;
- 
+	
+	/* The collection of all PeerInteractions made by the Student, sorted
+	 * in chronological order. */
+	private ArrayList<PeerInteraction> records;
 
+	/* Caching variables for several computationally nontrivial methods.
+	 * Stores results of these method calls and is recomputed whenever
+	 * the Student is mutated. */
+	private float weight = Float.NaN;
+	private float ratingMean = Float.NaN;
+	private float ratingStdDev = Float.NaN;
+	/* When the cache is to be refreshed, this boolean is set true. Any
+	 * methods that use the above variables will recompute values when
+	 * this boolean is set. See refreshCache()*/
+	private boolean mutated = false;
+	
  	/**
  	 * ID Ctor. Needs work?
  	 * 
@@ -25,18 +40,18 @@ public class Student{
  	 */
 	public Student(int code){
 		ID = code;
-		records = new ArrayList<FeedbackEntry>();
+		records = new ArrayList<PeerInteraction>();
 	}
 	
 	/**
 	 * ID and one-entry Ctor. Is this useful?
 	 * 
-	 * @param code  The ID of the Student
-	 * @param entry The first FeedbackEntry made by this student.
+	 * @param entry The first PeerInteraction made by this student.
 	 */
-	public Student(int code, FeedbackEntry entry){
-		this(code);
+	public Student(PeerInteraction entry){
+		this(entry.getPersonID());
 		records.add(entry);
+		refreshCache();
 	}
 
 	/**
@@ -49,7 +64,10 @@ public class Student{
 	 * @return The weight given to this Student's feedback.
 	 */
 	public double feedbackWeight(){
-		
+		if (!mutated)
+			return WEIGHT_PROPORTIONALITY_CONSTANT*weight;
+		if (records.size() == 0)
+			return Double.NaN;
 		int numberOfCommonResponses = 0; // For now, if the feedback was 5 or 10, it's not important
 		for(int i = 0; i < records.size(); i++){
 			if(records.get(i).getGrade() == 5 || records.get(i).getGrade() == 10){
@@ -68,14 +86,20 @@ public class Student{
 	}
 
 	/**
-	 * Add a FeedbackEntry to this Student's record thereof. This method 
-	 * imposes a chronologial precondition.
-	 * @todo Implement.
+	 * Add a PeerInteraction to this Student's record thereof. This method 
+	 * will sort the record by date after insertion. Throws an exception 
+	 * if an entry passed in has a personID which differs from this.ID .
 	 *
-	 * @param entry FeedbackEntry made by this Student
+	 * @param entry PeerInteraction made by this Student
 	 */
-	public void addEntry(FeedbackEntry entry){
+	public void addEntry(PeerInteraction entry){
+		if (entry.getPersonID() != ID)
+			throw new IllegalArgumentException(
+			    String.format("Student %d given entry by %d",
+				          ID, entry.getPersonID()) );
 		records.add(entry);
+		pushBack();
+		refreshCache();
 	}
 
 	/**
@@ -86,37 +110,101 @@ public class Student{
 	}
 
 	/**
-	 * Setter for ID (is this really useful?)
-	 */
-	public void setID(int code){
-		ID = code;
-	}
-
-	/**
-	 * @return Number of valid feedback data points given by this Student.
-	 * @todo Implement.
+	 * @return Number of valid peer interaction data points given by this Student.
 	 */
 	public int feedbackGiven(){
-		return -1;
+		return records.size();
 	}
 
 	/**
 	 * @return The average rating given by this Student for all lectures 
 	 *         so far in the semester.
-	 * @todo Implement if needed.
 	 */
-	public double ratingMean(){
-		return -1;
+	public float ratingMean(){
+		if (!mutated)
+			return ratingMean;
+		if (records.size() == 0)
+			return Float.NaN;
+		long sum = 0;
+		for (PeerInteraction elem : records)
+			sum += elem.getGrade();
+		return ((float) sum)/records.size();
 	}
 
 	/**
 	 * @return The standard deviation of all ratings given by this
 	 *         Student throughout the semester
-	 * @todo Implement if needed.
 	 */
-	public double ratingStdDev(){
-		return -1;
+	public float ratingStdDev(){
+		if (!mutated)
+			return ratingStdDev;
+		if (records.size() == 0)
+			return Float.NaN;
+		long sumSquared = 0;
+		double mean = ratingMean();
+		for (PeerInteraction elem : records)
+			sumSquared += (elem.getGrade()*elem.getGrade());
+		double meanSquared = ((float) sumSquared)/records.size();
+		return ratingStdDev = (float) Math.sqrt(meanSquared-mean*mean);
 	}
+	
+	/**
+	 * Ensures that the last few entries added are from distinct lectures.
+	 * If duplicates are found, all will be merged into a single entry.
+	 * This is public for now because it's unclear where it should be
+	 * called.
+	 */
+	public void mergeRecentDuplicates(){
+		int last = records.size()-1;
+		ArrayList<PeerInteraction> duplicates = new ArrayList<>();
+		while (last > 0){;
+			Lecture curr = Lecture.get(records.get(last));
+			Lecture prev = Lecture.get(records.get(last));
+			if (curr != prev)
+				break;
+			else
+				--last;
+		}
+		if (last != records.size()-1){
+			PeerInteraction[] repeats 
+			    = new PeerInteraction[records.size()-last];
+			for (int idx = 0; idx < records.size()-last; ++idx)
+				repeats[idx] = records.get(idx+last);
+			for (int idx = records.size()-1; idx >= last; ++idx)
+				records.remove(idx); //Shame Java has no removeLast
+			records.add(new PeerInteraction(repeats));
+			refreshCache(); //Recomputation needed due to changes
+		}
+	}
+	
+	/**
+	 * Private function that refreshes all cached variables. Setting
+	 * mutated to true causes all functions to recompute instead
+	 * of returning their cached values.
+	 */
+	private void refreshCache(){
+		mutated = true;
+		ratingMean();
+		ratingStdDev();
+		feedbackWeight();
+		mutated = false;
+	}
+	
+	/**
+	 * Private helper function that pushes back an unsorted entry to
+	 * its proper spot in Student.records. Called whenever an entry is
+	 * added.
+	 */
+	private void pushBack(){
+		int last = records.size()-1;
+		while (last > 0 
+		    && records.get(last-1).getDate().compareTo(
+		           records.get(last).getDate()) > 0)
+		//^ Java verbosity in a nutshell.
+		//  Translation: records[last-1].getDate() > records[last].getDate();
+			Collections.swap(records, last-1, last);
+		--last;
+	}
+	
 
-        
 }
