@@ -106,7 +106,7 @@ import java.util.*;
 		
 		/**
 		 * This merge constructor creates a PeerInteraction whose parameters are
-		 * all the same as those of the last element in the argument, except
+		 * all the same as those of the last valid element in the argument, except
 		 * for the written feedback parameters. These parameters are formed
 		 * from a processed concatenation of all elements in the argument.
 		 * 
@@ -114,11 +114,18 @@ import java.util.*;
 		 *                   same lecture and having the same personID.
 		 */
 		public PeerInteraction(PeerInteraction[] duplicates){
-			int last = duplicates.length - 1;
-			personID = duplicates[last].personID;
-			partnerID = duplicates[last].partnerID;
-			grade = duplicates[last].grade;
-			good = duplicates[last].good;
+			PeerInteraction ref = duplicates[duplicates.length-1];
+			for (int i = duplicates.length; --i >= 0;){
+				if(duplicates[i].valid()){
+					ref =  duplicates[i];
+					break;
+				}
+			}
+			personID = ref.personID;
+			partnerID = ref.partnerID;
+			grade = ref.grade;
+			good = ref.good;
+			date = ref.getDate();
 			if (duplicates.length == 1){
 				strengths = duplicates[0].strengths;
 				weaknesses = duplicates[0].weaknesses;
