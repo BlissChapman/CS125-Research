@@ -1,8 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.RandomAccess;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Student class. Stores information regarding a particular Student in class, 
@@ -268,8 +264,8 @@ class Student implements Iterable<PeerInteraction>{
 	public static void main(String[] args){
 		LectureInitializer.initialize();
 		String fileName = args.length == 1 ? args[0] : null;
-		double DUPLICATE = 0.00;
-		double INVALID_ID = 0.15;
+		double DUPLICATE = 0.02; //Chance of generating duplicate
+		double INVALID_ID = 0.15; //Chance of improper parter ID
 		Scanner safeScan = new Scanner(System.in);
 		if (fileName == null){
 			System.out.print("Enter the name of a feedback source file: ");
@@ -305,6 +301,7 @@ class Student implements Iterable<PeerInteraction>{
 		for(PeerInteraction elem : trial)
 			System.out.println(elem);
 		trial.mergeAllDuplicates();
+		//Check if merge works as intended
 		System.out.println("\n\nData with duplicates merged:");
 		for (PeerInteraction elem : trial)
 			System.out.println(elem);
