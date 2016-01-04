@@ -7,7 +7,8 @@
  * @todo Add useful features. Also implement Student class and add needed
  *       functionality to NRList class.
  */
-public class Roster{
+import java.util.*;
+public class Roster implements Iterable<Student>{
 
 	private Student[] map;
 	private int numStudents;
@@ -19,6 +20,7 @@ public class Roster{
 	 */
 	public Roster(int capacity){
 		map = new Student[capacity];
+		numStudents = 0;
 	}
 	
 	/**
@@ -51,7 +53,7 @@ public class Roster{
 	 *
 	 * @param ID The code associated with a particular student.
 	 *
-	 * @return The student associated with the given code.
+	 * @return The student associated with the given code or null.
 	 */
 	public Student get(int ID){
 		if (ID >= map.length || ID < 0)
@@ -61,9 +63,36 @@ public class Roster{
 	}
 	
 	/**
+	 * Given a PeerInteraction, returns the Student in the Roster whose ID
+	 * matches the first netID of the argument or null if no such Student
+	 * is found.
+	 * 
+	 * @param interaction The PeerInteraction whose author will be sought.
+	 * @return the student who authored the interaction or null.
+	 */
+	public Student get(PeerInteraction interaction){
+		return get(interaction.getPersonID());
+	}
+	
+	public void addInteractions(Iterable<PeerInteraction> batch){
+		for (PeerInteraction entry : batch){
+			Student person = get(entry);
+			if (person != null)
+				person.addEntry(entry);
+		}
+		for (Student person : this)
+			person.mergeRecentDuplicates(); //All or Recent?
+	}
+	
+	/**
 	 * @return The number of students in the Roster.
 	 */
-	public int size() { return numStudents; }
+	public int size()     { return numStudents; }
+	
+	/**
+	 * @return The number of students this Roster can contain.
+	 */
+	public int capacity() { return map.length; }
 	
 	/**
 	 * In case new Students join the class, allows addition of new Student to
@@ -96,4 +125,52 @@ public class Roster{
 			newMap[i] = map[i];
 		map = newMap;
 	}
+	
+	
+	/**
+	 * @return An iterator to the first Student in this Roster (in order of
+	 *         increasing ID)
+	 */
+	public StudentIterator iterator() { return new StudentIterator(); }
+
+	/**
+	 * Hashmap iterator. Jumps from one non-null element of map to the next.
+	 */
+	public class StudentIterator implements Iterator<Student>{
+		private int curr;
+		
+		/**
+		 * Helper function that jumps to the next non-null element
+		 * of map or until the end of map is reached.
+		 */
+		private void jump()      { while (hasNext() && map[++curr] == null); }
+		public StudentIterator() { curr = -1; jump(); }
+		public boolean hasNext() { return curr < map.length - 1; }
+		public Student next(){
+			Student out = map[curr];
+			jump();
+			return out;
+		}
+		
+	}
+	
+	public static void main(String[] args){
+		Roster testRoster = new Roster(1000);
+		ArrayList<Integer> oneToThousand = new ArrayList<>();
+		for (int i = 0; i < 1000; ++i)
+			oneToThousand.add(i);
+		Collections.shuffle(oneToThousand);
+		int count = 0;
+		for (int i = 0; i < 200; ++i){
+			int number = oneToThousand.get(i);
+			testRoster.addStudent(number);
+		}
+		for (Student person : testRoster){
+			++count;
+			System.out.printf("ID: %d\n", person.getID());
+		}
+		System.out.printf("Number of students: %d\n", count);
+		System.out.printf("Size of roster: %d\n", testRoster.size());
+	}
+
 }
