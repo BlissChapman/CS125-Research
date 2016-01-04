@@ -65,7 +65,7 @@ public class NRList implements Iterable<NetIDPair>{
 	private boolean check(NetIDPair potentialPair){
 		boolean duplicate = false;
 		for(int x = 0; x < pairList.size(); x++){
-			duplicate = pairList.get(x).getRandom()==potentialPair.getRandom();	
+			duplicate = pairList.get(x).getCode()==potentialPair.getCode();	
 			if(duplicate) break;
 		}
 		return duplicate;
@@ -82,7 +82,7 @@ public class NRList implements Iterable<NetIDPair>{
 	{
 		for(NetIDPair elem : pairList)
 			if (elem.equals(netID))
-				return elem.getRandom();
+				return elem.getCode();
 		return -1;
 	}
 	

@@ -1,29 +1,29 @@
 import java.util.Arrays;
 
 /**
- *  A simple pair POD that assigns a random number to a NetID
- *  and stores the two for use in encrypting data.
- *  @author CS125Research
+ * A simple pair POD that couples an integer ID code with 
+ * a NetID and stores the two for use in encrypting data.
+ * @author CS125Research
  */
 public class NetIDPair {
 	private String netID;
-	private int random;
+	private int code;
 	
 	/**
 	 * Struct constructor.
 	 * 
-	 * @param newNetid   NetID of student.
-	 * @param newRandom  Random code associated with this NetID.
+	 * @param newNetid  NetID of student.
+	 * @param newCode   Code associated with this NetID.
 	 */
-	public NetIDPair(String newNetID, int newRandom){
+	public NetIDPair(String newNetID, int newCode){
 		netID = newNetID;
-		random = newRandom;	
+		code = newCode;	
 	}
 	
 	/**
 	 * @return The code associated with this netID.
 	 */	
-	public int getRandom() { return random; }
+	public int getCode() { return code; }
 	
 	/**
 	 * @return The string representation of this pair. Just a comma
@@ -35,7 +35,7 @@ public class NetIDPair {
 		build[0] = netID.charAt(0);
 		int last = netID.length()-1;
 		build[last] = netID.charAt(last);
-		return (new String(build)) + ": " + random;
+		return (new String(build)) + ": " + code;
 	}
 	
 	/**
