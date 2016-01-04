@@ -1,4 +1,8 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.RandomAccess;
+import java.util.Scanner;
 
 /**
  * Student class. Stores information regarding a particular Student in class, 
@@ -155,7 +159,6 @@ class Student implements Iterable<PeerInteraction>{
 	 */
 	public void mergeRecentDuplicates(){
 		int last = records.size()-1;
-		ArrayList<PeerInteraction> duplicates = new ArrayList<>();
 		while (last > 0){;
 			Lecture curr = Lecture.get(records.get(last));
 			Lecture prev = Lecture.get(records.get(last));
@@ -262,7 +265,7 @@ class Student implements Iterable<PeerInteraction>{
 	 * @args The source file for PeerInteractions or nothing
 	 */
 	public static void main(String[] args){
-		LectureInitializer.initialize();
+		LectureData.initialize();
 		String fileName = args.length == 1 ? args[0] : null;
 		double DUPLICATE = 0.02; //Chance of generating duplicate
 		double INVALID_ID = 0.15; //Chance of improper parter ID
@@ -301,7 +304,6 @@ class Student implements Iterable<PeerInteraction>{
 		for(PeerInteraction elem : trial)
 			System.out.println(elem);
 		trial.mergeAllDuplicates();
-		//Check if merge works as intended
 		System.out.println("\n\nData with duplicates merged:");
 		for (PeerInteraction elem : trial)
 			System.out.println(elem);
