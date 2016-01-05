@@ -48,7 +48,7 @@ public class Roster implements Iterable<Student>{
 
 	/**
 	 * Given an ID, returns the Student with the matching ID in the Roster. 
-	 * Returns null if the ID is not found. This method is guarranteed to
+	 * Returns null if the ID is not found. This method is guaranteed to
 	 * run in constant time.
 	 *
 	 * @param ID The code associated with a particular student.
@@ -160,11 +160,13 @@ public class Roster implements Iterable<Student>{
 			jump();
 			return out;
 		}
+
 		@Override
 		public void remove() {
 			// TODO Auto-generated method stub
 			
 		}
+
 		
 	}
 	
@@ -220,5 +222,4 @@ public class Roster implements Iterable<Student>{
 		}
 		
 	}
-
 }
