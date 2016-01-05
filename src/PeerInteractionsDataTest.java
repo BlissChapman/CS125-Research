@@ -13,8 +13,12 @@ public class PeerInteractionsDataTest extends TestCase {
 		PeerInteractionsData.initialize();
 	}
 	
-	public void testDataNull() {
+	public void testValidAnalysisResults() {
 		assertNotNull(PeerInteractionsData.rawData);
 		assertNotNull(PeerInteractionsData.cleanData);
+		assertTrue((PeerInteractionsData.percentValid >= 0 && PeerInteractionsData.percentValid <= 100));
+		assertTrue((PeerInteractionsData.numberOfValidEntries > 0));
+		assertTrue((PeerInteractionsData.numberOfEntries > 0));
+		assertTrue((PeerInteractionsData.numberOfEntries >= PeerInteractionsData.numberOfValidEntries));
 	}
 }
