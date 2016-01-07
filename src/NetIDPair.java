@@ -45,4 +45,11 @@ public class NetIDPair {
 		return this.netID.equals(searchID);
 	}
 	
+	/**
+	 * @return True iff other.netID matches this NetIDPair's netID.
+	 */
+	public boolean equals(NetIDPair other){
+		return this.netID.equals(other.netID);
+	}
+	
 }
