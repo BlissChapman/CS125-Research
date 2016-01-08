@@ -42,7 +42,7 @@ public class Roster implements Iterable<Student>{
 		 */
 		for (NetIDPair elem : codes){
 			map[elem.getCode()] = new Student(elem.getCode());
-			numStudents = codes.getList().size();
+			numStudents = codes.size();
 		}
 	}
 

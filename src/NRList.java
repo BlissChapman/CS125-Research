@@ -86,13 +86,6 @@ public class NRList implements Iterable<NetIDPair>{
 	}
 	
 	/**
-	 * @return The list of net id pairs.. 
-	 */
-	public ArrayList<NetIDPair> getList(){
-		return pairList;
-	}
-	
-	/**
 	 * @return The maximum allowed number of NetIDPairs in this NRList.
 	 */
 	public int capacity(){
