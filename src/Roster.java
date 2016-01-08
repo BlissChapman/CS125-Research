@@ -152,11 +152,14 @@ public class Roster implements Iterable<Student>{
 		 * Helper function that jumps to the next non-null element
 		 * of map or until the end of map is reached.
 		 */
-		private void jump()      { while (hasNext() && map[++curr] == null); }
-		public StudentIterator() { curr = -1; jump(); }
-		public boolean hasNext() { return curr < map.length - 1; }
+		private void jump(){ 
+			while (hasNext() && map[curr] == null)
+				++curr;
+		}
+		public StudentIterator() { curr = 0; jump(); }
+		public boolean hasNext() { return curr < map.length ; }
 		public Student next(){
-			Student out = map[curr];
+			Student out = map[curr++];
 			jump();
 			return out;
 		}
