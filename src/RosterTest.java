@@ -23,9 +23,10 @@ public class RosterTest extends TestCase {
 	 * @throws FileNotFoundException 
 	 */
 	public void testRosterObject() throws FileNotFoundException {
+		//STUDENTS: Number of students in class
 		int STUDENTS = 100 + TestUtil.gen.nextInt(700);
+		//CAPACITY: Maximum size of Roster
 		int CAPACITY = STUDENTS + 100 + TestUtil.gen.nextInt(300);
-		int DELTA = CAPACITY - 100;
 		ArrayList<String> fakeNetIDs = TestUtil.generateRoster(STUDENTS);
 		
 		/* Convert our feedback file into a PeerInteraction ArrayList
@@ -59,11 +60,11 @@ public class RosterTest extends TestCase {
 		 */
 		double[] config = {0.667, 0.873, 0.70, 0.40, 0.90, 0.00};
 		long now = (new Date()).getTime();
-		long then = now - 4*30*24*60*60*1000; //~Four months ago
+		long then = now - 4l*30*24*60*60*1000; //~Four months ago
 		ArrayList<String> fakeRawFeedback = 
 		    TestUtil.generateFeedback(50, new Date(then), new Date(now), 
 		    		                  fakeNetIDs, dictionary, config);
-		NRList fakeNRList = new NRList(fakeNetIDs, fakeNetIDs.size()+DELTA);
+		NRList fakeNRList = new NRList(fakeNetIDs, fakeNetIDs.size()+100);
 		Roster testRoster = new Roster(fakeNRList, CAPACITY);
 		ArrayList<PeerInteraction> fakeEntries = new ArrayList<>();
 		try{
@@ -101,56 +102,57 @@ public class RosterTest extends TestCase {
 	 * TODO improve to also test 
 	 *      Roster.addPeerInteractions(Iterable<PeerInteraction>)
 	 */
-	public void testRosterIteratorAndExceptions() {		
-		int CAPACITY = 1000;
-		int SIZE = 200;
-		int DELTA = 500;
-		Roster testRoster = new Roster(CAPACITY);
-		ArrayList<Integer> integers = new ArrayList<>();
-		for (int i = 0; i < CAPACITY; ++i)
-			integers.add(i);
-		Collections.shuffle(integers);
-		int count = 0;
-		for (int i = 0; i < SIZE; ++i){
-			int number = integers.get(i);
-			testRoster.addStudent(number);
-		}
-		
-		//Test to see that iteration works as expected
-		for (Student person : testRoster)
-			++count;
-		
-		//Check to see that iterator reached all students
-		assertTrue(count == testRoster.size());
-		//Check that bounds exception is properly thrown
-		try{
-			//Randomly tries underflow or overflow by up to DELTA
-			int wildcard = Math.random() > 0.50 ? CAPACITY : -DELTA;
-			testRoster.addStudent(wildcard + (int)(Math.random()*DELTA));
-			assertTrue(false); //Bounds check test failed.
-		} catch(Exception e){
-			assertTrue("Wrong exception thrown.", 
-					   e instanceof IndexOutOfBoundsException);
-			//System.out.println(e.getMessage());
-			assertTrue("Bounds check test successful.", true);
-		}
-		
-		//After this resize, no bounds exceptions should be thrown.
-		//But the method should properly handle assignments to IDs
-		//that are already taken.
-		testRoster.resize(CAPACITY + DELTA);
-		int unvisited = SIZE;
-		for (int i = 0; i < CAPACITY + DELTA; ++i){
-			try{
-				testRoster.addStudent(i);
-				//System.out.printf("Added Student %d\n", i);
-			}catch(Exception e){
-				assertTrue(e instanceof IllegalArgumentException);
-				//System.out.println(e.getMessage());
-				--unvisited;
+	public void testRosterIteratorAndExceptions() {
+		int trials = 101;
+		while (--trials > 0){
+			int CAPACITY = 1000;
+			int SIZE = 200;
+			int DELTA = 500;
+			Roster testRoster = new Roster(CAPACITY);
+			ArrayList<Integer> integers = new ArrayList<>();
+			for (int i = 0; i < CAPACITY; ++i)
+				integers.add(i);
+			Collections.shuffle(integers);
+			int count = 0;
+			for (int i = 0; i < SIZE; ++i){
+				int number = integers.get(i);
+				testRoster.addStudent(number);
 			}
+			
+			//Test to see that iteration works as expected
+			for (Student person : testRoster)
+				++count;
+			assertTrue(count == testRoster.size());
+			//Check that bounds exception is properly thrown
+			try{
+				//Randomly tries underflow or overflow by up to DELTA
+				int wildcard = Math.random() > 0.50 ? CAPACITY : -DELTA;
+				testRoster.addStudent(wildcard + (int)(Math.random()*DELTA));
+				assertTrue(false); //Bounds check test failed.
+			} catch(Exception e){
+				assertTrue("Wrong exception thrown.", 
+						   e instanceof IndexOutOfBoundsException);
+				//System.out.println(e.getMessage());
+				assertTrue("Bounds check test successful.", true);
+			}
+			
+			//After this resize, no bounds exceptions should be thrown.
+			//But the method should properly handle assignments to IDs
+			//that are already taken.
+			testRoster.resize(CAPACITY + DELTA);
+			int unvisited = SIZE;
+			for (int i = 0; i < CAPACITY + DELTA; ++i){
+				try{
+					testRoster.addStudent(i);
+					//System.out.printf("Added Student %d\n", i);
+				}catch(Exception e){
+					assertTrue(e instanceof IllegalArgumentException);
+					//System.out.println(e.getMessage());
+					--unvisited;
+				}
+			}
+			assertTrue(unvisited == 0); //Exception thrown for every existing Student
+			assertTrue(testRoster.size() == testRoster.capacity()); //Roster full
 		}
-		assertTrue(unvisited == 0); //Exception thrown for every existing Student
-		assertTrue(testRoster.size() == testRoster.capacity()); //Roster full
 	}
 }
