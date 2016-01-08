@@ -306,10 +306,10 @@ import java.util.*;
 		}
 
 	/**
-	 *  A test runner for FeedbackEntry that reads from a raw CSV file and 
+	 *  A test runner for PeerInteraction that reads from a raw CSV file and 
 	 *  constructs corresponding FeedbackEntry objects if possible. The 
 	 *  method then prints out all corrupt lines in the file with their
-	 *  line numbers, all FeedbackEntry objects via FeedbackEntry.toString(),
+	 *  line numbers, all PeerInteraction objects via PeerInteraction.toString(),
 	 *  and finally the number of corrupt and clean lines in the file.
 	 *  The user may opt to use an NRList in this testing. Note that valid
 	 *  entries are required to have integer netID fields if no NRList is
@@ -357,7 +357,7 @@ import java.util.*;
 		NRList encryptor = null;
 		if (rosterSrcFile != null){
 			try{
-				encryptor = new NRList(rosterSrcFile, null, 10000);
+				encryptor = new NRList(rosterSrcFile, 10000);
 			}catch (Exception e){
 				System.out.printf("Problem with file: %s\n", rosterSrcFile);
 				return;
