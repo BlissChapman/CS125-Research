@@ -35,7 +35,7 @@ public class TestUtil {
 	private static ArrayList<String> filterDuplicates(ArrayList<String> words){
 		ArrayList<String> results = new ArrayList<>();
 		String last = "";
-		words.sort(naturalOrder);
+		Collections.sort(words);
 		for (String elem : words){
 			if (!elem.equals(last))
 				results.add(elem);
@@ -189,7 +189,7 @@ public class TestUtil {
 					output.add(wordExtractor.next().replace("\"", "\"\""));
 				wordExtractor.close();
 			}
-		output.sort(naturalOrder);
+		Collections.sort(output);
 		return output;
 	}
 	
