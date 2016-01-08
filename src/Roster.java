@@ -7,7 +7,8 @@
  * @todo Add useful features. Also implement Student class and add needed
  *       functionality to NRList class.
  */
-public class Roster{
+import java.util.*;
+public class Roster implements Iterable<Student>{
 
 	private Student[] map;
 	private int numStudents;
@@ -19,6 +20,7 @@ public class Roster{
 	 */
 	public Roster(int capacity){
 		map = new Student[capacity];
+		numStudents = 0;
 	}
 	
 	/**
@@ -39,19 +41,19 @@ public class Roster{
 		 * or else the array will waste space.
 		 */
 		for (NetIDPair elem : codes){
-			map[elem.getRandom()] = new Student(elem.getRandom());
-			numStudents = codes.pairList.size();
+			map[elem.getCode()] = new Student(elem.getCode());
+			numStudents = codes.getList().size();
 		}
 	}
 
 	/**
 	 * Given an ID, returns the Student with the matching ID in the Roster. 
-	 * Returns null if the ID is not found. This method is guarranteed to
+	 * Returns null if the ID is not found. This method is guaranteed to
 	 * run in constant time.
 	 *
 	 * @param ID The code associated with a particular student.
 	 *
-	 * @return The student associated with the given code.
+	 * @return The student associated with the given code or null.
 	 */
 	public Student get(int ID){
 		if (ID >= map.length || ID < 0)
@@ -61,9 +63,44 @@ public class Roster{
 	}
 	
 	/**
+	 * Given a PeerInteraction, returns the Student in the Roster whose ID
+	 * matches the first netID of the argument or null if no such Student
+	 * is found.
+	 * 
+	 * @param interaction The PeerInteraction whose author will be sought.
+	 * @return the student who authored the interaction or null.
+	 */
+	public Student get(PeerInteraction interaction){
+		return get(interaction.getPersonID());
+	}
+	
+	/**
+	 * This method matches all elements from a batch of PeerInteractions
+	 * to individual Students in this Roster and assigns those
+	 * PeerInteractions to their corresponding students using
+	 * Student.addEntry(PeerInteraction).
+	 * 
+	 * @param batch A collection of PeerInteractions to be added.
+	 */
+	public void addInteractions(Iterable<PeerInteraction> batch){
+		for (PeerInteraction entry : batch){
+			Student person = get(entry);
+			if (person != null)
+				person.addEntry(entry);
+		}
+		for (Student person : this)
+			person.mergeRecentDuplicates(); //All or Recent?
+	}
+	
+	/**
 	 * @return The number of students in the Roster.
 	 */
-	public int size() { return numStudents; }
+	public int size()     { return numStudents; }
+	
+	/**
+	 * @return The number of students this Roster can contain.
+	 */
+	public int capacity() { return map.length; }
 	
 	/**
 	 * In case new Students join the class, allows addition of new Student to
@@ -72,7 +109,8 @@ public class Roster{
 	 */
 	public void addStudent(int ID){
 		if (ID < 0 || ID >= map.length)
-			throw new IndexOutOfBoundsException(ID + " is out of Roster Range.");
+			throw new 
+			    IndexOutOfBoundsException(ID + " is out of Roster Range.");
 		if (map[ID] != null)
 			throw new IllegalArgumentException(ID + " is already taken.");
 		map[ID] = new Student(ID);
@@ -95,5 +133,50 @@ public class Roster{
 		for (int i = 0; i < map.length; ++i)
 			newMap[i] = map[i];
 		map = newMap;
+	}
+	
+	
+	/**
+	 * @return An iterator to the first Student in this Roster (in order of
+	 *         increasing ID)
+	 */
+	public StudentIterator iterator() { return new StudentIterator(); }
+
+	/**
+	 * Hashmap iterator. Jumps from one non-null element of map to the next.
+	 */
+	public class StudentIterator implements Iterator<Student>{
+		private int curr;
+		
+		/**
+		 * Helper function that jumps to the next non-null element
+		 * of map or until the end of map is reached.
+		 */
+		private void jump()      { while (hasNext() && map[++curr] == null); }
+		public StudentIterator() { curr = -1; jump(); }
+		public boolean hasNext() { return curr < map.length - 1; }
+		public Student next(){
+			Student out = map[curr];
+			jump();
+			return out;
+		}
+
+		@Override
+		public void remove() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		
+	}
+	
+	/**
+	 * Simple main function. Shows that the iterator for this class
+	 * works properly.
+	 * 
+	 */
+	public static void main(String[] args){
+		
+		
 	}
 }
