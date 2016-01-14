@@ -10,7 +10,7 @@ import java.util.*;
  * @author CS125-Research
  *
  */
-public class TestUtil {
+public class Utilities {
 	
 	public static Random gen = new Random();
 	
@@ -207,14 +207,14 @@ public class TestUtil {
 		final int LECTURES = 10;
 		final int STUDENTS = 100;
 		final int CAPACITY = 2*STUDENTS;
-		ArrayList<String> fakeRoster = TestUtil.generateRoster(STUDENTS);
+		ArrayList<String> fakeRoster = Utilities.generateRoster(STUDENTS);
 		ArrayList<PeerInteraction> samples = new ArrayList<>();
 		Scanner sc = 
 		    new Scanner(new File("src/peerInteractions.fa2015.final.csv"));
 		while (sc.hasNextLine()){
 			samples.add(new PeerInteraction(sc.nextLine()));
 		}
-		ArrayList<String> dictionary = TestUtil.dictFromInteractions(samples);
+		ArrayList<String> dictionary = Utilities.dictFromInteractions(samples);
 		NRList converter  = new NRList(fakeRoster, CAPACITY);
 		/*
 		 * config[0]: The probability that a student will give feedback for a
@@ -233,7 +233,7 @@ public class TestUtil {
 		Date now = new Date();
 		Date then = new Date(now.getTime() - 4*30*24*3600000l); //~4 months ago
 		ArrayList<String> fakeRawFeedback = 
-		    TestUtil.generateFeedback(LECTURES, then, now, 
+		    Utilities.generateFeedback(LECTURES, then, now, 
 		    		                  fakeRoster, dictionary, config);
 		NRList fakeNRList = new NRList(fakeRoster, fakeRoster.size()+300);
 		ArrayList<PeerInteraction> fakeEntries = new ArrayList<>();

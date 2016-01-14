@@ -24,10 +24,10 @@ public class RosterTest extends TestCase {
 	 */
 	public void testRosterObject() throws FileNotFoundException {
 		//STUDENTS: Number of students in class
-		int STUDENTS = 100 + TestUtil.gen.nextInt(700);
+		int STUDENTS = 100 + Utilities.gen.nextInt(700);
 		//CAPACITY: Maximum size of Roster
-		int CAPACITY = STUDENTS + 100 + TestUtil.gen.nextInt(300);
-		ArrayList<String> fakeNetIDs = TestUtil.generateRoster(STUDENTS);
+		int CAPACITY = STUDENTS + 100 + Utilities.gen.nextInt(300);
+		ArrayList<String> fakeNetIDs = Utilities.generateRoster(STUDENTS);
 		
 		/* Convert our feedback file into a PeerInteraction ArrayList
 		 * and use it to generate a wordbank. This is not really 
@@ -42,7 +42,7 @@ public class RosterTest extends TestCase {
 			}catch (IllegalArgumentException e) {/* Do nothing */}
 		}
 		sc.close();
-		ArrayList<String> dictionary = TestUtil.dictFromInteractions(samples);
+		ArrayList<String> dictionary = Utilities.dictFromInteractions(samples);
 		//ArrayList<String> dictionary = new ArrayList<>(); //This also works 
 		NRList converter  = new NRList(fakeNetIDs, CAPACITY);
 		/*
@@ -62,7 +62,7 @@ public class RosterTest extends TestCase {
 		long now = (new Date()).getTime();
 		long then = now - 4l*30*24*60*60*1000; //~Four months ago
 		ArrayList<String> fakeRawFeedback = 
-		    TestUtil.generateFeedback(50, new Date(then), new Date(now), 
+		    Utilities.generateFeedback(50, new Date(then), new Date(now), 
 		    		                  fakeNetIDs, dictionary, config);
 		NRList fakeNRList = new NRList(fakeNetIDs, fakeNetIDs.size()+100);
 		Roster testRoster = new Roster(fakeNRList, CAPACITY);
