@@ -88,8 +88,8 @@ public class Roster implements Iterable<Student>{
 			if (person != null)
 				person.addEntry(entry);
 		}
-		for (Student person : this)
-			person.mergeRecentDuplicates(); //All or Recent?
+		//for (Student person : this)
+			//person.mergeRecentDuplicates(); //All or Recent?
 	}
 	
 	/**

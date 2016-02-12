@@ -207,7 +207,8 @@ public class Utilities {
 		final int LECTURES = 10;
 		final int STUDENTS = 100;
 		final int CAPACITY = 2*STUDENTS;
-		ArrayList<String> fakeRoster = Utilities.generateRoster(STUDENTS);
+		ArrayList<String> fakeRoster = Utilities.generateRoster(STUDENTS);		
+		
 		ArrayList<PeerInteraction> samples = new ArrayList<>();
 		Scanner sc = 
 		    new Scanner(new File("src/peerInteractions.fa2015.final.csv"));
@@ -216,6 +217,7 @@ public class Utilities {
 		}
 		ArrayList<String> dictionary = Utilities.dictFromInteractions(samples);
 		NRList converter  = new NRList(fakeRoster, CAPACITY);
+		Roster fakeClass = new Roster(converter, CAPACITY);
 		/*
 		 * config[0]: The probability that a student will give feedback for a
 		 *            particular lecture.
@@ -265,6 +267,19 @@ public class Utilities {
 		System.out.printf("Validity: %.2f%%\n", (100.0*validCount)/count);
 		System.out.printf("Responsiveness: %.2f%%\n", 
 		                  (100.0*feedbackCount)/count);
+		
+		fakeClass.addInteractions(samples);
+		GraphTools grapher = new GraphTools(fakeClass);
+		
+		Main.main(new String[0]);
+		Lecture test = LectureData.lectures.get(5);
+		grapher.RATING_STD_DEV
+		double[] data = test.ratingDistributionDouble(grapher.RATING_STD_DEV);
+		
+		System.out.println("HERE");
+		for (int i = 0; i < data.length; i++) {
+			System.out.println(data[i]);
+		}
 	}
 	
 }

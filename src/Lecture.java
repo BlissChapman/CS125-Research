@@ -117,16 +117,23 @@ public class Lecture implements Iterable<PeerInteraction>{
 	 * @return An array of ints in which arr[idx] represents the number
 	 *         of PeerInteractions with ratings of (idx+1) in this Lecture
 	 */
-	public int[] ratingDistribution() {
+	public int[] ratingDistributionInt() {
 		int[] values = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		for (PeerInteraction element : recordsByTime)
 			values[element.getGrade() - 1]++;
 		return values;
 	}
 	
+	public double[] ratingDistributionDouble(Weighter<PeerInteraction> scale) {
+		double[] values = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		for (PeerInteraction element : recordsByTime)
+			values[element.getGrade() - 1] += scale.weight(element);
+		return values;
+	}
+	
 	public String ratingDistributionString() {
 		String stringRepresentation = "";
-		int[] distribution = ratingDistribution();
+		int[] distribution = ratingDistributionInt();
 		for(int i = 0; i < distribution.length; i++)
 			stringRepresentation += ((i + 1) + ": " + distribution[i] + ", ");
 		return stringRepresentation;
