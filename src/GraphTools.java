@@ -2,22 +2,20 @@ import java.util.Date;
 
 public class GraphTools<T>{
 	
-	Roster students;
+	private final Roster students;
 	
 	public GraphTools(Roster source){
 		students = source;
 	}
 	
-	public Weighter<PeerInteraction> ALL_ENTRIES 
-	  = new Weighter<PeerInteraction>(){
+	public class ALL_ENTRIES_c implements Weighter<PeerInteraction>{
 		public double weight(PeerInteraction any) {
 			return 1;
 		}
-	};
+	}
 	
-	public Weighter<PeerInteraction> RATING_STD_DEV 
-	  = new Weighter<PeerInteraction>(){
-		
+	
+	public class RATING_STD_DEV_c implements Weighter<PeerInteraction>{
 		public double 
 			minDev = 0, 
 			maxDev = Double.POSITIVE_INFINITY;
@@ -28,15 +26,18 @@ public class GraphTools<T>{
 			Student s = students.get(element);
 			if (s == null)
 				return 0;
-			if (s.ratingStdDev() > minDev && 
-				s.ratingStdDev() < maxDev)
-				return inRange ? 1 : 0;
-			return 0;
+			if (s.ratingStdDev() >= minDev && 
+				s.ratingStdDev() <= maxDev && inRange)
+				return 1;
+			else if (s.ratingStdDev() <= minDev && 
+					 s.ratingStdDev() >= maxDev && !inRange)
+				return 1;
+			else
+				return 0;
 		}
 	};
-	
-	public Weighter<PeerInteraction> UNCOMMON_ENTRIES
-	  = new Weighter<PeerInteraction>(){
+		
+	public class UNCOMMON_ENTRIES_c implements Weighter<PeerInteraction>{
 		
 		public double weight(PeerInteraction element){
 			Student s = students.get(element);
@@ -46,8 +47,7 @@ public class GraphTools<T>{
 		}
 	};
 	
-	public Weighter<PeerInteraction> RATING_MEAN
-	  = new Weighter<PeerInteraction>(){
+	public class RATING_MEAN_c implements Weighter<PeerInteraction>{
 		
 		public double
 			minRating = 0,
@@ -59,16 +59,17 @@ public class GraphTools<T>{
 			Student s = students.get(element);
 			if (s == null)
 				return 0;
-			if (s.ratingMean() > minRating && 
-				s.ratingMean() < maxRating)
-				return inRange ? 1 : 0;
+			if (s.ratingMean() >= minRating && 
+				s.ratingMean() <= maxRating && inRange)
+				return 1;
+			else if (s.ratingMean() <= minRating &&
+					 s.ratingMean() >= maxRating && !inRange)
+				return 1;
 			return 0;
 		}
 	};
 	
-	public Weighter<PeerInteraction> DATE
-	  = new Weighter<PeerInteraction>(){
-		
+	public class DATE_FILTER_c implements Weighter<PeerInteraction>{		
 		public Date
 			earliest = new Date(),
 			latest = new Date();
@@ -76,11 +77,21 @@ public class GraphTools<T>{
 			inRange = true;
 		
 		public double weight(PeerInteraction element){
-			if (element.getDate().compareTo(earliest) > 0 &&
-				element.getDate().compareTo(latest) < 0)
+			int comp1 = element.getDate().compareTo(earliest),
+			    comp2 = element.getDate().compareTo(latest);
+			if (comp1 == comp2 && comp1 != 0 && comp2 != 0)
+				return 0;
+			else if (comp1 > -1)
 				return inRange ? 1 : 0;
 			return 0;
 		}
 	};
+	
+	public final ALL_ENTRIES_c ALL_ENTRIES = new ALL_ENTRIES_c();
+	public final UNCOMMON_ENTRIES_c UNCOMMON_ENTRIES = new UNCOMMON_ENTRIES_c();
+	public final RATING_STD_DEV_c RATING_STD_DEV = new RATING_STD_DEV_c();
+	public final RATING_MEAN_c RATING_MEAN = new RATING_MEAN_c();
+	public final DATE_FILTER_c DATE_FILTER = new DATE_FILTER_c();
+
 
 }

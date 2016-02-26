@@ -43,7 +43,7 @@ public class RosterTest extends TestCase {
 		}
 		sc.close();
 		ArrayList<String> dictionary = Utilities.dictFromInteractions(samples);
-		//ArrayList<String> dictionary = new ArrayList<>(); //This also works 
+		//ArrayList<String> dictionary = new ArrayList<>(); //This also works
 		NRList converter  = new NRList(fakeNetIDs, CAPACITY);
 		/*
 		 * config[0]: The probability that a student will give Feedback for a
@@ -59,13 +59,13 @@ public class RosterTest extends TestCase {
 		 *            entry. This is very small in practice.
 		 */
 		double[] config = {0.667, 0.873, 0.70, 0.40, 0.90, 0.00};
-		long now = (new Date()).getTime();
+		long now = (new Date()).getTime();     //~Date right now
 		long then = now - 4l*30*24*60*60*1000; //~Four months ago
 		ArrayList<String> fakeRawFeedback = 
 		    Utilities.generateFeedback(50, new Date(then), new Date(now), 
 		    		                  fakeNetIDs, dictionary, config);
 		NRList fakeNRList = new NRList(fakeNetIDs, fakeNetIDs.size()+100);
-		Roster testRoster = new Roster(fakeNRList, CAPACITY);
+		Roster testRoster = new Roster(fakeNRList, fake);
 		ArrayList<PeerInteraction> fakeEntries = new ArrayList<>();
 		try{
 			for (String entry : fakeRawFeedback){

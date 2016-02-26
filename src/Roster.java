@@ -31,8 +31,8 @@ public class Roster implements Iterable<Student>{
 	 * @codes    An NRList containing all the encoded netIDs in the class roster.
 	 * @capacity The maximum number of students that can be added (can be changed).
 	 */
-	public Roster(NRList codes, int capacity){
-		this(capacity);
+	public Roster(NRList codes){
+		this(codes.capacity());
 		/* Goes through all the ID codes in the NRList argument and creates a
 		 * Student object for each one. The Students created are stored in an
 		 * array at the index corresponding to their ID codes. So map[154] would
@@ -115,6 +115,19 @@ public class Roster implements Iterable<Student>{
 			throw new IllegalArgumentException(ID + " is already taken.");
 		map[ID] = new Student(ID);
 		++numStudents;
+	}
+	
+	/**
+	 * Removes a Student from this Roster. Throws an IllegalArgumentException
+	 * if the Student is not found in the Roster.
+	 * 
+	 * @param ID The ID of the Student to be removed.
+	 */
+	public void removeStudent(int ID){
+		if (get(ID) != null)
+			map[ID] = null;
+		else
+			throw new IllegalArgumentException(ID + " is not in this Roster.");
 	}
 	 
 	/**

@@ -11,8 +11,7 @@ import java.util.*;
  */
 public class Lecture implements Iterable<PeerInteraction>{
 
-	private static int AUTO_INCREMENT = 0;
-	private int lectureNumber; //TODO: Discuss this name
+	public int lectureNumber; //TODO: Discuss this name
 	public ArrayList<PeerInteraction> recordsByTime;
 	private Date date;
 	private String[] topics;// OR ArrayList<String>
@@ -24,7 +23,6 @@ public class Lecture implements Iterable<PeerInteraction>{
 	 * @param d The time this lecture began.
 	 */
 	public Lecture(Date d){
-		lectureNumber = AUTO_INCREMENT++;
 		recordsByTime = new ArrayList<PeerInteraction>();
 		date = new Date(d.getTime());
 	}
@@ -43,7 +41,7 @@ public class Lecture implements Iterable<PeerInteraction>{
 	
 	/**
 	 * Constructor with argument to assign the topics for
-	 * the Lecture object.
+	 * the Lecture object. @TODO discuss merits of this constructor
 	 * 
 	 * @param d     The time this lecture began.
 	 * @param entry A PeerInteraction that was submitted for this Lecture
@@ -88,8 +86,7 @@ public class Lecture implements Iterable<PeerInteraction>{
 	 *
 	 * @return The Lecture corresponding to an entry.
 	 */
-	public static Lecture get(PeerInteraction key){
-		ArrayList<Lecture> lecs = LectureData.lectures;
+	public static Lecture get(PeerInteraction key, List<Lecture> lecs){
 		int lo = 0;
 		int hi = lecs.size()-1;
 		Date search = key.getDate();
@@ -194,18 +191,8 @@ public class Lecture implements Iterable<PeerInteraction>{
 	 * @return A chronological iterator through all PeerInteractions in
 	 *         this Lecture.
 	 */
-	public FeedbackIterator iterator() { return new FeedbackIterator(); }
-	
-	/**
-	 * Iterator that goes through FeedbackEntries in chronological order.
-	 */
-	public class FeedbackIterator implements Iterator<PeerInteraction>{
-		private int curr;
-		
-		public FeedbackIterator()    { curr = 0; }
-		public PeerInteraction next()  { return recordsByTime.get(curr++); }
-		public boolean hasNext()     { return curr < recordsByTime.size(); }
-		public void remove()  { throw new UnsupportedOperationException(); }
-																				
+	public ListIterator<PeerInteraction> iterator(){ 
+		return recordsByTime.listIterator(); 
 	}
+																
 }

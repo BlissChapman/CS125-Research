@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.*;
 /**
  *  A simple map-like list of NetIDPairs with a file argument constructor.
  *  Can return the code associated with a particular netID passed into its
@@ -14,6 +12,19 @@ public class NRList implements Iterable<NetIDPair>{
 	/* The maximum allowable size of this NRList */
 	private int capacity;
 	
+	
+	/**
+	 * Capacity constructor. Takes an integer and merely assigns it as the
+	 * maximum capacity of the NRList. The NRList is completely empty.
+	 * 
+	 * @param range Number of NetIDPairs that this list can contain.
+	 *              Accordingly, also sets integer range of randomly generated
+	 *              codes.
+	 */
+	public NRList(int range){
+		capacity = range;
+	}
+	
 	/**
 	 * String collection constructor. Takes an ArrayList of netIDs and then
 	 * makes a NRList from these netIDs, randomly assigning netIDs to codes in
@@ -23,7 +34,7 @@ public class NRList implements Iterable<NetIDPair>{
 	 * @param range  Range element for NetIDPair random generator.
 	 */
 	public NRList(Iterable<String> netIDs, int range){
-		capacity = range;
+		this(range);
 		for (String elem : netIDs)
 			addPair(elem);
 	}
@@ -37,7 +48,7 @@ public class NRList implements Iterable<NetIDPair>{
 	 * @param range   Range element for NetIDPair random generator.
 	 */
 	public NRList(String inFile, int range){
-		capacity = range;
+		this(range);
 		fillList(inFile);
 	}
 	
@@ -76,6 +87,19 @@ public class NRList implements Iterable<NetIDPair>{
 			potentialPair = new NetIDPair(netID,randomID);
 		} while(check(potentialPair));
 		pairList.add(potentialPair);
+	}
+	
+	public NetIDPair removePair(String netID){
+		Iterator<NetIDPair> destroyer = pairList.listIterator();
+		while (destroyer.hasNext()){
+			NetIDPair check = destroyer.next();
+			if (check.equals(netID)){
+				NetIDPair out = check;
+				destroyer.remove();
+				return out;
+			}
+		}
+		return null; //Not found
 	}
 	
 	/**

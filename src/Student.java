@@ -1,8 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.RandomAccess;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Student class. Stores information regarding a particular Student in class, 
@@ -156,27 +152,34 @@ class Student implements Iterable<PeerInteraction>{
 	 * If duplicates are found, all will be merged into a single entry.
 	 * This is public for now because it's unclear where it should be
 	 * called.
+	 * 
+	 * @return A list of PeerInteractions such that the last element is the
+	 *         output of the merge constructor and the other elements. If
+	 *         no merges were necessary, contains  last PeerInteraction in
+	 *         records.
 	 */
-	public void mergeRecentDuplicates(){
+	public ArrayList<PeerInteraction> 
+	  mergeRecentDuplicates(List<Lecture> source){
+		ArrayList<PeerInteraction> out = new ArrayList<>();
 		int last = records.size()-1;
-		while (last > 0){;
-			Lecture curr = Lecture.get(records.get(last));
-			Lecture prev = Lecture.get(records.get(last));
+		while (last > 0){
+			Lecture curr = Lecture.get(records.get(last), source);
+			Lecture prev = Lecture.get(records.get(last), source);
+			out.add(records.get(last));
 			if (curr != prev)
 				break;
 			else
 				--last;
 		}
-		if (last != records.size()-1){
-			PeerInteraction[] repeats 
-			    = new PeerInteraction[records.size()-last];
-			for (int idx = 0; idx < records.size()-last; ++idx)
-				repeats[idx] = records.get(idx+last);
+		if (out.size() >= 2){ //Duplicates found
 			for (int idx = records.size()-1; idx >= last; ++idx)
 				records.remove(idx); //Shame Java has no removeLast
-			records.add(new PeerInteraction(repeats));
+			PeerInteraction merged = new PeerInteraction(out);
+			records.add(merged);
+			out.add(merged);			
 			refreshCache(); //Recomputation needed due to changes
 		}
+		return out;
 	}
 
 	/**
@@ -184,27 +187,31 @@ class Student implements Iterable<PeerInteraction>{
 	 * so for all entries added. This might be slower but also might
 	 * preferable due to lack of preconditions.
 	 */
-	public void mergeAllDuplicates(){
+	public void mergeAllDuplicates(List<Lecture> source){
 		ArrayList<PeerInteraction> newRecords = new ArrayList<>();
 		ArrayList<PeerInteraction> bucket = new ArrayList<>();
 		Lecture last = null;
-		PeerInteraction[] merged = new PeerInteraction[1];
+		ArrayList<PeerInteraction> merged = new ArrayList<>();
+		//Basically this loop collects all duplicate entries from each lecture 
+		//into a bucket, dumps that bucket into the merge ctor for 
+		//PeerInteraction, and then inserts that new PeerInteraction into 
+		//newRecords.
 		for (PeerInteraction entry : records){
-			Lecture curr = Lecture.get(entry);
+			Lecture curr = Lecture.get(entry, source);
 			if (curr != last && bucket.size() > 0){
-				merged = new PeerInteraction[bucket.size()];
-				bucket.toArray(merged);
+				merged = new ArrayList<PeerInteraction>(bucket.size());
 				newRecords.add(new PeerInteraction(merged));
 				bucket = new ArrayList<>();
 			}
 			bucket.add(entry);
 			last = curr;
 		}
+		//In case there's a leftover bucket, dump that too.
 		if (bucket.size() > 0){
-			merged = new PeerInteraction[bucket.size()];
-			bucket.toArray(merged);
+			merged = new ArrayList<PeerInteraction>(bucket.size());
 			newRecords.add(new PeerInteraction(merged));
 		}
+		//Set records = newRecords to finish.
 		records = newRecords;
 	}
 	
@@ -255,6 +262,7 @@ class Student implements Iterable<PeerInteraction>{
 
 	
 	/**
+	 * 
 	 * For now, this test method only works for feedback files without
 	 * NRLists (so all netIDs must be integers). It also writes nothing
 	 * to any files. It mainly tests to see if mergeDuplicates works.
@@ -303,7 +311,9 @@ class Student implements Iterable<PeerInteraction>{
 		System.out.println("Data with possible duplicates:");
 		for(PeerInteraction elem : trial)
 			System.out.println(elem);
-		trial.mergeAllDuplicates();
+		//This code makes it explicit that mergeAllDuplicates() depends upon
+		//LectureData.lectures
+		trial.mergeAllDuplicates(LectureData.lectures);
 		System.out.println("\n\nData with duplicates merged:");
 		for (PeerInteraction elem : trial)
 			System.out.println(elem);

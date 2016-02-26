@@ -113,11 +113,11 @@ import java.util.*;
 		 * @param duplicates An array of PeerInteractions corresponding to the
 		 *                   same lecture and having the same personID.
 		 */
-		public PeerInteraction(PeerInteraction[] duplicates){
-			PeerInteraction ref = duplicates[duplicates.length-1];
-			for (int i = duplicates.length; --i >= 0;){
-				if(duplicates[i].valid()){
-					ref =  duplicates[i];
+		public PeerInteraction(List<PeerInteraction> duplicates){
+			PeerInteraction ref = duplicates.get(duplicates.size()-1);
+			for (int i = duplicates.size(); --i >= 0;){
+				if(duplicates.get(i).valid()){
+					ref =  duplicates.get(i);
 					break;
 				}
 			}
@@ -126,9 +126,9 @@ import java.util.*;
 			grade = ref.grade;
 			good = ref.good;
 			date = ref.getDate();
-			if (duplicates.length == 1){
-				strengths = duplicates[0].strengths;
-				weaknesses = duplicates[0].weaknesses;
+			if (duplicates.size() == 1){
+				strengths = duplicates.get(0).strengths;
+				weaknesses = duplicates.get(0).weaknesses;
 				return;
 			}
 			StringBuilder strBuild = new StringBuilder();

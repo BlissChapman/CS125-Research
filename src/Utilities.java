@@ -14,29 +14,57 @@ public class Utilities {
 	
 	public static Random gen = new Random();
 	
-	@SuppressWarnings("rawtypes")
-	public static final Comparator<Comparable> naturalOrder = 
-	    new Comparator<Comparable>()
+	/**
+	 * 
+	 * @author Navneeth Jayendran
+	 *
+	 * How to read this verbose tripe:
+	 * 1) NaturalOrder is the class name.
+	 * 2) NaturalComparator is parameterized to type T. So you may instantiate
+	 *    it and use it like:
+	 *      NaturalOrder<Integer> intcomp = new NaturalOrder<>();
+	 *      print intcomp(new Integer(10), new Integer(15));  //prints -1
+	 *      print intcomp(20, 20) //prints 0... I think. Assuming autoboxing.
+	 * 3) T extends Comparable<T>, which means that the class T must implement
+	 *    the method T.compareTo(T other).
+	 * 4) Plug it into any function that requires a Comparator to sort data and
+	 *    whatnot.
+	 */
+	public class NaturalOrder<T extends Comparable<T>>
+	  implements Comparator<T>
 	{
-		@SuppressWarnings("unchecked")
-		public int compare(Comparable first, Comparable second){
+		/** 
+		 * Because "first" is of type T, which implements Comparable<T>,
+		 * we know that we are allowed to call first.compareTo(second).
+		 * 
+		 * @param first  Thing to compare.
+		 * @param second Thing to be compared.
+		 * @return 1 if first > second, -1 if first < second, 0 otherwise
+		 */
+		public int compare(T first, T second){
 			return first.compareTo(second);
 		}
 	};
 	
 	/**
-	 * Takes an ArrayList of Strings, sorts it in alphabetical order, and
-	 * returns an ArrayList with the same elements as the argument but
+	 * Takes an ArrayList of generic type, sorts it in alphabetical order, and
+	 * returns a sorted ArrayList with the same elements as the argument but
 	 * without any duplicate elements.
 	 * 
-	 * @param words The words
-	 * @return
+	 * @param items  A list of unsorted items that may possess duplicates.
+	 * @return An ArrayList containing no two copies of the same element, such
+	 *         that each element therein was also found in the input.
 	 */
-	private static ArrayList<String> filterDuplicates(ArrayList<String> words){
-		ArrayList<String> results = new ArrayList<>();
-		String last = "";
-		Collections.sort(words);
-		for (String elem : words){
+	public static <T extends Comparable<T>> ArrayList<T> 
+	  withoutDuplicates(List<T> items)
+	{
+		ArrayList<T> results = new ArrayList<T>();
+		if (items.size() == 0) 
+			return results;
+		Collections.sort(items);
+		T last = items.get(0);
+		results.add(last);
+		for (T elem : items){
 			if (!elem.equals(last))
 				results.add(elem);
 			last = elem;
@@ -51,7 +79,7 @@ public class Utilities {
 	 * @param p Probability of success at a given trial, in the interval [0,1].
 	 * @return The number of trials needed for a success.
 	 */
-	private static int randomGeometric(double p){
+	public static int randomGeometric(double p){
 		int out = 1;
 		while (Math.random() > p)
 			++out;
@@ -100,9 +128,30 @@ public class Utilities {
 				curr.append(digit);
 				netIDs.add(curr.toString());
 			}
-			netIDs = filterDuplicates(netIDs);
+			netIDs = withoutDuplicates(netIDs);
 		}
 		return netIDs;
+	}
+	
+	/**
+	 * This method returns an ArrayList of evenly spaced dates meant to
+	 * imitate lecture dates.
+	 * 
+	 * @param days  The number of days.
+	 * @param start The first date in the range.
+	 * @param stop  The upper bound on the last date.
+	 * @return The 
+	 */
+	public static ArrayList<Date> generateDateRange(int days, Date start, Date stop){
+		long interval = (stop.getTime() - start.getTime())/days;
+		ArrayList<Date> span = new ArrayList<>();
+		span.add(start);
+		long currTime = start.getTime();
+		while (days-- > 0){
+			currTime += interval;
+			span.add(new Date(currTime));
+		}
+		return span;
 	}
 	
 	/**
@@ -194,6 +243,45 @@ public class Utilities {
 	}
 	
 	/**
+	 * Helper function that pushes an element in an almost-sorted list
+	 * forward until it is in its right position. Used as a helper for
+	 * insertion-sort, among other things.
+	 * 
+	 * @param coll     The collection to be sorted.
+	 * @param idx      The index
+	 * @param ordering A comparator dictating how the list must be sorted.
+	 */
+	public static <T> void riseSorted(List<T> coll, int idx,
+			                            Comparator<T> ordering){
+		T tmp = null;
+		while (idx > 0 &&
+			   ordering.compare(coll.get(idx), coll.get(idx-1))> 0){
+			tmp = coll.get(idx);
+			coll.set(idx, coll.get(idx-1));
+			coll.set(idx-1, tmp);
+			--idx;
+		}
+	}
+	
+	/**
+	 * Insertion sort is a simple sorting algorithm that essentially sorts
+	 * a list of size N by (recursively)
+	 * 1) Sorting the first k elements.
+	 * 2) Pushing the (k+1)th element forward until the first (k+1) elements
+	 *    in the list are sorted.
+	 * Insertion sort is ideal for lists that are almost sorted already.
+	 * In such cases, the runtime is linear (whereas mergesort and
+	 * quicksort will be linearithmic at best).
+	 * 
+	 * @param coll     A list of elements to be sorted.
+	 * @param ordering The
+	 */
+	public static <T> void insertionSort(List<T> coll, Comparator<T> ordering){
+		for (int k = 1; k < coll.size(); ++k)
+			riseSorted(coll, k, ordering);
+	}
+	
+	/**
 	 * Simple main method that demonstrates the behavior of these test
 	 * methods. It reads from the final CSV file of all PeerInteractions
 	 * and constructs fake feedback using a randomly generated roster of
@@ -204,20 +292,23 @@ public class Utilities {
 	 * @throws FileNotFoundException
 	 */
 	public static void main(String[] args) throws FileNotFoundException{
-		final int LECTURES = 10;
+		final int LECTURES = 25;
 		final int STUDENTS = 100;
 		final int CAPACITY = 2*STUDENTS;
-		ArrayList<String> fakeRoster = Utilities.generateRoster(STUDENTS);		
-		
+		ArrayList<String> fakeRoster = Utilities.generateRoster(STUDENTS);
+		Date now = new Date();
+		Date then = new Date(now.getTime() - 4l*30l*24l*3600000l); //~4 months ago
+		ArrayList<Date> dateRange = 
+			Utilities.generateDateRange(LECTURES, now, then);
 		ArrayList<PeerInteraction> samples = new ArrayList<>();
 		Scanner sc = 
 		    new Scanner(new File("src/peerInteractions.fa2015.final.csv"));
-		while (sc.hasNextLine()){
+		while (sc.hasNextLine())
 			samples.add(new PeerInteraction(sc.nextLine()));
-		}
 		ArrayList<String> dictionary = Utilities.dictFromInteractions(samples);
 		NRList converter  = new NRList(fakeRoster, CAPACITY);
-		Roster fakeClass = new Roster(converter, CAPACITY);
+		ProtoApp trialrun = new ProtoApp(converter, dateRange);
+		System.out.println();
 		/*
 		 * config[0]: The probability that a student will give feedback for a
 		 *            particular lecture.
@@ -232,12 +323,12 @@ public class Utilities {
 		 *            entry. This is very small in practice.
 		 */
 		double[] config = {0.667, 0.873, 0.15, 0.70, 0.40, 0.005};
-		Date now = new Date();
-		Date then = new Date(now.getTime() - 4*30*24*3600000l); //~4 months ago
 		ArrayList<String> fakeRawFeedback = 
 		    Utilities.generateFeedback(LECTURES, then, now, 
 		    		                  fakeRoster, dictionary, config);
-		NRList fakeNRList = new NRList(fakeRoster, fakeRoster.size()+300);
+		ArrayList<Integer> allCodes = new ArrayList<>();
+		for (NetIDPair elem : converter)
+				allCodes.add(elem.getCode());
 		ArrayList<PeerInteraction> fakeEntries = new ArrayList<>();
 		String last = "";
 		System.out.println("Dictionary: \n\n");
@@ -253,12 +344,16 @@ public class Utilities {
 		int validCount = 0;
 		int feedbackCount = 0;
 		for (String elem : fakeRawFeedback){
-			PeerInteraction curr = new PeerInteraction(elem, fakeNRList);
+			PeerInteraction curr = new PeerInteraction(elem, converter);
 			++count;
 			if (curr.valid())
 				++validCount;
 			if (curr.hasFeedback())
 				++feedbackCount;
+			if (trialrun.students.get(curr.getPersonID()) == null){
+				System.out.println("Did not find " + curr.getPersonID());
+				TextIO.getln();
+			}
 			System.out.println(elem);
 		}
 		System.out.printf("\n\"Attendance\": %.2f%% (Doesn't take into "
@@ -268,18 +363,14 @@ public class Utilities {
 		System.out.printf("Responsiveness: %.2f%%\n", 
 		                  (100.0*feedbackCount)/count);
 		
-		fakeClass.addInteractions(samples);
-		GraphTools grapher = new GraphTools(fakeClass);
-		
-		Main.main(new String[0]);
-		Lecture test = LectureData.lectures.get(5);
-		grapher.RATING_STD_DEV
-		double[] data = test.ratingDistributionDouble(grapher.RATING_STD_DEV);
-		
-		System.out.println("HERE");
-		for (int i = 0; i < data.length; i++) {
-			System.out.println(data[i]);
-		}
+		trialrun.addFeedback(samples);
+		Lecture test = trialrun.lectures.get(5);
+		trialrun.entryGrapher.RATING_STD_DEV.minDev = 0;
+		trialrun.entryGrapher.RATING_STD_DEV.maxDev = 3;
+		double[] rawdata = test.ratingDistributionDouble(trialrun.entryGrapher.ALL_ENTRIES);
+		double[] data = test.ratingDistributionDouble(trialrun.entryGrapher.RATING_STD_DEV);
+		System.out.println(Arrays.toString(rawdata));
+		System.out.println(Arrays.toString(data));
 	}
 	
 }
