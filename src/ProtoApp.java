@@ -20,7 +20,7 @@ public class ProtoApp {
 	
 	public ProtoApp(int cap){
 		students = new Roster(cap);
-		converter = null;
+		converter = new NRList(cap);
 		lectures = new ArrayList<>();
 		entryGrapher = new GraphTools<>(students);
 	}
@@ -41,8 +41,17 @@ public class ProtoApp {
 	}
 	
 	public void addLecture(Date day){
-		lectures.add(new Lecture(day));
-		Utilities.riseSorted(lectures, lectures.size()-1, byDate);
+		Lecture newLec = new Lecture(day);
+		lectures.add(newLec);
+		boolean dupe = 
+				Utilities.riseSorted(lectures, lectures.size()-1, byDate);
+		if (dupe){
+			for (ListIterator<Lecture> it = lectures.listIterator(); it.hasNext(); ){
+				Lecture curr = it.next();
+				if (curr == newLec)
+					it.remove();
+			}
+		}
 		int i = 0;
 		for (Lecture lec : lectures){
 			lec.lectureNumber = ++i;
@@ -86,6 +95,20 @@ public class ProtoApp {
 	 */
 	public void addFeedback(Iterable<PeerInteraction> batch){
 		students.addInteractions(batch);
+		/*
+		for (Student s : students){ //For every student
+			ArrayList<PeerInteraction>  //Extract all duplicates
+			  retrieved = s.mergeRecentDuplicates(lectures);
+			if (retrieved.size() > 1){ //If duplicates found
+				PeerInteraction merged = retrieved.get(retrieved.size()-1);
+				Lecture proper = Lecture.get(merged, lectures);
+				proper.add(merged);
+			}
+		}
+		*/
+	}
+	
+	public void mergeRecentDuplicates(){
 		for (Student s : students){ //For every student
 			ArrayList<PeerInteraction>  //Extract all duplicates
 			  retrieved = s.mergeRecentDuplicates(lectures);

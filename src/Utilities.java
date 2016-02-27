@@ -250,8 +250,9 @@ public class Utilities {
 	 * @param coll     The collection to be sorted.
 	 * @param idx      The index
 	 * @param ordering A comparator dictating how the list must be sorted.
+	 * @return true if a duplicate was found.
 	 */
-	public static <T> void riseSorted(List<T> coll, int idx,
+	public static <T> boolean riseSorted(List<T> coll, int idx,
 			                            Comparator<T> ordering){
 		T tmp = null;
 		while (idx > 0 &&
@@ -261,6 +262,9 @@ public class Utilities {
 			coll.set(idx-1, tmp);
 			--idx;
 		}
+		if (idx > 0 && coll.get(idx).equals(coll.get(idx-1)))
+			return true;
+		return false;
 	}
 	
 	/**

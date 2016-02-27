@@ -65,7 +65,7 @@ public class RosterTest extends TestCase {
 		    Utilities.generateFeedback(50, new Date(then), new Date(now), 
 		    		                  fakeNetIDs, dictionary, config);
 		NRList fakeNRList = new NRList(fakeNetIDs, fakeNetIDs.size()+100);
-		Roster testRoster = new Roster(fakeNRList, fake);
+		Roster testRoster = new Roster(fakeNRList);
 		ArrayList<PeerInteraction> fakeEntries = new ArrayList<>();
 		try{
 			for (String entry : fakeRawFeedback){

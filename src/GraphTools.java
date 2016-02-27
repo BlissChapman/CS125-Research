@@ -92,6 +92,5 @@ public class GraphTools<T>{
 	public final RATING_STD_DEV_c RATING_STD_DEV = new RATING_STD_DEV_c();
 	public final RATING_MEAN_c RATING_MEAN = new RATING_MEAN_c();
 	public final DATE_FILTER_c DATE_FILTER = new DATE_FILTER_c();
-
-
+	
 }
