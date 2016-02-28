@@ -3,6 +3,12 @@ import java.util.Map.Entry;
 
 /**
  * Simple command line tools for using and testing this application.
+ * This UI uses Unix-like commands to allow the addition of  several courses
+ * to this application and test the functionalities we've added so far. So
+ * far this is probably 15% complete.
+ * 
+ * @TODO implement functions for all listed commands
+ * 
  * @author CS125-Research
  *
  */
@@ -19,7 +25,9 @@ public class SimpleUI {
 	 * Maps strings to ProtoApp instances. For example, if I have a course
 	 * CS125, here are some common things I could do.
 	 * 
-	 * courseMap.put("CS125", courseMap 
+	 * courseMap.put("CS125", courseMap);
+	 * courseMap.containsKey("CS125") == true;
+	 * coursePointer = courseMap.get("CS125"); 
 	 */
 	private TreeMap<String, ProtoApp> courseMap = new TreeMap<String,ProtoApp>();
 	
@@ -27,7 +35,10 @@ public class SimpleUI {
 	
 	private MenuType menu = MenuType.COURSES;
 	
-	
+	/*
+	 * Association between menus and the specific command lists that
+	 * correspond to each menu type.
+	 */
 	private static HashMap<MenuType, String> menus = new HashMap<MenuType, String>();
 	static{
 		menus.put(MenuType.COURSES,
@@ -64,7 +75,7 @@ public class SimpleUI {
 		menus.put(MenuType.STUDENT,
 			"STUDENT MENU:\nStudent #%d\n" +
 			"ls						Show all feedback given by student.\n" +
-			"stat					Obtain statistical summary os student.\n" +
+			"stat					Obtain statistical summary of student.\n" +
 			"rm						Purge this student from the course.\n");
 		menus.put(MenuType.GRAPH,
 			"GRAPH RULE MENU:\n" +
@@ -74,7 +85,12 @@ public class SimpleUI {
 			"cd						Go back to the lecture page.\n");
 	};
 	
-	
+	/**
+	 * Primary runner for this class. Reads in commands from standard input
+	 * and relays them to more specific parsers for each menu (unless the
+	 * commands are universal to all menus, in which case it will directly
+	 * call the appropriate function).
+	 */
 	void parseLine(){
 		System.out.print(">>");
 		String input = stdin.nextLine().trim();
@@ -98,8 +114,7 @@ public class SimpleUI {
 			case COURSES:
 				parseCoursesLine(parsedPieces); break;
 			case COURSE:
-				parseCourseLine(parsedPieces);
-				break;
+				parseCourseLine(parsedPieces); break;
 			case LECTURE:
 				break;
 			case STUDENT:
@@ -133,32 +148,56 @@ public class SimpleUI {
 		}
 	}
 	
-	void invalidCommand(String cmd){
-		System.out.printf("Invalid command \"%s\".\nEnter \"help\" for a list of valid " +
-				"commands.\n", cmd);
-	}
 	
+	/*
+	 * METHODS USED IN THE COURSES MENU. THESE ARE VERY LIMITED.
+	 */
+	
+	
+	/**
+	 * Specific parser for the Courses menu. Only accepts commands that are
+	 * (exclusively) listed under the course menu like cd $ arg, 
+	 * mkdir lec $ arg, etc.
+	 * 
+	 * @param input The partially parsed {cmd, arg} inputted by the user.
+	 */
 	void parseCoursesLine(String[] input){
 		System.out.printf("%s $ %s\n", input[0], input[1]);
 		if (input[0].equals("mkdir"))
 			addCourse(input[1]);
 		else if (input[0].equals("cd"))
 			changeToCourse(input[1]);
-		else if (input[0].equals("mkdir lec"))
-			addLecture(input[1]);
 		else
 			invalidCommand(input[0]);
 		//parseLine();
 	}
 	
-	void parseCourseLine(String[] input){
-		System.out.printf("%s $ %s\n", input[0], input[1]);
-		if (input[0].equals("mkdir lec"))
-			addLecture(input[1]);
-		else
-			invalidCommand(input[0]);
+	/**
+	 * Selects a course in the courses menu and switches to the course menu
+	 * for that course. Gives an error message if the course name passed in
+	 * does not match any existing course.
+	 * 
+	 * @param courseName The name of the course.
+	 */
+	void changeToCourse(String courseName){
+		if (!courseMap.containsKey(courseName))
+			System.out.printf("No course named \"%s\". Enter \"ls\" to see " 
+					+ "all courses.\n", courseName);
+		else{
+			coursePointer = courseMap.get(courseName);
+			menu = MenuType.COURSE;
+		}
 	}
 	
+	/**
+	 * Adds a new course of the given name. Empty strings will cause
+	 * the method to print an error message. The method will not allow
+	 * the user to add a course with a name matching an existing course.
+	 * The method also will repeatedly prompt the user to enter a student
+	 * capacity greater than or equal to 5.
+	 * 
+	 * @param name The name of the course to add.
+	 */
 	void addCourse(String name){
 		if (name.length() == 0)
 			System.out.println("Missing course name argument.");
@@ -171,9 +210,8 @@ public class SimpleUI {
 				try{
 					int trialcap = stdin.nextInt();
 					if (trialcap < 5){
-						System.out.print("Enter a capacity greater than 5: ");
-					}
-					else{
+						System.out.print("Enter a capacity greater than 4: ");
+					}else{
 						cap = trialcap;
 						ProtoApp newone = new ProtoApp(cap);
 						courseMap.put(name, newone);
@@ -188,7 +226,53 @@ public class SimpleUI {
 			}
 		}
 	}
-
+	
+	/*
+	 * BELOW ARE THE INDIVIDUAL COURSE METHODS. THESE METHODS ARE USED TO
+	 * MODIFY A SPECIFIC COURSE. THEY WILL ONLY BE CALLED WHEN THE
+	 * MENU IS SET TO MENUTYPE.COURSE.
+	 * 
+	 * @TODO Improve several methods and work on the unimplemented ones.
+	 */
+	
+	void parseCourseLine(String[] input){
+		System.out.printf("%s $ %s\n", input[0], input[1]); //Echoes command
+		if (input[0].equals("ls lec"))
+			displayLectures();
+		else if (input[1].equals("ls stud"))
+			displayStudents();
+		if (input[0].equals("mkdir lec"))
+			addLecture(input[1]);
+		else if (input[0].equals("mkdir stud"))
+			addStudent(input[1]);
+		else if (input[0].equals("rm"))
+			removeCourse();
+		else if (input[0].equals("import lecs"))
+			todo();
+		else if (input[0].equals("import studs"))
+			todo();
+		else if (input[0].equals("import entries"))
+			todo();
+		else if (input[0].equals("cd stud"))
+			changeToStudent(input[1]);
+		else if (input[0].equals("cd lec"))
+			changeToLecture(input[1]);
+		else
+			invalidCommand(input[0]);
+	}
+	
+	/**
+	 * Adds a lecture to the current course. Uses ProtoApp.addLecture(String).
+	 * If the input string cannot be parsed as a valid Java Date object,
+	 * print an error message and return.
+	 * 
+	 * @TODO Finish implementing this. Currently it makes a lecture at the time
+	 *       this function was called. It should actually parse the day
+	 *       
+	 * @param day A string in the format "mm dd yy" that will be used to
+	 *            determine the date of the lecture. The time of day can be
+	 *            set arbitrarily.
+	 */
 	void addLecture(String day){
 		if (day.length() == 0)
 			System.out.println("Missing lecture date argument.");
@@ -197,30 +281,82 @@ public class SimpleUI {
 		else{
 			System.out.println("Not implemented yet."); //@TODO Use SimpleDateFormat
 			Date newDate = new Date();
-			if (coursePointer == null)
+			if (coursePointer == null) //Catches a strange bug, possibly
 				throw new UnsupportedOperationException("What???");
 			coursePointer.addLecture(newDate);
 		}
 	}
 	
+	/**
+	 * Adds a student to the current course using ProtoApp.addStudent().
+	 * Make sure to handle exceptions thrown by that method in cases
+	 * of netID duplication or full capacity.
+	 * 
+	 * 
+	 * @TODO Implement
+	 */
+	void addStudent(String netID){
+		todo();
+	}
+	
+	/**
+	 * Deletes the current course from the courses menu and
+	 * then moves back to the Courses menu. This is a fairly
+	 * inelegant way of doing things.
+	 */
 	void removeCourse(){
+		if(!requestYesNo("Are you sure you want to remove this course? Y/N: "))
+			return;
 		for (Map.Entry<String, ProtoApp> elem : courseMap.entrySet())
 			if (elem.getValue() == coursePointer){
 				courseMap.remove(elem.getKey());
 				System.out.printf("Removed %s\n", elem.getKey());
 			}
+		menu = MenuType.COURSES;
 	}
 	
-	void changeToCourse(String courseName){
-		if (!courseMap.containsKey(courseName))
-			System.out.printf("No course named \"%s\". Enter \"ls\" to see " 
-					+ "all courses.\n", courseName);
-		else{
-			coursePointer = courseMap.get(courseName);
-			menu = MenuType.COURSE;
-		}
+	/**
+	 * Changes the menu type to Student and focus on the Student whose
+	 * code matches the code passed in. First parse the string as an integer
+	 * and use Roster.get(int) to obtain the Student with the matching netID.
+	 * 
+	 * Give error messages if the string passed in cannot be parsed as an int,
+	 * or if the Student is not found in the Roster.
+	 * 
+	 * @TODO Implement.
+	 * 
+	 * @param code The code of the Student to switch to.
+	 */
+	void changeToStudent(String code){
+		todo();
+		menu = MenuType.STUDENT;
 	}
 	
+	
+	/**
+	 * Changes the menu type to Lecture and focus on the Lecture whose index in
+	 * the collection of existing Lectures matches the number passed in. First
+	 * parse the string as an integer and then use ProtoApp.lectures.get(int)
+	 * to retrieve the right lecture.
+	 * 
+	 * Give error messages if the string passed in cannot be parsed as an int,
+	 * or if the number is out of bounds.
+	 * 
+	 * @TODO Implement
+	 */
+	void changeToLecture(String lecNo){
+		todo();
+		menu = MenuType.LECTURE;
+	}
+	
+	
+	/*
+	 * BELOW ARE ALL THE DISPLAY METHODS. THEY DO NOT PROMPT ANYTHING FROM
+	 * STANDARD INPUT AND MERELY PRINT THINGS OUT TO STANDARD OUTPUT. MOST
+	 * DO NOT ACCEPT ANY ARGUMENTS.
+	 * 
+	 * 
+	 */
 	
 	private void displayMenu(){
 		switch(menu){
@@ -250,19 +386,23 @@ public class SimpleUI {
 			displayStudents();
 			break;
 		case LECTURE:
-			System.out.println("Not yet implemented.");
+			todo();
 			break;
 		case STUDENT:
-			System.out.println("Not yet implemented.");
+			todo();
 			break;
 		case GRAPH:
-			System.out.println("Not yet implemented.");
+			todo();
 			break;
 		default:
 			break;
 		}
 	}
 	
+	/**
+	 * Displays all courses in this application. States "No courses." if
+	 * the application has no courses.
+	 */
 	private void displayCourses(){
 		if (courseMap.isEmpty())
 			System.out.println("No courses.");
@@ -281,10 +421,14 @@ public class SimpleUI {
 		}
 		System.out.println("Lectures: ");
 		for (Lecture lec : coursePointer.lectures)
-			System.out.printf("Lecture %d: %s",
+			System.out.printf("Lecture %d: %s\n",
 					lec.lectureNumber, lec.getDate().toString());
 	}
 	
+	/**
+	 * Displays all students in the current course. Says "No students added"
+	 * if the course has no students.
+	 */
 	private void displayStudents(){
 		if (coursePointer.students.size() == 0){
 			System.out.println("No students added.");
@@ -295,6 +439,58 @@ public class SimpleUI {
 			System.out.printf("Student %d\n", person.getID());
 	}
 	
+	/**
+	 * Displays the different weighters available for making graphs
+	 * alongside numbers.
+	 */
+	private void displayWeighters(){
+		System.out.print("1. Default.\n" + 
+	                     "2. Filter by student rating standard deviation\n" +
+				         "3. Filter by student rating mean\n" +
+	                     "4. Prioritize students without many 5s and 10s\n" +
+				         "5. Filter by date range\n");
+	}
+
+	
+	/*
+	 * HELPER FUNCTIONS, MOSTLY USED TO REDUCE REDUNDANT PRINT STATEMENTS.
+	 */
+	
+	/**
+	 * States that the command passed in does not exist.
+	 * @param cmd The invalid command that does not exist.
+	 */
+	
+	private void invalidCommand(String cmd){
+		System.out.printf("Invalid command \"%s\".\nEnter \"help\" for a list of valid " +
+				"commands.\n", cmd);
+	}
+	
+	/**
+	 * Helper method that prompts a user to enter Y/N and converts the 
+	 * response to a boolean. The method will do this until a valid
+	 * input is received.
+	 * 
+	 * @param message The initial prompt message given to the user.
+	 * @return True if the user entered Y, false if he entered N
+	 */
+	private boolean requestYesNo(String message){
+		String input = "";
+		System.out.print(message);
+		while(true){
+			input = stdin.nextLine().toLowerCase();
+			if (!(input.equals("y") || input.equals("n"))){
+				System.out.print("Invalid response. Enter Y/N: ");
+			}
+			else
+				break;
+		}
+		return input.equals("y");
+	}
+	
+	private void todo(){
+		System.out.println("Not yet implemented.");
+	}
 	
 	public static void main(String[] args){
 		SimpleUI runner = new SimpleUI();
