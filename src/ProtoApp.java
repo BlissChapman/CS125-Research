@@ -50,6 +50,13 @@ public class ProtoApp {
 		}
 	}
 	
+	/**
+	 * Adds a new Lecture to this course and then reassigns all existing
+	 * PeerInteractions possessed by all Students in this course to their
+	 * corresponding lectures under the new course schedule.
+	 * 
+	 * @param day The time of the new Lecture.
+	 */
 	public void addLecture(Date day){
 		Lecture newLec = new Lecture(day);
 		lectures.add(newLec);
@@ -107,11 +114,9 @@ public class ProtoApp {
 	
 	/**
 	 * This method takes in a list of PeerInteractions and does the following:
-	 * 1) Assigns these to their respective students.
-	 * 2) Goes through each student and merges all recent PeerInteractions
-	 *    corresponding to the same lecture (ie so that 70 entries from the
-	 *    same student on the same day will get merged into just 1).
-	 * 3) Adds the merged result from each
+	 * 1) Assigns these to their respective Students.
+	 * 2) Takes all PeerInteractions matched with a Student and assigns them to
+	 *    their respective Lectures.
 	 *
 	 * @param batch An Iterable set of recent PeerInteractions to be 
 	 *              distributed among students and lectures.
@@ -140,7 +145,7 @@ public class ProtoApp {
 	 * 
 	 * @param batch A collection of PeerInteractions to be added to the course.
 	 */
-	public void assignEntriesToLectures(Iterable<PeerInteraction> batch){
+	private void assignEntriesToLectures(Iterable<PeerInteraction> batch){
 		for (PeerInteraction elem : batch){
 			Lecture tgt = Lecture.get(elem, lectures);
 			tgt.add(elem);
