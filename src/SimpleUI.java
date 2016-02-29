@@ -178,6 +178,21 @@ public class SimpleUI {
 	}
 	
 	/**
+	 * Displays all courses in this application. States "No courses." if
+	 * the application has no courses.
+	 */
+	public void displayCourses(){
+		if (courseMap.isEmpty())
+			System.out.println("No courses.");
+		else{
+			System.out.println("List of courses:\n");
+			int i = 1;
+			for (Entry<String, ProtoApp> course : courseMap.entrySet())
+				System.out.println(i++ + ": " + course.getKey());
+		}
+	}
+	
+	/**
 	 * Selects a course in the courses menu and switches to the course menu
 	 * for that course. Gives an error message if the course name passed in
 	 * does not match any existing course.
@@ -277,6 +292,21 @@ public class SimpleUI {
 	}
 	
 	/**
+	 * Displays all students in this application. States "No courses." if
+	 * the application has no students.
+	 */
+	public void displayLectures(){
+		if (coursePointer.lectures.isEmpty()){
+			System.out.println("No lectures added.");
+			return;
+		}
+		System.out.println("LECTURES: ");
+		for (Lecture lec : coursePointer.lectures)
+			System.out.printf("    %d: %s\n",
+					lec.lectureNumber, lec.getDate().toString());
+	}
+	
+	/**
 	 * Adds a lecture to the current course. Uses ProtoApp.addLecture(String).
 	 * If the input string cannot be parsed as a valid Java Date object,
 	 * print an error message and return.
@@ -301,6 +331,21 @@ public class SimpleUI {
 				throw new UnsupportedOperationException("What???");
 			coursePointer.addLecture(newDate);
 		}
+	}
+	
+	
+	/**
+	 * Displays all students in the current course. Says "No students added"
+	 * if the course has no students.
+	 */
+	private void displayStudents(){
+		if (coursePointer.students.size() == 0){
+			System.out.println("No students added.");
+			return;
+		}
+		System.out.println("STUDENTS: ");
+		for (Student person : coursePointer.students)
+			System.out.printf("    #%d\n", person.getID());
 	}
 	
 	/**
@@ -330,7 +375,7 @@ public class SimpleUI {
 	 */
 	void removeCourse(){
 		if(!requestYesNo("Are you sure you want to remove this course? Y/N: ")){
-			return
+			System.out.println("Remove cancelled.");
 			return;
 		}
 		for (Map.Entry<String, ProtoApp> elem : courseMap.entrySet())
@@ -351,7 +396,7 @@ public class SimpleUI {
 	 * 
 	 * @param code The code of the Student to switch to.
 	 */
-	void changeToStudent(String code){
+	public void changeToStudent(String code){
 		try{
 			int num = Integer.parseInt(code);
 			studentPointer = coursePointer.students.get(num);
@@ -377,7 +422,7 @@ public class SimpleUI {
 	 * 
 	 * @TODO Implement
 	 */
-	void changeToLecture(String lecNo){
+	public void changeToLecture(String lecNo){
 		toDo();
 	}
 	
@@ -395,7 +440,7 @@ public class SimpleUI {
 	 * @param input The parsed command-argument string array. The first
 	 *              element is the command, the second the argument.
 	 */
-	void parseLectureLine(String[] input){
+	public void parseLectureLine(String[] input){
 		if (input[0].equals("cd stud"))
 			changeToStudent(input[1]);
 		else if (input[0].equals("stat"))
@@ -412,6 +457,18 @@ public class SimpleUI {
 			invalidCommand(input[0]);
 	}
 	
+	/**
+	 * Displays all the PeerInteraction objects in the particular lecture.
+	 * 
+	 * @TODO Decide how to implement this. Current representation is an
+	 *       eyesore.
+	 */
+	private void displayInteractions(){
+		toDo("Improve format");
+		for (PeerInteraction elem : lecPointer)
+			System.out.println(elem);
+	}
+	
 	/*
 
 	"LECTURE %d%s\nDATE: %s\n\n" +
@@ -426,6 +483,7 @@ public class SimpleUI {
 	
 	*/
 	
+	
 	/*
 	 * BELOW ARE ALL THE STUDENT METHODS. THEY ARE USED TO EXTRACT INFORMATION
 	 * FROM A PARTICULAR STUDENT.
@@ -439,7 +497,7 @@ public class SimpleUI {
 	 * @param input The parsed command-argument string array. The first
 	 *              element is the command, the second the argument.
 	 */
-	void parseStudentLine(String[] input){
+	public void parseStudentLine(String[] input){
 		if (input[0].equals("stat"))
 			toDo(); //TODO Implement
 		else if (input[0].equals("rm"))
@@ -463,10 +521,26 @@ public class SimpleUI {
 	 * TODO Implement everything
 	 */
 	
-	void parseGraphLine(String[] input){
-		toDo(); //TODO Implement
+	public void parseGraphLine(String[] input){
+		if (input[0] == "use")
+			toDo(); //TODO implement
+		else if (input[0] == "edit")
+			toDo(); //TODO Implement
+		else
+			invalidCommand(input[0]);
 	}
 	
+	/**
+	 * Displays the different weighters available for making graphs
+	 * alongside numbers.
+	 */
+	private void displayWeighters(){
+		System.out.print("1. Default.\n" + 
+	                     "2. Filter by student rating standard deviation\n" +
+				         "3. Filter by student rating mean\n" +
+	                     "4. Prioritize students without many 5s and 10s\n" +
+				         "5. Filter by date range\n");
+	}
 	
 	/*
 	 * BELOW ARE ALL THE DISPLAY METHODS. THEY DO NOT PROMPT ANYTHING FROM
@@ -481,7 +555,7 @@ public class SimpleUI {
 	 * simply prints out the appropriate menu string associated with the
 	 * current menu type.
 	 */
-	private void displayMenu(){
+	public void displayMenu(){
 		switch(menu){
 		case COURSE:
 			System.out.printf(menus.get(menu), coursePointer.courseTitle, 
@@ -508,7 +582,7 @@ public class SimpleUI {
 	 * method is called in the parseLine() method exclusively. What this
 	 * actually displays is dependent upon the menu type.
 	 */
-	private void list(){
+	public void list(){
 		switch (menu){
 		case COURSES:
 			displayCourses();
@@ -518,85 +592,23 @@ public class SimpleUI {
 			displayStudents();
 			break;
 		case LECTURE:
-			toDo();
+			displayInteractions();
 			break;
 		case STUDENT:
 			toDo();
 			break;
 		case GRAPH:
-			toDo();
+			displayWeighters();
 			break;
 		default:
 			break;
 		}
 	}
 	
-	/**
-	 * Displays all courses in this application. States "No courses." if
-	 * the application has no courses.
-	 */
-	private void displayCourses(){
-		if (courseMap.isEmpty())
-			System.out.println("No courses.");
-		else{
-			System.out.println("List of courses:\n");
-			int i = 1;
-			for (Entry<String, ProtoApp> course : courseMap.entrySet())
-				System.out.println(i++ + ": " + course.getKey());
-		}
-	}
-	
-	private void displayLectures(){
-		if (coursePointer.lectures.isEmpty()){
-			System.out.println("No lectures added.");
-			return;
-		}
-		System.out.println("LECTURES: ");
-		for (Lecture lec : coursePointer.lectures)
-			System.out.printf("    %d: %s\n",
-					lec.lectureNumber, lec.getDate().toString());
-	}
-	
-	/**
-	 * Displays all students in the current course. Says "No students added"
-	 * if the course has no students.
-	 */
-	private void displayStudents(){
-		if (coursePointer.students.size() == 0){
-			System.out.println("No students added.");
-			return;
-		}
-		System.out.println("STUDENTS: ");
-		for (Student person : coursePointer.students)
-			System.out.printf("    #%d\n", person.getID());
-	}
-	
-	/**
-	 * Displays the different weighters available for making graphs
-	 * alongside numbers.
-	 */
-	private void displayWeighters(){
-		System.out.print("1. Default.\n" + 
-	                     "2. Filter by student rating standard deviation\n" +
-				         "3. Filter by student rating mean\n" +
-	                     "4. Prioritize students without many 5s and 10s\n" +
-				         "5. Filter by date range\n");
-	}
-	
-	/**
-	 * Displays all the PeerInteraction objects in the particular lecture.
-	 * 
-	 * @TODO Decide how to implement this. Current representation is an
-	 *       eyesore.
-	 */
-	private void displayInteractions(){
-		for (PeerInteraction elem : lecPointer)
-			System.out.println(elem);
-	}
-
 	
 	/*
 	 * HELPER FUNCTIONS, MOSTLY USED TO REDUCE REDUNDANT PRINT STATEMENTS.
+	 * 
 	 */
 	
 	/**

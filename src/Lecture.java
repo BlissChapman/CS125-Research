@@ -5,9 +5,20 @@ import java.util.Date;
 import java.util.*;
 
 /**
- * A model for a lecture object with a unique id corresponding to the lecture number, all the associated peer interactions, the date, and the lecture topics.
- * This class also contains static properties and methods involved with initializing lectures and analyzing the result.
+ * A Lecture object class primarily associated with the time (a Java 
+ * Date object) of a lecture. The Lecture object contains all PeerInteractions
+ * associated with the particular lecture and an optional title, description,
+ * and number. Lecture provides a static binary search method that can
+ * associate a PeerInteraction with the right Lecture given a List of
+ * Lectures. It also computes several statistical variables such as rating
+ * mean and rating standard deviation. Lastly, it provides a distribution of
+ * all ratings in the Lecture subject to externally defined filters and
+ * weights (see Weighter.java and GraphTools.java).
+ * 
  * @author CS125Research
+ * 
+ * TODO Discuss the design of this class and its member variables. Decide if
+ *      it needs more functionalities.
  */
 public class Lecture implements Iterable<PeerInteraction>{
 
@@ -37,7 +48,8 @@ public class Lecture implements Iterable<PeerInteraction>{
 	 */
 	public Lecture(Date d, String[] topics){
 		this(d);
-		this.topics = topics.clone();
+		title = topics[0];
+		description = topics[1];
 	}
 	
 	/**
@@ -53,8 +65,8 @@ public class Lecture implements Iterable<PeerInteraction>{
 	}
 	
 	/**
-	 * 
-	 * @param title The desired title of the lecture.
+	 * @param title The desired title of the lecture. Null arguments result in
+	 *              exceptions thrown.
 	 */
 	public void setTitle(String title){
 		if (title == null)
@@ -71,8 +83,8 @@ public class Lecture implements Iterable<PeerInteraction>{
 	
 	
 	/**
-	 * 
-	 * @param description The desired description for this lecture.
+	 * @param description The desired description for this lecture. Null
+	 *                    arguments result in exceptions thrown.
 	 */
 	public void setInfo(String description){
 		if (description == null)
@@ -111,6 +123,40 @@ public class Lecture implements Iterable<PeerInteraction>{
 	 */
 	public void add(PeerInteraction entry){
 		recordsByTime.add(entry);
+	}
+	
+	/**
+	 * Sets the PeerInteraction collection of this Lecture to a new empty
+	 * collection and returns the old collection.
+	 * 
+	 * @return The ArrayList of PeerInteractions previously associated with
+	 *         this Lecture.
+	 */
+	public ArrayList<PeerInteraction> refreshEntries(){
+		ArrayList<PeerInteraction> tmp = recordsByTime;
+		recordsByTime = new ArrayList<>();
+		return tmp;
+	}
+	
+	/**
+	 * Purges the Lecture of all PeerInteractions submitted by a Student with
+	 * the matching integer code passed into the function and returns all
+	 * matching PeerInteractions as an ArrayList.
+	 * 
+	 * @param code The integer code of the Student whose entries must be purged.
+	 * @return The ArrayList of all PeerInteractions belonging to said Student.
+	 */
+	public ArrayList<PeerInteraction> removeByStudent(int code){
+		ArrayList<PeerInteraction> out = new ArrayList<>();
+		for (ListIterator<PeerInteraction> it = recordsByTime.listIterator();
+			 it.hasNext();){
+			PeerInteraction curr = it.next();
+			if (curr.getPersonID() == code){
+				out.add(curr);
+				it.remove();
+			}
+		}
+		return out;
 	}
 	
 	/**

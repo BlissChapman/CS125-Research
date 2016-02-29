@@ -1,6 +1,6 @@
 import java.util.Date;
 
-public class GraphTools<T>{
+public class GraphTools{
 	
 	private final Roster students;
 	

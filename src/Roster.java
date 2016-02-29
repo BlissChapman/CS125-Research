@@ -1,11 +1,14 @@
 /**
  * A container which stores all Students in the class for processing. Implements
  * a constant-time getter method which maps student ID codes to their
- * corresponding Student objects. 
+ * corresponding Student objects. This class also has methods to add new 
+ * Students, change capacity, and also distribute collections of 
+ * PeerInteractions among Students in the Roster. 
  *
  * @author CS125 Research
- * @todo Add useful features. Also implement Student class and add needed
- *       functionality to NRList class.
+ * TODO Discuss the addition of more useful features. In particular, discuss
+ *      adding more information to the Student class and supporting those
+ *      additions through Roster.
  */
 import java.util.*;
 public class Roster implements Iterable<Student>{
@@ -81,15 +84,20 @@ public class Roster implements Iterable<Student>{
 	 * Student.addEntry(PeerInteraction).
 	 * 
 	 * @param batch A collection of PeerInteractions to be added.
+	 * @return An ArrayList of the PeerInteractions that were actually
+	 *         assigned to Students in this Roster.
 	 */
-	public void addInteractions(Iterable<PeerInteraction> batch){
+	public ArrayList<PeerInteraction> 
+		addInteractions(Iterable<PeerInteraction> batch){
+		ArrayList<PeerInteraction> out = new ArrayList<>();
 		for (PeerInteraction entry : batch){
 			Student person = get(entry);
-			if (person != null)
+			if (person != null){
 				person.addEntry(entry);
+				out.add(entry);
+			}
 		}
-		//for (Student person : this)
-			//person.mergeRecentDuplicates(); //All or Recent?
+		return out;
 	}
 	
 	/**

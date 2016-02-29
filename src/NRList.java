@@ -1,8 +1,13 @@
 import java.util.*;
 /**
  *  A simple map-like list of NetIDPairs with a file argument constructor.
- *  Can return the code associated with a particular netID passed into its
- *  getSecret() method.
+ *  Supports the addition of new students through their netIDs, the removal
+ *  of existing students through their netIDs, and will return a randomized
+ *  (but consistent) code associated with each netID in the NRList given a
+ *  particular netID.
+ *  
+ *  TODO Possibly implement resizing to parallel Roster. Discuss changing data
+ *       structure to allow O(1) operations.
  *  @author CS125Research
  */
 public class NRList implements Iterable<NetIDPair>{
@@ -89,6 +94,14 @@ public class NRList implements Iterable<NetIDPair>{
 		pairList.add(potentialPair);
 	}
 	
+	/**
+	 * Searches for a NetIDPair with a netID field matching the argument. If a
+	 * match is found, the method removes and returns that NetIDPair from the
+	 * NRList. Otherwise, the method returns null.
+	 * 
+	 * @param netID The netID of the NetIDPair to be removed.
+	 * @return The removed NetIDPair matching the argument.
+	 */
 	public NetIDPair removePair(String netID){
 		Iterator<NetIDPair> destroyer = pairList.listIterator();
 		while (destroyer.hasNext()){
@@ -121,9 +134,12 @@ public class NRList implements Iterable<NetIDPair>{
 	 *  no two NetIDPair instances therein correspond to the same code
 	 *  or netID.
 	 *
-	 *  @param potentialPair  A potential NetIDPair that may be added to the list.
+	 *  @param potentialPair  A potential NetIDPair that may be added to the 
+	 *                        list.
 	 *  @return True if the code of potentialPair isn't already found in
 	 *          the NRList.
+	 *          
+	 *  @TODO Discuss using a data structure that allows O(1) checks.
 	 */
 	private boolean check(NetIDPair potentialPair){
 		for (NetIDPair elem : pairList){
@@ -152,8 +168,7 @@ public class NRList implements Iterable<NetIDPair>{
 	}
 	
 	/**
-	 * Prints out the contents of this NRList separated by
-	 * newlines.
+	 * Prints out the contents of this NRList separated by newlines.
 	 */
 	public void printList() {
 		for (int i = 0; i < pairList.size(); i++) {

@@ -5,7 +5,7 @@ import java.util.*;
 /**
 	 *  This class is a simple data structure that represents an entry from the CS125
 	 *  lecture feedback app. It contains a pair of encoded NetIDs, a grade, two
-	 *  feedback strings, and a date string.
+	 *  feedback strings, and a Java Date object representing the time of submission.
 	 *  @author CS125 Research
 	 */
 	public final class PeerInteraction {
