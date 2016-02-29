@@ -14,7 +14,8 @@ public class Lecture implements Iterable<PeerInteraction>{
 	public int lectureNumber; //TODO: Discuss this name
 	public ArrayList<PeerInteraction> recordsByTime;
 	private Date date;
-	private String[] topics;// OR ArrayList<String>
+	private String title = "";
+	private String description = "";
 	
 	/**
 	 * Base constructor called by all other constructors.
@@ -49,6 +50,41 @@ public class Lecture implements Iterable<PeerInteraction>{
 	public Lecture(Date d, PeerInteraction entry){
 		this(d);
 		this.add(entry);
+	}
+	
+	/**
+	 * 
+	 * @param title The desired title of the lecture.
+	 */
+	public void setTitle(String title){
+		if (title == null)
+			throw new NullPointerException();
+		this.title = title;
+	}
+	
+	/**
+	 * @return The title of this lecture.
+	 */
+	public String getTitle(){
+		return title;
+	}
+	
+	
+	/**
+	 * 
+	 * @param description The desired description for this lecture.
+	 */
+	public void setInfo(String description){
+		if (description == null)
+			throw new NullPointerException();
+		this.description = description;
+	}
+	
+	/**
+	 * @return The description for this course.
+	 */
+	public String getInfo(){
+		return description;
 	}
 	
 	/**

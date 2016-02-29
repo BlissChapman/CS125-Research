@@ -256,7 +256,7 @@ public class Utilities {
 			                            Comparator<T> ordering){
 		T tmp = null;
 		while (idx > 0 &&
-			   ordering.compare(coll.get(idx), coll.get(idx-1))> 0){
+			   ordering.compare(coll.get(idx-1), coll.get(idx)) > 0){
 			tmp = coll.get(idx);
 			coll.set(idx, coll.get(idx-1));
 			coll.set(idx-1, tmp);

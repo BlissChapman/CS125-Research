@@ -1,3 +1,4 @@
+import java.text.ParseException;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -7,7 +8,7 @@ import java.util.Map.Entry;
  * to this application and test the functionalities we've added so far. So
  * far this is probably 15% complete.
  * 
- * @TODO implement functions for all listed commands
+ * TODO implement functions for all listed commands
  * 
  * @author CS125-Research
  *
@@ -41,11 +42,12 @@ public class SimpleUI {
 	 */
 	private static HashMap<MenuType, String> menus = new HashMap<MenuType, String>();
 	static{
+		//TODO alphabetize these commands and replace all tabs with spaces
 		menus.put(MenuType.COURSES,
 			"COURSE CREATION MENU:\n\n" +
-			"mkdir $ <name>         Creates new course.\n" +
-			"ls                     Display all existing courses.\n" +
-			"cd $ <name>            Go to an existing course.\n");
+			"mkdir $ <name>             Creates new course.\n" +
+			"ls                         Display all existing courses.\n" +
+			"cd $ <name>                Go to an existing course.\n");
 		menus.put(MenuType.COURSE,
 			"COURSE: %s\nDESCRIPTION: %s\n\n" +
 			"mkdir lec $ <mm dd yyyy>   Add new lecture.\n" +
@@ -57,32 +59,33 @@ public class SimpleUI {
 			"ls stud                    Shows all students.\n" +
 			"cd lec $ <lec#>            Select lecture.\n" +
 			"cd stud $ <studID>         Select student.\n" +
-			"cd	                        Go back to course list.\n" +
+			"cd                         Go back to course list.\n" +
 			"import lecs $ <file>       Use file to add new lectures.\n" +
 			"import entries $ <file>    Use file to add new feedback.\n" +
 			"import studs $ <file>      Use file to add new students.\n" +
 			"rm                         Remove this course.\n");
 		menus.put(MenuType.LECTURE,
 			"LECTURE %d%s\nDATE: %s\n\n" +
-			"ls                     Shows all feedback for this lecture.\n" +
-			"cd $ <studID>          Select student.\n" +
-			"cd                     Go back to the course page.\n" +
-			"stat                   Obtain statistical summary of lecture.\n" +
-			"edit title $ <title>   Change lecture title.\n" +
-			"edit info $ <info>     Change lecture description.\n" +
-			"graph                  Graph lecture data.\n" +
-			"graph rules            Modify weighting rules on graph.\n");
+			"ls                         Shows all feedback for this lecture.\n" +
+			"cd stud$ <studID>          Select student.\n" +
+			"cd                         Go back to the course page.\n" +
+			"stat                       Obtain statistical summary of lecture.\n" +
+			"edit title $ <title>       Change lecture title.\n" +
+			"edit info $ <info>         Change lecture description.\n" +
+			"graph                      Graph lecture data.\n" +
+			"graph rules                Modify weighting rules on graph.\n");
 		menus.put(MenuType.STUDENT,
-			"STUDENT MENU:\nStudent #%d\n" +
-			"ls						Show all feedback given by student.\n" +
-			"stat					Obtain statistical summary of student.\n" +
-			"rm						Purge this student from the course.\n");
+			"STUDENT MENU (Student #%d):\n" +
+			"cd                         Go back to the course page.\n" +
+			"ls                         Show all feedback given by student.\n" +
+			"stat                       Obtain statistical summary of student.\n" +
+			"rm                         Purge this student from the course.\n");
 		menus.put(MenuType.GRAPH,
 			"GRAPH RULE MENU:\n" +
-			"ls						Show all graphing constraints.\n" +
-			"use <rule#>			Switch to specific graph constraint.\n" +
-			"edit <rule#>			Change parameters of specific rule.\n" +
-			"cd						Go back to the lecture page.\n");
+			"ls						    Show all graphing constraints.\n" +
+			"use <rule#>			    Switch to specific graph constraint.\n" +
+			"edit <rule#>			    Change parameters of specific rule.\n" +
+			"cd						    Go back to the lecture page.\n");
 	};
 	
 	/**
@@ -94,6 +97,8 @@ public class SimpleUI {
 	void parseLine(){
 		System.out.print(">>");
 		String input = stdin.nextLine().trim();
+		if (input.equals(""))
+			parseLine();
 		String[] pieces = input.split("\\$");
 		String[] parsedPieces = new String[2];
 		parsedPieces[0] = pieces[0].trim().toLowerCase();
@@ -110,17 +115,18 @@ public class SimpleUI {
 		else if (cmd.equals("cd") && arg.isEmpty())
 			closeMenu();
 		else{
+			echo(parsedPieces[0], parsedPieces[1]);
 			switch (menu){
 			case COURSES:
 				parseCoursesLine(parsedPieces); break;
 			case COURSE:
 				parseCourseLine(parsedPieces); break;
 			case LECTURE:
-				break;
+				parseLectureLine(parsedPieces); break;
 			case STUDENT:
-				break;
+				parseStudentLine(parsedPieces); break;
 			case GRAPH:
-				break;
+				parseGraphLine(parsedPieces); break;
 			}
 		}
 		parseLine();
@@ -159,10 +165,9 @@ public class SimpleUI {
 	 * (exclusively) listed under the course menu like cd $ arg, 
 	 * mkdir lec $ arg, etc.
 	 * 
-	 * @param input The partially parsed {cmd, arg} inputted by the user.
+	 * @param input The partially parsed {cmd, arg} inputed by the user.
 	 */
 	void parseCoursesLine(String[] input){
-		System.out.printf("%s $ %s\n", input[0], input[1]);
 		if (input[0].equals("mkdir"))
 			addCourse(input[1]);
 		else if (input[0].equals("cd"))
@@ -232,31 +237,41 @@ public class SimpleUI {
 	 * MODIFY A SPECIFIC COURSE. THEY WILL ONLY BE CALLED WHEN THE
 	 * MENU IS SET TO MENUTYPE.COURSE.
 	 * 
-	 * @TODO Improve several methods and work on the unimplemented ones.
+	 * TODO Improve several methods and work on the unimplemented ones.
 	 */
 	
+	/**
+	 * This method is a specialized parse method for the Course menu. It
+	 * must handle the most commands of all the menus.
+	 * 
+	 * @param input The parsed command-argument string array. The first
+	 *              element is the command, the second the argument.
+	 */
 	void parseCourseLine(String[] input){
-		System.out.printf("%s $ %s\n", input[0], input[1]); //Echoes command
 		if (input[0].equals("ls lec"))
 			displayLectures();
-		else if (input[1].equals("ls stud"))
+		else if (input[0].equals("ls stud"))
 			displayStudents();
-		if (input[0].equals("mkdir lec"))
+		else if (input[0].equals("mkdir lec"))
 			addLecture(input[1]);
 		else if (input[0].equals("mkdir stud"))
 			addStudent(input[1]);
 		else if (input[0].equals("rm"))
 			removeCourse();
 		else if (input[0].equals("import lecs"))
-			todo();
+			toDo(); //TODO make a method for this
 		else if (input[0].equals("import studs"))
-			todo();
+			toDo(); //TODO make a method for this
 		else if (input[0].equals("import entries"))
-			todo();
+			toDo(); //TODO make a method for this
 		else if (input[0].equals("cd stud"))
-			changeToStudent(input[1]);
+			changeToStudent(input[1]); //DONE
 		else if (input[0].equals("cd lec"))
-			changeToLecture(input[1]);
+			changeToLecture(input[1]); //DONE
+		else if (input[0].equals("edit title"))
+			coursePointer.courseTitle = input[1]; //DONE
+		else if (input[0].equals("edit info"))
+			coursePointer.courseInfo = input[1]; //DONE
 		else
 			invalidCommand(input[0]);
 	}
@@ -279,7 +294,8 @@ public class SimpleUI {
 		//else if (courseMap.containsKey(name))
 			//System.out.printf("Course named \"%s\" already exists.\n", name);
 		else{
-			System.out.println("Not implemented yet."); //@TODO Use SimpleDateFormat
+			toDo("does not actually parse date and simply creates a Lecture at " +
+					"the time the command is used."); //TODO Use SimpleDateFormat
 			Date newDate = new Date();
 			if (coursePointer == null) //Catches a strange bug, possibly
 				throw new UnsupportedOperationException("What???");
@@ -292,21 +308,31 @@ public class SimpleUI {
 	 * Make sure to handle exceptions thrown by that method in cases
 	 * of netID duplication or full capacity.
 	 * 
-	 * 
-	 * @TODO Implement
 	 */
 	void addStudent(String netID){
-		todo();
+		try{
+			coursePointer.addStudent(netID);
+			System.out.printf("Successfully added \"%s\"\n", netID);
+		}
+		catch(IndexOutOfBoundsException e){
+			System.out.printf("This course has reached its maximum capacity: "
+					+ "%d\n", coursePointer.converter.capacity());
+		}
+		catch(IllegalArgumentException e){
+			System.out.printf("NetID \"%s\" is already present in this " +
+					"course.\n", netID);
+		}
 	}
 	
 	/**
-	 * Deletes the current course from the courses menu and
-	 * then moves back to the Courses menu. This is a fairly
-	 * inelegant way of doing things.
+	 * Deletes the current course from the courses menu and then moves back to
+	 * the Courses menu. This is a fairly inelegant way of doing things.
 	 */
 	void removeCourse(){
-		if(!requestYesNo("Are you sure you want to remove this course? Y/N: "))
+		if(!requestYesNo("Are you sure you want to remove this course? Y/N: ")){
+			return
 			return;
+		}
 		for (Map.Entry<String, ProtoApp> elem : courseMap.entrySet())
 			if (elem.getValue() == coursePointer){
 				courseMap.remove(elem.getKey());
@@ -323,13 +349,20 @@ public class SimpleUI {
 	 * Give error messages if the string passed in cannot be parsed as an int,
 	 * or if the Student is not found in the Roster.
 	 * 
-	 * @TODO Implement.
-	 * 
 	 * @param code The code of the Student to switch to.
 	 */
 	void changeToStudent(String code){
-		todo();
-		menu = MenuType.STUDENT;
+		try{
+			int num = Integer.parseInt(code);
+			studentPointer = coursePointer.students.get(num);
+			if (studentPointer == null)
+				System.out.printf("Student %d not found in the roster.\n",
+						num);
+			else
+				menu = MenuType.STUDENT;
+		}catch (NumberFormatException e){
+			System.out.println("Please enter an integer student code.");
+		}
 	}
 	
 	
@@ -345,8 +378,93 @@ public class SimpleUI {
 	 * @TODO Implement
 	 */
 	void changeToLecture(String lecNo){
-		todo();
-		menu = MenuType.LECTURE;
+		toDo();
+	}
+	
+	/*
+	 * BELOW ARE ALL THE LECTURE METHODS. THEY ARE USED TO EXTRACT INFORMATION
+	 * FROM A PARTICULAR LECTURE.
+	 * 
+	 * TODO Implement everything.
+	 */
+	
+	
+	/**
+	 * This method is a specialized parse method for the Lecture menu. 
+	 * 
+	 * @param input The parsed command-argument string array. The first
+	 *              element is the command, the second the argument.
+	 */
+	void parseLectureLine(String[] input){
+		if (input[0].equals("cd stud"))
+			changeToStudent(input[1]);
+		else if (input[0].equals("stat"))
+			toDo(); //TODO implement
+		else if (input[0].equals("edit title"))
+			lecPointer.setTitle(input[1]);
+		else if (input[0].equals("edit info"))
+			lecPointer.setInfo(input[1]);
+		else if (input[0].equals("graph"))
+			toDo(); //TODO implement
+		else if (input[0].equals("graph rules"))
+			toDo(); //TODO implement
+		else
+			invalidCommand(input[0]);
+	}
+	
+	/*
+
+	"LECTURE %d%s\nDATE: %s\n\n" +
+	"ls                     Shows all feedback for this lecture.\n" +
+	"cd $ <studID>          Select student.\n" +
+	"cd                     Go back to the course page.\n" +
+	"stat                   Obtain statistical summary of lecture.\n" +
+	"edit title $ <title>   Change lecture title.\n" +
+	"edit info $ <info>     Change lecture description.\n" +
+	"graph                  Graph lecture data.\n" +
+	"graph rules            Modify weighting rules on graph.\n");
+	
+	*/
+	
+	/*
+	 * BELOW ARE ALL THE STUDENT METHODS. THEY ARE USED TO EXTRACT INFORMATION
+	 * FROM A PARTICULAR STUDENT.
+	 * 
+	 * @TODO Implement everything
+	 */
+	
+	/**
+	 * This method is a specialized parse method for the Student menu. 
+	 * 
+	 * @param input The parsed command-argument string array. The first
+	 *              element is the command, the second the argument.
+	 */
+	void parseStudentLine(String[] input){
+		if (input[0].equals("stat"))
+			toDo(); //TODO Implement
+		else if (input[0].equals("rm"))
+			toDo(); //TODO Implement
+		else
+			invalidCommand(input[0]);
+	}
+	
+	/*
+	"STUDENT MENU (Student #%d):\n" +
+	"ls						    Show all feedback given by student.\n" +
+	"stat					    Obtain statistical summary of student.\n" +
+	"rm						    Purge this student from the course.\n");
+	*/
+	
+	/*
+	 * BELOW ARE ALL THE GRAPH METHODS. THEY ARE USED TO CHANGE THE PARAMETERS
+	 * OF INDIVIDUAL GRAPH CONSTRAINTS AND TO CHANGE THE TYPE OF CONSTRAINT
+	 * USED. NOTE THAT GRAPHERS ARE GLOBAL TO EACH COURSE INSTANCE.
+	 * 
+	 * TODO Implement everything
+	 */
+	
+	void parseGraphLine(String[] input){
+		toDo(); //TODO Implement
 	}
 	
 	
@@ -355,9 +473,14 @@ public class SimpleUI {
 	 * STANDARD INPUT AND MERELY PRINT THINGS OUT TO STANDARD OUTPUT. MOST
 	 * DO NOT ACCEPT ANY ARGUMENTS.
 	 * 
-	 * 
 	 */
 	
+	/**
+	 * Variadic method that is called in response to the command "help". This
+	 * method is exclusively called by the parseLine() function. The method
+	 * simply prints out the appropriate menu string associated with the
+	 * current menu type.
+	 */
 	private void displayMenu(){
 		switch(menu){
 		case COURSE:
@@ -371,11 +494,20 @@ public class SimpleUI {
 		case STUDENT:
 			System.out.printf(menus.get(menu), studentPointer.getID());
 			break;
+		case GRAPH:
+			System.out.println(menus.get(menu));
+			break;
 		default:
 			System.out.println(menus.get(menu)); break;
 		}
 	}
 	
+	
+	/**
+	 * Variadic method that is called in response to the command "ls". This
+	 * method is called in the parseLine() method exclusively. What this
+	 * actually displays is dependent upon the menu type.
+	 */
 	private void list(){
 		switch (menu){
 		case COURSES:
@@ -386,13 +518,13 @@ public class SimpleUI {
 			displayStudents();
 			break;
 		case LECTURE:
-			todo();
+			toDo();
 			break;
 		case STUDENT:
-			todo();
+			toDo();
 			break;
 		case GRAPH:
-			todo();
+			toDo();
 			break;
 		default:
 			break;
@@ -419,9 +551,9 @@ public class SimpleUI {
 			System.out.println("No lectures added.");
 			return;
 		}
-		System.out.println("Lectures: ");
+		System.out.println("LECTURES: ");
 		for (Lecture lec : coursePointer.lectures)
-			System.out.printf("Lecture %d: %s\n",
+			System.out.printf("    %d: %s\n",
 					lec.lectureNumber, lec.getDate().toString());
 	}
 	
@@ -434,9 +566,9 @@ public class SimpleUI {
 			System.out.println("No students added.");
 			return;
 		}
-		System.out.println("Students: ");
+		System.out.println("STUDENTS: ");
 		for (Student person : coursePointer.students)
-			System.out.printf("Student %d\n", person.getID());
+			System.out.printf("    #%d\n", person.getID());
 	}
 	
 	/**
@@ -449,6 +581,17 @@ public class SimpleUI {
 				         "3. Filter by student rating mean\n" +
 	                     "4. Prioritize students without many 5s and 10s\n" +
 				         "5. Filter by date range\n");
+	}
+	
+	/**
+	 * Displays all the PeerInteraction objects in the particular lecture.
+	 * 
+	 * @TODO Decide how to implement this. Current representation is an
+	 *       eyesore.
+	 */
+	private void displayInteractions(){
+		for (PeerInteraction elem : lecPointer)
+			System.out.println(elem);
 	}
 
 	
@@ -488,8 +631,23 @@ public class SimpleUI {
 		return input.equals("y");
 	}
 	
-	private void todo(){
+	private void toDo(){
 		System.out.println("Not yet implemented.");
+	}
+	
+	private void toDo(String details){
+		System.out.printf("Not fully implemented: %s\n", details);
+	}
+	
+	/**
+	 * Prints out a command and argument separated by a $ character. This may
+	 * only be used in debugging.
+	 * 
+	 * @param cmd The command.
+	 * @param arg The argument.
+	 */
+	private void echo(String cmd, String arg){
+		System.out.printf("ECHO: %s $ %s\n", cmd, arg);
 	}
 	
 	public static void main(String[] args){

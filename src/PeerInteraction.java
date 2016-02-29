@@ -94,7 +94,8 @@ import java.util.*;
 			personID = map.getSecret(separated[0]);
 			partnerID = map.getSecret(separated[1]);
 			grade = Integer.parseInt(separated[2]);
-			if (grade > 10 || grade < 1 || personID == partnerID)
+			if (grade > 10 || grade < 1 || personID == partnerID || 
+					partnerID == -1 || personID == -1)
 				good = false;
 			strengths = separated[3];
 			weaknesses = separated[4];

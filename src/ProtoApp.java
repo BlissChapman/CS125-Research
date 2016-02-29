@@ -63,7 +63,7 @@ public class ProtoApp {
 	 * to the NRList and then uses the NRList to add that Student to the
 	 * Roster by code.
 	 * 
-	 * @param netID The netID of the student to add.
+	 * @param  netID The netID of the student to add.
 	 * @throws IllegalArgumentException If the netID is already present.
 	 * @throws IndexOutOfBoundsException If the course is at fully capacity.
 	 */
