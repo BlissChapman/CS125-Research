@@ -1,5 +1,18 @@
 import java.util.Date;
 
+/**
+ * GraphTools is a collection class of several Weighter subclasses. These
+ * subclasses all implement various constraints on distribution generation.
+ * The GraphTools object takes as a construction argument a Roster object,
+ * which it uses to generate weights for PeerInteractions based on the
+ * statistics of the student who submitted each PeerInteraction. Currently
+ * the implementation is used only to generate rating distributions for 
+ * Lectures when individual subclasses are passed into the
+ * ratingDistrbituion() method.
+ * 
+ * @author CS125 Research
+ */
+
 public class GraphTools{
 	
 	private final Roster students;
@@ -10,7 +23,10 @@ public class GraphTools{
 	
 	public class ALL_ENTRIES_c implements Weighter<PeerInteraction>{
 		public double weight(PeerInteraction any) {
-			return 1;
+			if (students.get(any) != null)
+				return 1;
+			else
+				return 0;
 		}
 	}
 	
