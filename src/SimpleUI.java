@@ -6,9 +6,13 @@ import java.util.Map.Entry;
  * Simple command line tools for using and testing this application.
  * This UI uses Unix-like commands to allow the addition of  several courses
  * to this application and test the functionalities we've added so far. So
- * far this is probably 15% complete.
+ * far this is probably 30% complete.
  * 
- * TODO implement functions for all listed commands
+ * TODO implement functions for all listed commands. The main things that need
+ *      to be prioritized is importing files, as this will be the primary
+ *      usage scenario in any real class. Displaying graph tools and creating
+ *      interfaces for modifying them might take the most work out of all
+ *      individual tasks.
  * 
  * @author CS125-Research
  *
