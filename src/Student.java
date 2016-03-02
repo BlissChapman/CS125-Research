@@ -3,10 +3,16 @@ import java.util.*;
 /**
  * Student class. Stores information regarding a particular Student in class, 
  * including their lecture attendance and possibly grades. Each Student
- * will contain all the proper PeerInteractions made by the student.
+ * will contain all the proper PeerInteractions made by the student. Student
+ * also provides basic statistical summarizes of its PeerInteractions, in
+ * parallel to Lecture, and methods to merge together multiple
+ * PeerInteractions submitted for the same Lecture (given a sorted list of
+ * Lectures).
  *
  * @author CS125 Research
- * @todo Implement more.
+ * TODO Consider addition of more information to the Student class, such as
+ *      grades. Also consider how to deal with duplicate submissions to
+ *      allow for multiple partnerships.
  */
 class Student implements Iterable<PeerInteraction>{
 	public static final float WEIGHT_PROPORTIONALITY_CONSTANT = 1;
