@@ -2,13 +2,17 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 	
-/**
-	 *  This class is a simple data structure that represents an entry from the CS125
-	 *  lecture feedback app. It contains a pair of encoded NetIDs, a grade, two
-	 *  feedback strings, and a Java Date object representing the time of submission.
-	 *  @author CS125 Research
+	/**
+	 * This class is a simple data structure that represents an entry from the CS125 
+	 * lecture feedback database. It contains a pair of encoded NetIDs, a grade, two 
+	 * feedback strings, and a date string. Its primary constructor uses an `NRList`
+	 * to take a CSV String and parse it as a `PeerInteraction`, with valid 
+	 * PeerInteraction`s marked as such if the netIDs of the feedback passed in are
+	 * distinct and both found in the `NRList` and all netID fields replaced with 
+	 * integer codes.
+	 * @author CS125 Research
 	 */
-	public final class PeerInteraction {
+	public class PeerInteraction {
 		
 		private boolean good = false;
 		private int grade = -1;
