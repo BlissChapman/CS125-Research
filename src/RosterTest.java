@@ -27,7 +27,7 @@ public class RosterTest extends TestCase {
 		int STUDENTS = 100 + Utilities.gen.nextInt(700);
 		//CAPACITY: Maximum size of Roster
 		int CAPACITY = STUDENTS + 100 + Utilities.gen.nextInt(300);
-		ArrayList<String> fakeNetIDs = Utilities.generateRoster(STUDENTS);
+		ArrayList<String> fakeNetIDs = Utilities.generateNetIDs(STUDENTS);
 		
 		/* Convert our feedback file into a PeerInteraction ArrayList
 		 * and use it to generate a wordbank. This is not really 
@@ -42,7 +42,10 @@ public class RosterTest extends TestCase {
 			}catch (IllegalArgumentException e) {/* Do nothing */}
 		}
 		sc.close();
-		ArrayList<String> dictionary = Utilities.dictFromInteractions(samples);
+		TreeMap<String, Integer> dictMap = Utilities.dictFromInteractions(samples);
+		ArrayList<String> dictionary = new ArrayList<>();;
+		for (String elem : dictMap.keySet())
+			dictionary.add(elem);
 		//ArrayList<String> dictionary = new ArrayList<>(); //This also works
 		NRList converter  = new NRList(fakeNetIDs, CAPACITY);
 		/*
