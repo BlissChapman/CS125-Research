@@ -115,7 +115,7 @@ public class Utilities {
 	 * @param number The number of students in this fake roster.
 	 * @return An ArrayList filled with random netIDs.
 	 */
-	public static ArrayList<String> generateRoster(int number){
+	public static ArrayList<String> generateNetIDs(int number){
 		ArrayList<String> netIDs = new ArrayList<>();
 		while(netIDs.size() < number){
 			while(netIDs.size() < number){
@@ -226,19 +226,26 @@ public class Utilities {
 	 * @param samples A collection of PeerInteractions 
 	 * @return An ArrayList containing all distinct elements from the argument.
 	 */
-	public static ArrayList<String> 
+	public static TreeMap<String, Integer> 
 	    dictFromInteractions(Iterable<PeerInteraction> samples)
 	{
-		ArrayList<String> output = new ArrayList<>();
+		TreeMap<String, Integer> output = new TreeMap();
 		for (PeerInteraction entry : samples)
 			if (entry.hasFeedback()){
 				String cat = entry.getStrength() + ' ' + entry.getWeakness();
 				Scanner wordExtractor = new Scanner(cat);
-				while (wordExtractor.hasNext())
-					output.add(wordExtractor.next().replace("\"", "\"\""));
+				while (wordExtractor.hasNext()){
+					String curr = wordExtractor.next().replace("\"", "\"\"");
+					if (output.containsKey(curr)){
+						//Good thing Java 7 has no "replaceValue()" method \s
+						int inc = output.get(curr) + 1;
+						output.remove(curr);
+						output.put(curr, inc); //At least there's autoboxing
+					}
+				}
 				wordExtractor.close();
 			}
-		Collections.sort(output);
+		//Collections.sort(output); //TreeMap is already sorted :)
 		return output;
 	}
 	
@@ -298,8 +305,14 @@ public class Utilities {
 	public static void main(String[] args) throws FileNotFoundException{
 		final int LECTURES = 25;
 		final int STUDENTS = 100;
-		final int CAPACITY = 2*STUDENTS;
-		ArrayList<String> fakeRoster = Utilities.generateRoster(STUDENTS);
+		final int CAPACITY = 2*STUDENTS; //Must be greater than STUDENTS
+		
+		/* Creates a list of randomly generated netIDs.*/
+		ArrayList<String> fakeNetIDs = Utilities.generateNetIDs(STUDENTS);
+		
+		/* Creates a list of evenly spaced dates starting at "then" and ending
+		 * before "now". The number of dates creates is given by LECTURES.
+		 */
 		Date now = new Date();
 		Date then = new Date(now.getTime() - 4l*30l*24l*3600000l); //~4 months ago
 		ArrayList<Date> dateRange = 
@@ -309,8 +322,14 @@ public class Utilities {
 		    new Scanner(new File("src/peerInteractions.fa2015.final.csv"));
 		while (sc.hasNextLine())
 			samples.add(new PeerInteraction(sc.nextLine()));
-		ArrayList<String> dictionary = Utilities.dictFromInteractions(samples);
-		NRList converter  = new NRList(fakeRoster, CAPACITY);
+		
+		/* Extracts words from a real csv of PeerInteractions and puts all
+		 * those words in a dictionary.*/
+		TreeMap<String, Integer> mapDict = Utilities.dictFromInteractions(samples);
+		ArrayList<String> dictionary = new ArrayList<>();
+		for (String elem : mapDict.keySet())
+			dictionary.add(elem);
+		NRList converter  = new NRList(fakeNetIDs, CAPACITY);
 		ProtoApp trialrun = new ProtoApp(converter, dateRange);
 		System.out.println();
 		/*
@@ -329,7 +348,7 @@ public class Utilities {
 		double[] config = {0.667, 0.873, 0.15, 0.70, 0.40, 0.005};
 		ArrayList<String> fakeRawFeedback = 
 		    Utilities.generateFeedback(LECTURES, then, now, 
-		    		                  fakeRoster, dictionary, config);
+		    		                  fakeNetIDs, dictionary, config);
 		ArrayList<Integer> allCodes = new ArrayList<>();
 		for (NetIDPair elem : converter)
 				allCodes.add(elem.getCode());
@@ -341,7 +360,7 @@ public class Utilities {
 			last = elem;
 		}
 		System.out.println("\n\nFake Roster: ");
-		for (String elem : fakeRoster)
+		for (String elem : fakeNetIDs)
 			System.out.println(elem);
 		System.out.println("\n\nFake Feedback: ");
 		int count = 0;
