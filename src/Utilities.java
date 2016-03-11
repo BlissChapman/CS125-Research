@@ -5,10 +5,10 @@ import java.util.*;
 
 /**
  * A utilities class containing various static methods that may be of use
- * in other classes, particularly in making large test cases.
+ * in other classes, particularly in making large test cases and performing
+ * simple sorting.
  * 
  * @author CS125-Research
- *
  */
 public class Utilities {
 	
