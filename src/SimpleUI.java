@@ -12,6 +12,33 @@ import java.util.Map.Entry;
  * 
  * @author CS125-Research
  *
+ *
+ * DESIGN PARADIGM:
+ * 
+ * -DO NOT COMMIT BROKEN CODE. Make one function at a time and test it until
+ *     you are sure it works. In particular... see below.
+ * -CATCH ALL EXCEPTIONS that might arise from invalid use of ProtoApp and
+ *     related classes. Inform the user about an error and, if applicable, 
+ *     allow her to fix it. DO NOT THROW ANY EXCEPTIONS. This application must
+ *     be rigorous (ie never crash through reasonable use).
+ * -Program exists in several "menu states", showing the contents of the entire
+ *     application, a specific course, a specific student, a specific lecture, or
+ *     a specific graph configuration. The "menu" variable is an enum dedicated 
+ *     to representing this state variable.
+ * -Functions should generally return a Result enum type to indicate result of
+ *     running. In the end, we may modify all void functions to return Result.
+ * -parseline() is the source of all input into this application. parseline()
+ *     also delegates work to sub-parsers for each specific menu. Commands
+ *     universal to all menus are handled in parseline() alone, whereas 
+ *     specific commands are handled in specific parse functions.
+ * -Create a function for every compact specific task. Better to have 50 2-line
+ *     functions than 1 200-line function.
+ * -Prioritize design of "import" functions that will read files from the disk 
+ *     and use them to add data to the application. This is what will be used 
+ *     in most real life situations.
+ *  If you make a new function, tag it with "@author YOUR NAME" so that other
+ *     collaborators can ask you about your design choices.
+ * -Consult the author of a function if it is labeled DONE before changing it.
  */
 public class SimpleUI {
 
@@ -20,7 +47,9 @@ public class SimpleUI {
 	private Student studentPointer = null;
 	private GraphTools grapherPointer = null;
 	private Scanner stdin = new Scanner(System.in); //Reads from standard input
-	
+	private boolean savedToDisc = false; //Set true after save() is called successfully
+	private boolean logCommands = true; //Log all commands entered by user
+	private boolean echoCommands = true; //Echo all commands entered by the user to stdout
 	
 	/*
 	 * Maps strings to ProtoApp instances. For example, if I have a course
@@ -34,7 +63,11 @@ public class SimpleUI {
 	
 	public enum MenuType { COURSES, COURSE, LECTURE, STUDENT, GRAPH};
 	
+	public enum Result {CONTINUE, QUIT, FAIL, MUTATED}; //Need work
+	
 	private MenuType menu = MenuType.COURSES;
+	
+	ArrayList<String> log = new ArrayList<>();
 	
 	/*
 	 * Association between menus and the specific command lists that
@@ -93,12 +126,16 @@ public class SimpleUI {
 	 * and relays them to more specific parsers for each menu (unless the
 	 * commands are universal to all menus, in which case it will directly
 	 * call the appropriate function).
+	 * @author Navneeth Jayendran
+	 * 
+	 * @return The result of the function call.
 	 */
-	void parseLine(){
+	Result parseLine(){
 		System.out.print(">>");
+		Result r = Result.CONTINUE;
 		String input = stdin.nextLine().trim();
 		if (input.equals(""))
-			parseLine();
+			return r;
 		String[] pieces = input.split("\\$");
 		String[] parsedPieces = new String[2];
 		parsedPieces[0] = pieces[0].trim().toLowerCase();
@@ -106,30 +143,71 @@ public class SimpleUI {
 				pieces[1].trim() : "";
 		String cmd = parsedPieces[0];
 		String arg = parsedPieces[1];
+		echo(parsedPieces[0], parsedPieces[1]);
 		if (cmd.equals("quit"))
-			return;
-		if (cmd.equals("help"))
+			return quit();
+		else if (cmd.equals("menu"))
 			displayMenu();
+		else if (cmd.equals("help"))
+			displayIntro();
 		else if (cmd.equals("ls"))
 			list();
+		else if (cmd.equals("save"))
+			r = save();
 		else if (cmd.equals("cd") && arg.isEmpty())
 			closeMenu();
 		else{
-			echo(parsedPieces[0], parsedPieces[1]);
 			switch (menu){
 			case COURSES:
-				parseCoursesLine(parsedPieces); break;
+				r = parseCoursesLine(parsedPieces); break;
 			case COURSE:
-				parseCourseLine(parsedPieces); break;
+				r = parseCourseLine(parsedPieces); break;
 			case LECTURE:
-				parseLectureLine(parsedPieces); break;
+				r = parseLectureLine(parsedPieces); break;
 			case STUDENT:
-				parseStudentLine(parsedPieces); break;
+				r = parseStudentLine(parsedPieces); break;
 			case GRAPH:
-				parseGraphLine(parsedPieces); break;
+				r = parseGraphLine(parsedPieces); break;
+			default:
+				r = Result.FAIL;
 			}
 		}
-		parseLine();
+		if (r == Result.MUTATED)
+			savedToDisc = false;
+		return r;
+	}
+	
+	/**
+	 * Reminds the user that she has unsaved data if she does and asks her if
+	 * she wants to exit anyway, losing all unsaved changes.
+	 * @author Navneeth Jayendran
+	 * 
+	 * @return CONTINUE if user has unsaved info and enters No, QUIT otherwise
+	 * 
+	 */
+	Result quit(){
+		if (savedToDisc)
+			return Result.QUIT;
+		return requestYesNo("Exit without saving? " +
+				"All unsaved changes will be lost (Y/N): ")
+			   ? Result.QUIT : Result.CONTINUE; //conditional expression
+			
+	}
+	
+	/**
+	 * Saves the application's current state to the disc, somehow.
+	 * TODO Implement everything. This will be challenging because it involves
+	 * saving every class we've built so far to the disk.
+	 * @author Navneeth Jayendran
+	 * 
+	 * @return CONTINUE if successfully saved, FAIL otherwise.
+	 *
+	 */
+	Result save(){
+		toDo("saves nothing right now, but changes application state so that "
+		   + "quit will not give a warning."); //TODO Implement.
+		savedToDisc = true;
+		return Result.CONTINUE;
 	}
 	
 	/**
@@ -139,6 +217,7 @@ public class SimpleUI {
 	 * this takes you back to the course containing that lecture or student.
 	 * In the graph menu, takes you back to the lecture from which you tried
 	 * to change the graph tools.
+	 * @author Navneeth Jayendran
 	 */
 	void closeMenu(){
 		switch (menu){
@@ -150,13 +229,13 @@ public class SimpleUI {
 		case GRAPH:
 			menu = MenuType.LECTURE; break;
 		default:
-			invalidCommand("cd");
+			System.out.println("Missing course name argument.");
 		}
 	}
 	
 	
 	/*
-	 * METHODS USED IN THE COURSES MENU. THESE ARE VERY LIMITED.
+	 * METHODS USED IN THE COURSES MENU. THESE ARE SOMEWHAT LIMITED.
 	 */
 	
 	
@@ -164,22 +243,25 @@ public class SimpleUI {
 	 * Specific parser for the Courses menu. Only accepts commands that are
 	 * (exclusively) listed under the course menu like cd $ arg, 
 	 * mkdir lec $ arg, etc.
+	 * @author Navneeth Jayendran
 	 * 
 	 * @param input The partially parsed {cmd, arg} inputed by the user.
 	 */
-	void parseCoursesLine(String[] input){
+	Result parseCoursesLine(String[] input){
 		if (input[0].equals("mkdir"))
-			addCourse(input[1]);
+			return addCourse(input[1]);
 		else if (input[0].equals("cd"))
 			changeToCourse(input[1]);
 		else
-			invalidCommand(input[0]);
+			return invalidCommand(input[0]);
+		return Result.CONTINUE;
 		//parseLine();
 	}
 	
 	/**
 	 * Displays all courses in this application. States "No courses." if
 	 * the application has no courses.
+	 * @author Navneeth Jayendran
 	 */
 	public void displayCourses(){
 		if (courseMap.isEmpty())
@@ -196,6 +278,7 @@ public class SimpleUI {
 	 * Selects a course in the courses menu and switches to the course menu
 	 * for that course. Gives an error message if the course name passed in
 	 * does not match any existing course.
+	 * @author Navneeth Jayendran
 	 * 
 	 * @param courseName The name of the course.
 	 */
@@ -215,10 +298,11 @@ public class SimpleUI {
 	 * the user to add a course with a name matching an existing course.
 	 * The method also will repeatedly prompt the user to enter a student
 	 * capacity greater than or equal to 5.
+	 * @author Navneeth Jayendran
 	 * 
 	 * @param name The name of the course to add.
 	 */
-	void addCourse(String name){
+	Result addCourse(String name){
 		if (name.length() == 0)
 			System.out.println("Missing course name argument.");
 		else if (courseMap.containsKey(name))
@@ -234,17 +318,20 @@ public class SimpleUI {
 					}else{
 						cap = trialcap;
 						ProtoApp newone = new ProtoApp(cap);
+						newone.courseTitle = name;
 						courseMap.put(name, newone);
 						System.out.printf("Added course with capacity of " +
 							"%d: \"%s\"\n", cap, name);
-						stdin.nextLine();
+						stdin.nextLine(); //Flush buffer
+						return Result.MUTATED;
 					}
 				}catch (Exception e){
 					System.out.print("Invalid capacity. Try again: ");
-					stdin.nextLine();
+					stdin.nextLine(); //Flush buffer
 				}
 			}
 		}
+		return Result.FAIL;
 	}
 	
 	/*
@@ -258,21 +345,23 @@ public class SimpleUI {
 	/**
 	 * This method is a specialized parse method for the Course menu. It
 	 * must handle the most commands of all the menus.
+	 * @author Navneeth Jayendran
 	 * 
 	 * @param input The parsed command-argument string array. The first
 	 *              element is the command, the second the argument.
+	 * @return 
 	 */
-	void parseCourseLine(String[] input){
+	Result parseCourseLine(String[] input){
 		if (input[0].equals("ls lec"))
 			displayLectures();
 		else if (input[0].equals("ls stud"))
 			displayStudents();
 		else if (input[0].equals("mkdir lec"))
-			addLecture(input[1]);
+			return addLecture(input[1]);
 		else if (input[0].equals("mkdir stud"))
-			addStudent(input[1]);
+			return addStudent(input[1]);
 		else if (input[0].equals("rm"))
-			removeCourse();
+			return removeCourse();
 		else if (input[0].equals("import lecs"))
 			toDo(); //TODO make a method for this
 		else if (input[0].equals("import studs"))
@@ -283,17 +372,23 @@ public class SimpleUI {
 			changeToStudent(input[1]); //DONE
 		else if (input[0].equals("cd lec"))
 			changeToLecture(input[1]); //DONE
-		else if (input[0].equals("edit title"))
+		else if (input[0].equals("edit title")){
 			coursePointer.courseTitle = input[1]; //DONE
-		else if (input[0].equals("edit info"))
+			return Result.MUTATED;
+		}
+		else if (input[0].equals("edit info")){
 			coursePointer.courseInfo = input[1]; //DONE
+			return Result.MUTATED;
+		}
 		else
-			invalidCommand(input[0]);
+			return invalidCommand(input[0]);
+		return Result.CONTINUE;
 	}
 	
 	/**
 	 * Displays all students in this application. States "No courses." if
 	 * the application has no students.
+	 * @author Navneeth Jayendran
 	 */
 	public void displayLectures(){
 		if (coursePointer.lectures.isEmpty()){
@@ -310,6 +405,7 @@ public class SimpleUI {
 	 * Adds a lecture to the current course. Uses ProtoApp.addLecture(String).
 	 * If the input string cannot be parsed as a valid Java Date object,
 	 * print an error message and return.
+	 * @author Navneeth Jayendran
 	 * 
 	 * @TODO Finish implementing this. Currently it makes a lecture at the time
 	 *       this function was called. It should actually parse the day
@@ -318,9 +414,11 @@ public class SimpleUI {
 	 *            determine the date of the lecture. The time of day can be
 	 *            set arbitrarily.
 	 */
-	void addLecture(String day){
-		if (day.length() == 0)
+	Result addLecture(String day){
+		if (day.length() == 0){
 			System.out.println("Missing lecture date argument.");
+			return Result.FAIL;
+		}
 		//else if (courseMap.containsKey(name))
 			//System.out.printf("Course named \"%s\" already exists.\n", name);
 		else{
@@ -330,6 +428,7 @@ public class SimpleUI {
 			if (coursePointer == null) //Catches a strange bug, possibly
 				throw new UnsupportedOperationException("What???");
 			coursePointer.addLecture(newDate);
+			return Result.MUTATED;
 		}
 	}
 	
@@ -337,6 +436,7 @@ public class SimpleUI {
 	/**
 	 * Displays all students in the current course. Says "No students added"
 	 * if the course has no students.
+	 * @author Navneeth Jayendran
 	 */
 	private void displayStudents(){
 		if (coursePointer.students.size() == 0){
@@ -352,12 +452,13 @@ public class SimpleUI {
 	 * Adds a student to the current course using ProtoApp.addStudent().
 	 * Make sure to handle exceptions thrown by that method in cases
 	 * of netID duplication or full capacity.
-	 * 
+	 * @author Navneeth Jayendran
 	 */
-	void addStudent(String netID){
+	Result addStudent(String netID){
 		try{
 			coursePointer.addStudent(netID);
 			System.out.printf("Successfully added \"%s\"\n", netID);
+			return Result.MUTATED;
 		}
 		catch(IndexOutOfBoundsException e){
 			System.out.printf("This course has reached its maximum capacity: "
@@ -367,16 +468,18 @@ public class SimpleUI {
 			System.out.printf("NetID \"%s\" is already present in this " +
 					"course.\n", netID);
 		}
+		return Result.FAIL;
 	}
 	
 	/**
 	 * Deletes the current course from the courses menu and then moves back to
 	 * the Courses menu. This is a fairly inelegant way of doing things.
+	 * @author Navneeth Jayendran
 	 */
-	void removeCourse(){
+	Result removeCourse(){
 		if(!requestYesNo("Are you sure you want to remove this course? Y/N: ")){
 			System.out.println("Remove cancelled.");
-			return;
+			return Result.FAIL;
 		}
 		for (Map.Entry<String, ProtoApp> elem : courseMap.entrySet())
 			if (elem.getValue() == coursePointer){
@@ -384,6 +487,7 @@ public class SimpleUI {
 				System.out.printf("Removed %s\n", elem.getKey());
 			}
 		menu = MenuType.COURSES;
+		return Result.MUTATED;
 	}
 	
 	/**
@@ -393,6 +497,7 @@ public class SimpleUI {
 	 * 
 	 * Give error messages if the string passed in cannot be parsed as an int,
 	 * or if the Student is not found in the Roster.
+	 * @author Navneeth Jayendran
 	 * 
 	 * @param code The code of the Student to switch to.
 	 */
@@ -419,6 +524,7 @@ public class SimpleUI {
 	 * 
 	 * Give error messages if the string passed in cannot be parsed as an int,
 	 * or if the number is out of bounds.
+	 * @author Navneeth Jayendran
 	 * 
 	 * @TODO Implement
 	 */
@@ -430,17 +536,19 @@ public class SimpleUI {
 	 * BELOW ARE ALL THE LECTURE METHODS. THEY ARE USED TO EXTRACT INFORMATION
 	 * FROM A PARTICULAR LECTURE.
 	 * 
-	 * TODO Implement everything.
+	 * TODO Implement stuff.
 	 */
 	
 	
 	/**
-	 * This method is a specialized parse method for the Lecture menu. 
+	 * This method is a specialized parse method for the Lecture menu.
+	 * @author Navneeth Jayendran
 	 * 
 	 * @param input The parsed command-argument string array. The first
 	 *              element is the command, the second the argument.
+	 * @return 
 	 */
-	public void parseLectureLine(String[] input){
+	public Result parseLectureLine(String[] input){
 		if (input[0].equals("cd stud"))
 			changeToStudent(input[1]);
 		else if (input[0].equals("stat"))
@@ -453,12 +561,15 @@ public class SimpleUI {
 			toDo(); //TODO implement
 		else if (input[0].equals("graph rules"))
 			toDo(); //TODO implement
-		else
-			invalidCommand(input[0]);
+		else{
+			return invalidCommand(input[0]);
+		}
+		return Result.CONTINUE;
 	}
 	
 	/**
 	 * Displays all the PeerInteraction objects in the particular lecture.
+	 * @author Navneeth Jayendran
 	 * 
 	 * @TODO Decide how to implement this. Current representation is an
 	 *       eyesore.
@@ -493,17 +604,20 @@ public class SimpleUI {
 	
 	/**
 	 * This method is a specialized parse method for the Student menu. 
+	 * @author Navneeth Jayendran
 	 * 
 	 * @param input The parsed command-argument string array. The first
 	 *              element is the command, the second the argument.
+	 * @return Result of execution.
 	 */
-	public void parseStudentLine(String[] input){
+	public Result parseStudentLine(String[] input){
 		if (input[0].equals("stat"))
 			toDo(); //TODO Implement
 		else if (input[0].equals("rm"))
 			toDo(); //TODO Implement
 		else
-			invalidCommand(input[0]);
+			return invalidCommand(input[0]);
+		return Result.CONTINUE;
 	}
 	
 	/*
@@ -521,18 +635,27 @@ public class SimpleUI {
 	 * TODO Implement everything
 	 */
 	
-	public void parseGraphLine(String[] input){
+	/**
+	 * Specialized parser for the Graph menu. This does very little and
+	 * will probably stay that way.
+	 * @author Navneeth Jayendran
+	 * 
+	 * @return Result of execution.
+	 */
+	public Result parseGraphLine(String[] input){
 		if (input[0] == "use")
 			toDo(); //TODO implement
 		else if (input[0] == "edit")
 			toDo(); //TODO Implement
 		else
-			invalidCommand(input[0]);
+			return invalidCommand(input[0]);
+		return Result.CONTINUE;
 	}
 	
 	/**
 	 * Displays the different weighters available for making graphs
 	 * alongside numbers.
+	 * @author Navneeth Jayendran
 	 */
 	private void displayWeighters(){
 		System.out.print("1. Default.\n" + 
@@ -543,17 +666,18 @@ public class SimpleUI {
 	}
 	
 	/*
-	 * BELOW ARE ALL THE DISPLAY METHODS. THEY DO NOT PROMPT ANYTHING FROM
-	 * STANDARD INPUT AND MERELY PRINT THINGS OUT TO STANDARD OUTPUT. MOST
+	 * BELOW ARE ALL THE UNIVERSAL DISPLAY METHODS. THEY DO NOT PROMPT ANYTHING 
+	 * FROM STANDARD INPUT AND MERELY PRINT THINGS OUT TO STANDARD OUTPUT. MOST
 	 * DO NOT ACCEPT ANY ARGUMENTS.
 	 * 
 	 */
 	
 	/**
-	 * Variadic method that is called in response to the command "help". This
-	 * method is exclusively called by the parseLine() function. The method
-	 * simply prints out the appropriate menu string associated with the
+	 * Polymorphic method that is called in response to the command "menu". 
+	 * This method is exclusively called by the parseLine() function. The 
+	 * method simply prints out the appropriate menu string associated with the
 	 * current menu type.
+	 * @author Navneeth Jayendran
 	 */
 	public void displayMenu(){
 		switch(menu){
@@ -578,9 +702,10 @@ public class SimpleUI {
 	
 	
 	/**
-	 * Variadic method that is called in response to the command "ls". This
+	 * Polymorphic method that is called in response to the command "ls". This
 	 * method is called in the parseLine() method exclusively. What this
 	 * actually displays is dependent upon the menu type.
+	 * @author Navneeth Jayendran
 	 */
 	public void list(){
 		switch (menu){
@@ -605,6 +730,25 @@ public class SimpleUI {
 		}
 	}
 	
+	/**
+	 * Displays the introductory information for SimpleUI, including four
+	 * specialized universal commands. This is called in response to the
+	 * command "help".
+	 * @author Navneeth Jayendran 
+	 */
+	public void displayIntro(){
+		System.out.print(
+			 "Welcome to this prototypical user interface for the CS125 Lecture Feedback Analysis Application!\n\n"
+			+"This UI takes in Unix-like commands from the user, given in the form \"cmd $ args\" or just\n"
+			+"\"cmd\", after displaying the prompt >>. Many commands are not implemented yet.\n\n"
+	
+			+"Special commands:\n" 
+		    +"\"menu\" display all commands specific to a menu\n"
+			+"\"quit\" stop the application\n"
+			+"\"help\" display this introduction again\n"
+			+"\"save\" save application instance to disc (not yet implemented)\n\n"
+			);
+	}
 	
 	/*
 	 * HELPER FUNCTIONS, MOSTLY USED TO REDUCE REDUNDANT PRINT STATEMENTS.
@@ -613,18 +757,23 @@ public class SimpleUI {
 	
 	/**
 	 * States that the command passed in does not exist.
+	 * @author Navneeth Jayendran
+	 * 
 	 * @param cmd The invalid command that does not exist.
+	 * @return FAIL, always.
 	 */
 	
-	private void invalidCommand(String cmd){
-		System.out.printf("Invalid command \"%s\".\nEnter \"help\" for a list of valid " +
-				"commands.\n", cmd);
+	private Result invalidCommand(String cmd){
+		System.out.printf("Invalid command \"%s\".\nEnter \"menu\" for a list of valid " +
+				"commands for this menu, or \"help\" for more general commands.\n", cmd);
+		return Result.FAIL;
 	}
 	
 	/**
 	 * Helper method that prompts a user to enter Y/N and converts the 
 	 * response to a boolean. The method will do this until a valid
 	 * input is received.
+	 * @author Navneeth Jayendran
 	 * 
 	 * @param message The initial prompt message given to the user.
 	 * @return True if the user entered Y, false if he entered N
@@ -643,27 +792,51 @@ public class SimpleUI {
 		return input.equals("y");
 	}
 	
+	/**
+	 * Straightforward. Put this wherever you have commands that have not
+	 * been implemented at all to inform the user.
+	 * @author Navneeth Jayendran //DONE
+	 */
 	private void toDo(){
 		System.out.println("Not yet implemented.");
 	}
 	
+	/**
+	 * Modified version of toDo() that allows you to specify more details
+	 * as to how something isn't fully implemented yet. This is for
+	 * commands that do SOMETHING, but not necessarily to completion.
+	 * @author Navneeth Jayendran //DONE
+	 * 
+	 * @param details Specific ways in which functionality has not been fully
+	 *                implemented.
+	 */
 	private void toDo(String details){
 		System.out.printf("Not fully implemented: %s\n", details);
 	}
 	
 	/**
 	 * Prints out a command and argument separated by a $ character. This may
-	 * only be used in debugging.
+	 * only be useful in debugging. It also logs commands if
 	 * 
 	 * @param cmd The command.
 	 * @param arg The argument.
 	 */
 	private void echo(String cmd, String arg){
-		System.out.printf("ECHO: %s $ %s\n", cmd, arg);
+		String sEcho = String.format("ECHO: %s $ %s", cmd, arg);
+		String sLog = String.format("%s $ %s", cmd, arg);
+		if (echoCommands)
+			System.out.println(sEcho);
+		if (logCommands)
+			log.add(sLog);
 	}
 	
-	public static void main(String[] args){
+	/**
+	 * Very simple main method.
+	 */
+	public static void main(String[] args){		
 		SimpleUI runner = new SimpleUI();
-		runner.parseLine();
+		runner.displayIntro();
+		while(runner.parseLine() != Result.QUIT);
+		System.out.println("Goodbye!");
 	}
 }
