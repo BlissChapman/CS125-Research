@@ -45,6 +45,15 @@ public class ProtoApp {
 		lectures = new LectureList(days);
 	}
 	
+	public PeerInteraction parseInteraction(String csv){
+		try{
+			PeerInteraction out = new PeerInteraction(csv, converter);
+		}catch(IllegalArgumentException e){
+			
+		}
+		return null;
+	}
+	
 	/**
 	 * Adds a new Lecture to this course and then reassigns all existing
 	 * PeerInteractions possessed by all Students in this course to their

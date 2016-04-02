@@ -618,6 +618,45 @@ public class SimpleUI {
 		return Result.CONTINUE;
 	}
 	
+	public Result importEntries(String filename){
+		Scanner freader;
+		File f = new File(filename);
+		try{
+			freader = new Scanner(f);
+		}catch(FileNotFoundException e){
+			System.out.printf("Cannot open file \"%s\" for reading.\n",
+				filename);
+			return Result.FAIL;
+		}
+		ArrayList<String> fails = new ArrayList<>();
+		ArrayList<PeerInteraction> successes = new ArrayList<>();
+		while(freader.hasNextLine()){
+			String attempt = freader.nextLine();
+			PeerInteraction trial;
+			trial = coursePointer.parseInteraction(attempt);
+			if (trial == null)
+				fails.add(attempt);
+			else
+				successes.add(trial);
+		}
+		freader.close();
+		if (successes.size() != 0)
+			System.out.printf("%d interaction were added.\n", successes.size());
+		if (fails.size() != 0){
+			System.out.printf("%d lines could not be parsed" +
+			  (fails.size() > 10 ? ", including:\n" : ":\n"), fails.size());
+			for (int i = 0; i < 10 && i < fails.size(); ++i){
+				System.out.println(fails.get(i));
+			}
+		}
+		if (successes.size() == 0){
+			System.out.println("No interactions added.");
+			return Result.FAIL;
+		}
+		coursePointer.addFeedback(successes);
+		return Result.MUTATED;
+	}
+	
 	/*
 	 * BELOW ARE ALL THE LECTURE METHODS. THEY ARE USED TO EXTRACT INFORMATION
 	 * FROM A PARTICULAR LECTURE.
