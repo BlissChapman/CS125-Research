@@ -66,7 +66,7 @@ public class LectureList implements Iterable<Lecture>{
 		}
 		int i = 0;
 		for (Lecture lec : lecs){
-			lec.lectureNumber = ++i;
+			lec.lectureNumber = i++;
 		}
 	}
 	
