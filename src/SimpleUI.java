@@ -1,4 +1,7 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -426,12 +429,20 @@ public class SimpleUI {
 		//else if (courseMap.containsKey(name))
 			//System.out.printf("Course named \"%s\" already exists.\n", name);
 		else{
-			toDo("does not actually parse date and simply creates a Lecture at " +
-					"the time the command is used."); //TODO Use SimpleDateFormat
-			Date newDate = new Date();
+			Date newDate;
+			try{
+				newDate = new 
+				    SimpleDateFormat("MM dd yyyy hh:mm:ss").parse(day + " 09:00:00");
+			}catch(ParseException e){
+				System.out.println("Invalid date format. Enter a date in the "+
+						"form \"mm dd yyyy\" without quotes.");
+				return Result.FAIL;
+			}
 			if (coursePointer == null) //Catches a strange bug, possibly
 				throw new UnsupportedOperationException("What???");
 			coursePointer.addLecture(newDate);
+			System.out.printf("Created Lecture #%d on "+ newDate +
+					".\n", coursePointer.lectures.size());
 			return Result.MUTATED;
 		}
 	}
@@ -533,7 +544,78 @@ public class SimpleUI {
 	 * @TODO Implement
 	 */
 	public void changeToLecture(String lecNo){
+		if (coursePointer.lectures.size() == 0){
+			System.out.println("No lecture in this course.");
+			return;
+		}
+		try{
+			int num = Integer.parseInt(lecNo);
+			if (num < 1 || num > coursePointer.lectures.size())
+				throw new NumberFormatException();
+			else{
+				menu = MenuType.LECTURE;
+				lecPointer = coursePointer.lectures.get(num-1);
+			}
+		}catch (NumberFormatException e){
+			System.out.printf("Please enter an integer lecture index between" +
+					"1 and %d.\n", coursePointer.lectures.size());
+		}
+	}
+	
+	public Result importLectures(String filename){
+		File f = new File(filename);
+		Scanner freader;
+		try{
+			freader = new Scanner(f);
+		}catch(FileNotFoundException e){
+			System.out.printf("Cannot open file \"%s\" for reading.\n",
+				filename);
+			return Result.FAIL;
+		}
+		ArrayList<String> fails = new ArrayList<>();
+		ArrayList<Date> successes = new ArrayList<>();
+		SimpleDateFormat formatter = 
+				new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		while(freader.hasNextLine()){
+			String attempt = freader.nextLine();
+			Date lecDate;
+			try{
+				lecDate = formatter.parse(attempt);
+				successes.add(lecDate);
+			}catch(ParseException e){
+				fails.add(attempt);
+			}
+		}
+		freader.close();
+		if (successes.size() != 0){
+			System.out.printf("%d lectures were added on dates:\n", 
+					successes.size());
+			Utilities.insertionSort(successes, new Utilities.NaturalOrder<Date>());
+			for (Date elem : successes)
+				System.out.println(elem);
+		}
+		if (fails.size() != 0){
+			System.out.printf("%d lines could not be parsed" +
+			  (fails.size() > 10 ? ", including:\n" : ":\n"), fails.size());
+			for (int i = 0; i < 10 && i < fails.size(); ++i){
+				System.out.println(fails.get(i));
+			}
+			System.out.println("Make sure to use the " +
+					"format \"yyyy-MM-dd hh:mm:ss\" for denoting dates "+
+					"in the source file (no quotes)."); 
+		}
+		if (successes.size() == 0){
+			System.out.println("No lectures added.");
+			return Result.FAIL;
+		}
+		for (Date day : successes)
+			coursePointer.addLecture(day);
+		return Result.MUTATED;
+	}
+	
+	public Result importStudents(String filename){
 		toDo();
+		return Result.CONTINUE;
 	}
 	
 	/*
@@ -616,7 +698,7 @@ public class SimpleUI {
 	 */
 	public Result parseStudentLine(String[] input){
 		if (input[0].equals("stat"))
-			toDo(); //TODO Implement
+			removeStudent();
 		else if (input[0].equals("rm"))
 			toDo(); //TODO Implement
 		else
@@ -624,6 +706,49 @@ public class SimpleUI {
 		return Result.CONTINUE;
 	}
 	
+	/**
+	 * This method lists all the PeerInteractions submitted by the
+	 * Student.
+	 */
+	public void displayStudent(){
+		System.out.printf("\nSTUDENT #%d\n==================\nPeer Interactions:\n", 
+				studentPointer.getID());
+		if (studentPointer.numberOfEntries() == 0)
+			System.out.println("This student has no associated peer interactions.");
+		for (PeerInteraction elem : studentPointer)
+			System.out.println(elem);
+		System.out.printf("==================\nSTUDENT #%d\n", studentPointer.getID());
+	}
+	
+	/**
+	 * This method lists the basic statistics of the Student. For now this is
+	 * only rating mean, standard deviation, and count.
+	 */
+	public void studentStats(){
+		System.out.printf("\nSTUDENT #%d\n==================\n", 
+				studentPointer.getID());
+		System.out.printf("Rating Mean: %f\nRating Standard Deviation: %f\n" +
+				"Number of Interactions: %d\n==================\n",
+				studentPointer.ratingMean(), studentPointer.ratingStdDev(),
+				studentPointer.numberOfEntries());
+		System.out.printf("STUDENT #%d\n", studentPointer.getID());
+	}
+	
+	
+	/**
+	 * This method removes the current student from the class using
+	 * ProtoApp.removeStudent(). The user will be prompted to confirm
+	 * removal.
+	 * 
+	 */
+	public void removeStudent(){
+		String message = String.format("Are you sure you want to remove " +
+				"Student #%d? All associated PeerInteractions will get (Y/N) " +
+				"deleted.", studentPointer.getID());
+		if (requestYesNo(message))
+			coursePointer.removeStudent(studentPointer.getID());
+		studentPointer = null;
+	}
 	/*
 	"STUDENT MENU (Student #%d):\n" +
 	"ls						    Show all feedback given by student.\n" +
@@ -724,7 +849,7 @@ public class SimpleUI {
 			displayInteractions();
 			break;
 		case STUDENT:
-			toDo();
+			displayStudent();
 			break;
 		case GRAPH:
 			displayWeighters();

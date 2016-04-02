@@ -16,8 +16,9 @@ public class ProtoApp {
 
 	public Roster students;
 	public NRList converter;
-	public ArrayList<Lecture> lectures;
+	public LectureList lectures;
 	public GraphTools entryGrapher;
+	public Weighter<PeerInteraction> currentWeighter;
 	
 	public String courseTitle = "";
 	public String courseInfo = "";
@@ -32,22 +33,16 @@ public class ProtoApp {
 	public ProtoApp(int cap){
 		students = new Roster(cap);
 		converter = new NRList(cap);
-		lectures = new ArrayList<>();
+		lectures = new LectureList();
 		entryGrapher = new GraphTools(students);
+		currentWeighter = entryGrapher.ALL_ENTRIES;
 	}
 	
 	public ProtoApp(NRList studentCodes, List<Date> days){
 		converter = studentCodes;
 		students = new Roster(converter);
 		entryGrapher = new GraphTools(students);
-		List<Date> neatDays = Utilities.withoutDuplicates(days);
-		lectures = new ArrayList<>();
-		for (int i = 0; i < neatDays.size(); ++i){
-			Date day = neatDays.get(i);
-			Lecture next = new Lecture(day);
-			next.lectureNumber = i+1;
-			lectures.add(next);
-		}
+		lectures = new LectureList(days);
 	}
 	
 	/**
@@ -58,21 +53,7 @@ public class ProtoApp {
 	 * @param day The time of the new Lecture.
 	 */
 	public void addLecture(Date day){
-		Lecture newLec = new Lecture(day);
-		lectures.add(newLec);
-		boolean dupe = 
-				Utilities.riseSorted(lectures, lectures.size()-1, byDate);
-		if (dupe){
-			for (ListIterator<Lecture> it = lectures.listIterator(); it.hasNext(); ){
-				Lecture curr = it.next();
-				if (curr == newLec)
-					it.remove();
-			}
-		}
-		int i = 0;
-		for (Lecture lec : lectures){
-			lec.lectureNumber = ++i;
-		}
+		lectures.addLecture(day);
 	}
 	
 	/**
@@ -101,7 +82,16 @@ public class ProtoApp {
 	 * @return True if the Student was found and removed, false otherwise
 	 */
 	public boolean removeStudent(String netID){
-		NetIDPair former = converter.removePair(netID); //Remove from NRList
+		int query = converter.getSecret(netID);
+		if (query >= 0)
+			return removeStudent(query);
+		else
+			return false;
+			
+	}
+	
+	public boolean removeStudent(int code){
+		NetIDPair former = converter.removePair(code); //Remove from NRList
 		if (former == null)                         //But only if he exists.
 			return false;
 		students.removeStudent(former.getCode());   //Remove from Roster
@@ -140,31 +130,31 @@ public class ProtoApp {
 	/**
 	 * Takes a batch of PeerInteractions and assigns them to their
 	 * appropriate lectures in the course. The method then adds them
-	 * to their corresponding lectures. This method does not perform any
+	 * to their corresponding students. This method does not perform any
 	 * checks as to whether the PeerInteractions are valid.
 	 * 
 	 * @param batch A collection of PeerInteractions to be added to the course.
 	 */
 	private void assignEntriesToLectures(Iterable<PeerInteraction> batch){
-		for (PeerInteraction elem : batch){
-			Lecture tgt = Lecture.get(elem, lectures);
-			tgt.add(elem);
-		}
+		lectures.addInteractions(batch);
+		students.addInteractions(batch);
 	}
 	
 	/**
 	 * Removes all PeerInteractions from all Lectures in this course and
 	 * replaces them with all PeerInteractions possessed by all Students
 	 * in the Roster.
+	 * 
+	 * @param mergeDupes Whether or not to merge duplicate entries into one.
 	 */
-	public void reassignStudentEntriesToLectures(){
+	public void reassignStudentEntriesToLectures(boolean mergeDupes){
 		for (Lecture lec : lectures)
 			lec.refreshEntries();
-		for (Student s : students)
-			for (PeerInteraction elem : s){
-				Lecture tgt = Lecture.get(elem, lectures);
-				tgt.add(elem);
-			}
+		ArrayList<PeerInteraction> all = new ArrayList<>();
+		for (Student s : students) for (PeerInteraction elem : s)
+				all.add(elem);
+		if(mergeDupes)   lectures.addInteractionsDistinct(all);
+		else             lectures.addInteractions(all);
 	}
 	
 	/**
@@ -182,10 +172,10 @@ public class ProtoApp {
 	public void mergeEntriesToLecture(Lecture lec){
 		for (Student s : students){ //For every student
 			ArrayList<PeerInteraction>  //Extract all duplicates
-			  retrieved = s.mergeRecentDuplicates(lectures);
+			  retrieved = s.mergeRecentDuplicates(lectures.toList());
 			if (retrieved.size() > 1){ //If duplicates found
 				PeerInteraction merged = retrieved.get(retrieved.size()-1);
-				Lecture proper = Lecture.get(merged, lectures);
+				Lecture proper = Lecture.get(merged, lectures.toList());
 				if (proper == lec){
 					lec.removeByStudent(merged.getPersonID());
 					lec.add(merged);
@@ -194,4 +184,12 @@ public class ProtoApp {
 		}
 	}
 	
+	public double[] weightedDistribution(Lecture lec, 
+			Weighter<PeerInteraction> rule){
+		return lec.ratingDistributionDouble(rule);
+	}
+	
+	public double[] weightedDistribution(Lecture lec){
+		return lec.ratingDistributionDouble(currentWeighter);
+	}
 }

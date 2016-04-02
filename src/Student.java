@@ -117,7 +117,7 @@ class Student implements Iterable<PeerInteraction>{
 	/**
 	 * @return Number of valid peer interaction data points given by this Student.
 	 */
-	public int feedbackGiven(){
+	public int numberOfEntries(){
 		return records.size();
 	}
 

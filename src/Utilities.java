@@ -14,6 +14,23 @@ public class Utilities {
 	
 	public static Random gen = new Random();
 	
+	
+	
+	public static Comparator<PeerInteraction> byPersonID = new Comparator<PeerInteraction>(){
+		public int compare(PeerInteraction o1, PeerInteraction o2) {
+			return o1.getPersonID() > o2.getPersonID() ? 1 :
+				   o1.getPersonID() < o2.getPersonID() ? -1:
+				                                          0;
+		}
+	};
+	
+	public static Comparator<Lecture> byDate = new Comparator<Lecture>(){
+		public int compare(Lecture a, Lecture b){
+			return a.getDate().compareTo(b.getDate());
+		}
+	};
+	
+	
 	/**
 	 * 
 	 * @author Navneeth Jayendran
@@ -23,14 +40,14 @@ public class Utilities {
 	 * 2) NaturalComparator is parameterized to type T. So you may instantiate
 	 *    it and use it like:
 	 *      NaturalOrder<Integer> intcomp = new NaturalOrder<>();
-	 *      print intcomp(new Integer(10), new Integer(15));  //prints -1
-	 *      print intcomp(20, 20) //prints 0... I think. Assuming autoboxing.
+	 *      print intcomp.compare(new Integer(10), new Integer(15));  //prints -1
+	 *      print intcomp.compare(20, 20) //prints 0... I think. Assuming autoboxing.
 	 * 3) T extends Comparable<T>, which means that the class T must implement
 	 *    the method T.compareTo(T other).
 	 * 4) Plug it into any function that requires a Comparator to sort data and
 	 *    whatnot.
 	 */
-	public class NaturalOrder<T extends Comparable<T>>
+	public static class NaturalOrder<T extends Comparable<T>>
 	  implements Comparator<T>
 	{
 		/** 
@@ -47,7 +64,7 @@ public class Utilities {
 	};
 	
 	/**
-	 * Takes an ArrayList of generic type, sorts it in alphabetical order, and
+	 * Copies an ArrayList of generic type, sorts it in alphabetical order, and
 	 * returns a sorted ArrayList with the same elements as the argument but
 	 * without any duplicate elements.
 	 * 
@@ -273,6 +290,7 @@ public class Utilities {
 			return true;
 		return false;
 	}
+
 	
 	/**
 	 * Insertion sort is a simple sorting algorithm that essentially sorts

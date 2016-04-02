@@ -53,6 +53,19 @@ public class Lecture implements Iterable<PeerInteraction>{
 	}
 	
 	/**
+	 * Copy constructor.
+	 * @param other A Lecture to be copied.
+	 */
+	public Lecture(Lecture other){
+		title = other.title;
+		description = other.description;
+		lectureNumber = other.lectureNumber;
+		recordsByTime = new ArrayList<PeerInteraction>();
+		for (PeerInteraction elem : other.recordsByTime)
+			recordsByTime.add(elem);
+	}
+	
+	/**
 	 * Constructor with argument to assign the topics for
 	 * the Lecture object. @TODO discuss merits of this constructor
 	 * 

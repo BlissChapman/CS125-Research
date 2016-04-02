@@ -94,6 +94,19 @@ public class NRList implements Iterable<NetIDPair>{
 		pairList.add(potentialPair);
 	}
 	
+	public NetIDPair removePair(int code){
+		Iterator<NetIDPair> destroyer = pairList.listIterator();
+		while (destroyer.hasNext()){
+			NetIDPair check = destroyer.next();
+			if (check.getCode() == code){
+				NetIDPair out = check;
+				destroyer.remove();
+				return out;
+			}
+		}
+		return null; //Not found
+	}
+	
 	/**
 	 * Searches for a NetIDPair with a netID field matching the argument. If a
 	 * match is found, the method removes and returns that NetIDPair from the
