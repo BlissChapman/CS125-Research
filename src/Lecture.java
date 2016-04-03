@@ -1,8 +1,6 @@
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.*;
+import java.io.Serializable;
+
 
 /**
  * A Lecture object class primarily associated with the time (a Java 
@@ -20,8 +18,12 @@ import java.util.*;
  * TODO Discuss the design of this class and its member variables. Decide if
  *      it needs more functionalities.
  */
-public class Lecture implements Iterable<PeerInteraction>{
-
+public class Lecture implements Iterable<PeerInteraction>, Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5046836523933953276L;
+	
 	public int lectureNumber; //TODO: Discuss this name
 	public ArrayList<PeerInteraction> recordsByTime;
 	private Date date;

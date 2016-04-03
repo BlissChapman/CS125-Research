@@ -1,11 +1,17 @@
 import java.util.Arrays;
+import java.io.Serializable;
 
 /**
  * A simple pair POD that couples an integer ID code with 
  * a NetID and stores the two for use in encrypting data.
  * @author CS125Research
  */
-public class NetIDPair {
+public class NetIDPair implements Serializable{	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -873475199284705672L;
+	
 	private String netID;
 	private int code;
 	

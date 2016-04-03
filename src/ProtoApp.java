@@ -1,5 +1,5 @@
 import java.util.*;
-
+import java.io.Serializable;
 
 /**
  * Prototypical combined application for the research project. This object
@@ -12,7 +12,12 @@ import java.util.*;
  * TODO Find a better name, discuss any additional needed features and member
  *      variables/functions. Also discuss the merits of public modifiers.
  */
-public class ProtoApp {
+public class ProtoApp implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1515245992663014143L;
 
 	public Roster students;
 	public NRList converter;

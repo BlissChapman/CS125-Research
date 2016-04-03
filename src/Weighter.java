@@ -1,10 +1,12 @@
+import java.io.Serializable;
+
 /**
  * Abstract weighter class used to assign a weight to a given object
  * (conventionally between 0 and 1) for use in graphing weighted or
  * filtered data.
  */
  
-public interface Weighter <T> {
+public interface Weighter <T> extends Serializable{
   
     /**
      * Key method for the Weighter class. Assigns a weight to an

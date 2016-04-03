@@ -10,9 +10,15 @@
  *      adding more information to the Student class and supporting those
  *      additions through Roster.
  */
+import java.io.Serializable;
 import java.util.*;
-public class Roster implements Iterable<Student>{
+public class Roster implements Iterable<Student>, Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5223491044183089570L;
+	
 	private Student[] map;
 	private int numStudents;
 	

@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -5,8 +6,12 @@ import java.util.*;
  * @author navneeth
  *
  */
-public class LectureList implements Iterable<Lecture>{
-	
+public class LectureList implements Iterable<Lecture>, Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6829718943681733677L;
+
 	ArrayList<Lecture> lecs;
 	
 	
@@ -76,7 +81,7 @@ public class LectureList implements Iterable<Lecture>{
 	 * @return The Lecture at index i in list.
 	 */
 	Lecture get(int i){
-		return lecs.get(i);
+		return lecs.get(i+1);
 	}
 	
 	/**

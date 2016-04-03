@@ -1,5 +1,6 @@
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.io.Serializable;
 import java.util.*;
 	
 	/**
@@ -12,7 +13,11 @@ import java.util.*;
 	 * integer codes.
 	 * @author CS125 Research
 	 */
-	public class PeerInteraction {
+	public class PeerInteraction implements Serializable{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 4643075531428005385L;
 		
 		private boolean good = false;
 		private int grade = -1;

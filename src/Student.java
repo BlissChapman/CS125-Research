@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.Serializable;
 
 /**
  * Student class. Stores information regarding a particular Student in class, 
@@ -14,7 +15,13 @@ import java.util.*;
  *      grades. Also consider how to deal with duplicate submissions to
  *      allow for multiple partnerships.
  */
-class Student implements Iterable<PeerInteraction>{
+class Student implements Iterable<PeerInteraction>, Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5365339391001029568L;
+	
 	public static final float WEIGHT_PROPORTIONALITY_CONSTANT = 1;
 	public static final float WEIGHT_THRESHOLD = 10;
 	

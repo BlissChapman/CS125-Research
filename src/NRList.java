@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.*;
 /**
  *  A simple map-like list of NetIDPairs with a file argument constructor.
@@ -10,7 +11,12 @@ import java.util.*;
  *       structure to allow O(1) operations.
  *  @author CS125Research
  */
-public class NRList implements Iterable<NetIDPair>{
+public class NRList implements Iterable<NetIDPair>, Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2556266569060651516L;
 	
 	/* A list of all NetIDPairs extracted from the roster */
 	private ArrayList <NetIDPair> pairList = new ArrayList<NetIDPair>();
