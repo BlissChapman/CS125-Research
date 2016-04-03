@@ -1,10 +1,10 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 /**
  * Simple command line tools for using and testing this application.
  * This UI uses Unix-like commands to allow the addition of  several courses
@@ -47,14 +47,19 @@ import java.util.Map.Entry;
  *     collaborators can ask you about your design choices.
  * -Consult the author of a function if it is labeled DONE before changing it.
  */
-public class SimpleUI {
+public class SimpleUI implements Serializable{
 
-	private Lecture lecPointer = null;
-	private ProtoApp coursePointer = null;
-	private Student studentPointer = null;
-	private GraphTools grapherPointer = null;
-	private Scanner stdin = new Scanner(System.in); //Reads from standard input
-	private boolean savedToDisc = false; //Set true after save() is called successfully
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private transient Lecture lecPointer = null;
+	private transient ProtoApp coursePointer = null;
+	private transient Student studentPointer = null;
+	private transient GraphTools grapherPointer = null;
+	private transient Scanner stdin = new Scanner(System.in); //Reads from standard input
+	private transient boolean savedToDisc = false; //Set true after save() is called successfully
+	private String defaultSaveFile = null;
 	private boolean logCommands = true; //Log all commands entered by user
 	private boolean echoCommands = true; //Echo all commands entered by the user to stdout
 	
@@ -72,7 +77,7 @@ public class SimpleUI {
 	
 	public enum Result {CONTINUE, QUIT, FAIL, MUTATED}; //Need work
 	
-	private MenuType menu = MenuType.COURSES;
+	transient private MenuType menu = MenuType.COURSES;
 	
 	ArrayList<String> log = new ArrayList<>();
 	
@@ -105,7 +110,7 @@ public class SimpleUI {
 			"import studs $ <file>      Use file to add new students.\n" +
 			"rm                         Remove this course.\n");
 		menus.put(MenuType.LECTURE,
-			"LECTURE %d%s\nDATE: %s\n\n" +
+			"LECTURE %d\nDATE: %s\n\n" +
 			"ls                         Shows all feedback for this lecture.\n" +
 			"cd stud$ <studID>          Select student.\n" +
 			"cd                         Go back to the course page.\n" +
@@ -127,6 +132,36 @@ public class SimpleUI {
 			"edit <rule#>			    Change parameters of specific rule.\n" +
 			"cd						    Go back to the lecture page.\n");
 	};
+	
+	/**
+	 * Shallow copy helper function.
+	 * @param other The SimpleUI instance to be copied.
+	 */
+	private void copy(SimpleUI other){
+		lecPointer = other.lecPointer;
+		coursePointer = other.coursePointer;
+		studentPointer = other.studentPointer;
+		grapherPointer = other.grapherPointer;
+		stdin = new Scanner(System.in); //Unreasonable to copy input stream
+		savedToDisc = other.savedToDisc;
+		defaultSaveFile = other.defaultSaveFile;
+		logCommands = other.logCommands; //Log all commands entered by user
+		echoCommands = other.echoCommands; //Echo all commands entered by the user to stdout
+		log = other.log;
+	}
+	
+	private void readObject(ObjectInputStream in){
+		try{
+		    in.defaultReadObject();
+		    menu = MenuType.COURSES;
+		    savedToDisc = true;
+		    SimpleUI other = (SimpleUI) in.readObject();
+		    copy(other);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
 	
 	/**
 	 * Primary runner for this class. Reads in commands from standard input
@@ -160,7 +195,7 @@ public class SimpleUI {
 		else if (cmd.equals("ls"))
 			list();
 		else if (cmd.equals("save"))
-			r = save();
+			r = save(arg);
 		else if (cmd.equals("cd") && arg.isEmpty())
 			closeMenu();
 		else{
@@ -207,15 +242,89 @@ public class SimpleUI {
 	 * saving every class we've built so far to the disk.
 	 * @author Navneeth Jayendran
 	 * 
+	 * @param filename The name of the file to save the application state.
 	 * @return CONTINUE if successfully saved, FAIL otherwise.
 	 *
 	 */
-	Result save(){
-		toDo("saves nothing right now, but changes application state so that "
-		   + "quit will not give a warning."); //TODO Implement.
-		savedToDisc = true;
-		return Result.CONTINUE;
+	Result save(String filename){
+		toDo("Needs testing.\n"); //TODO Implement.
+		if (filename.equals("") && defaultSaveFile == null){
+			System.out.println("This application has no default save " +
+					"location. Use command \"save <filename>\" to specify.");
+			return Result.FAIL;
+		}else if (filename.equals(""))
+			defaultSaveFile = filename;
+		String regex = "^(_|\\s|[A-Z]|[a-z]|[0-9])+$";
+		Pattern validFilenames = Pattern.compile(regex);
+		Matcher matcher = validFilenames.matcher(filename);
+		if (!matcher.matches()){
+			System.out.printf("\"%s\" is not a valid file name. Only use" +
+					"underscores, spaces, and alphanumerical characters.\n");
+			return Result.FAIL;
+		}else{
+			File f = new File("savedApps/"+"name"+filename+".ser");
+			if (f.canWrite()){
+				if (f.canRead()){
+					if (!requestYesNo("Overwrite existing save file \""+
+						filename+"\"? " + "(Y/N))"))
+						return Result.CONTINUE;
+				}
+				try{
+					FileOutputStream fos = new FileOutputStream(f);
+					ObjectOutputStream oos = new ObjectOutputStream(fos);
+					oos.writeObject(this);
+					savedToDisc = true;
+					defaultSaveFile = filename;
+					return Result.CONTINUE;
+				}catch(IOException e){
+					e.printStackTrace();
+					return Result.FAIL;
+				}
+			}else{
+				System.out.printf("\"%s\" not a writeable file.\n", filename);
+				return Result.FAIL;
+			}
+		}
 	}
+	
+	/**
+	 * 
+	 * @param filename The file from which to load the application state.
+	 * @return
+	 */
+	Result load(String filename){
+		if (filename.length() == 0){
+			System.out.println("Missing course name argument.");
+			return Result.FAIL;
+		}
+		if (!savedToDisc && 
+			!requestYesNo("Load new application? Unsaved changes will be " +
+					"lost. (Y/N)"))
+			return Result.CONTINUE;
+		String regex = "^(_|\\s|[A-Z]|[a-z]|[0-9])+$";
+		Pattern validFilenames = Pattern.compile(regex);
+		Matcher matcher = validFilenames.matcher(filename);
+		if (!matcher.matches()){
+			System.out.printf("\"%s\" is not a valid file name. Only use" +
+					"underscores, spaces, and alphanumerical characters.\n");
+			return Result.FAIL;
+		}
+		File f = new File("savedApps/"+"name"+filename+".ser");
+		if (!f.canRead()){
+			System.out.printf("Could not find readable file \"%s\"", filename);
+			return Result.FAIL;
+		}
+		try{
+			FileInputStream fis = new FileInputStream(f);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			readObject(ois);
+			return Result.CONTINUE;
+		}catch(IOException e){
+			e.printStackTrace(); //Abnormal exceptions
+			return Result.FAIL;
+		}
+	}
+
 	
 	/**
 	 * Activated by the command "cd" with no arguments. Simply changes the menu
@@ -690,8 +799,16 @@ public class SimpleUI {
 	 */
 	private void displayInteractions(){
 		toDo("Improve format");
-		for (PeerInteraction elem : lecPointer)
+		System.out.println("Peer Interactions:");
+		boolean none = true;
+		for (PeerInteraction elem : lecPointer){
+			none = false;
 			System.out.println(elem);
+		}
+		if (none)
+			System.out.println("None for this lecture.");
+		System.out.printf("Lecture No. %d: " +lecPointer.getDate()+"\n",
+				lecPointer.lectureNumber);
 	}
 	
 	/*
@@ -904,7 +1021,9 @@ public class SimpleUI {
 		    +"\"menu\" display all commands specific to a menu\n"
 			+"\"quit\" stop the application\n"
 			+"\"help\" display this introduction again\n"
-			+"\"save\" save application instance to disc (not yet implemented)\n\n"
+			+"\"save <filename>\" save application instance to file named <filename>\n"
+			+"\"save\" save application instance to default file\n"
+			+"\"load <filename>\" load application stored in specified file.\n\n"
 			);
 	}
 	
