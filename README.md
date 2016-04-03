@@ -1,4 +1,5 @@
-# CS125-Research ![](https://travis-ci.org/Togira/CS125-Research.svg)
+# CS125-Research [![Build Status](https://travis-ci.org/Togira/CS125-Research.svg?branch=develop)](https://travis-ci.org/Togira/CS125-Research)
+
 ### Abstract
 We provide a model, analysis and results from an experiment implementing a daily lecture feedback requirement in a large-lecture environment introductory computer science course. Gathering feedback early and often has been demonstrated to be effective at monitoring student progress and aids in identifying stumbling points in material and presentation throughout a course. We present results from an experiment taking this idea to an extreme. Daily feedback on our lectures (provided by **600 students** per semester) lets us keep a finger on the pulse of the course, immediately detecting topics that are unsettling to students and permitting rapid movement through material in which students express mastery.
 
