@@ -45,13 +45,19 @@ public class ProtoApp {
 		lectures = new LectureList(days);
 	}
 	
+	/**
+	 * Uses the existing Roster and course information to simply parse
+	 * a PeerInteration 
+	 * @param csv
+	 * @return
+	 */
 	public PeerInteraction parseInteraction(String csv){
 		try{
 			PeerInteraction out = new PeerInteraction(csv, converter);
+			return out;
 		}catch(IllegalArgumentException e){
-			
+			return null;
 		}
-		return null;
 	}
 	
 	/**
@@ -63,6 +69,17 @@ public class ProtoApp {
 	 */
 	public void addLecture(Date day){
 		lectures.addLecture(day);
+		lectures.refresh();
+	}
+	
+	/**
+	 * Adds a 
+	 * @param days
+	 */
+	public void addLectures(Iterable<Date> days){
+		for (Date day : days)
+			lectures.addLecture(day);
+		lectures.refresh();
 	}
 	
 	/**
@@ -121,8 +138,8 @@ public class ProtoApp {
 	 *              distributed among students and lectures.
 	 */
 	public void addFeedback(Iterable<PeerInteraction> batch){
-		ArrayList<PeerInteraction> toAdd = students.addInteractions(batch);
-		assignEntriesToLectures(toAdd);
+		assignEntriesToStudents(batch);
+		assignEntriesToLectures(batch);
 		/*
 		for (Student s : students){ //For every student
 			ArrayList<PeerInteraction>  //Extract all duplicates
@@ -144,8 +161,11 @@ public class ProtoApp {
 	 * 
 	 * @param batch A collection of PeerInteractions to be added to the course.
 	 */
-	private void assignEntriesToLectures(Iterable<PeerInteraction> batch){
+	public void assignEntriesToLectures(Iterable<PeerInteraction> batch){
 		lectures.addInteractions(batch);
+	}
+	
+	public void assignEntriesToStudents(Iterable<PeerInteraction> batch){
 		students.addInteractions(batch);
 	}
 	
@@ -157,8 +177,7 @@ public class ProtoApp {
 	 * @param mergeDupes Whether or not to merge duplicate entries into one.
 	 */
 	public void reassignStudentEntriesToLectures(boolean mergeDupes){
-		for (Lecture lec : lectures)
-			lec.refreshEntries();
+		lectures.emptyEach();
 		ArrayList<PeerInteraction> all = new ArrayList<>();
 		for (Student s : students) for (PeerInteraction elem : s)
 				all.add(elem);

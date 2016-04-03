@@ -370,11 +370,11 @@ public class SimpleUI {
 		else if (input[0].equals("rm"))
 			return removeCourse();
 		else if (input[0].equals("import lecs"))
-			toDo(); //TODO make a method for this
+			importLectures(input[1]); //TODO make a method for this
 		else if (input[0].equals("import studs"))
-			toDo(); //TODO make a method for this
+			importStudents(input[1]); //TODO make a method for this
 		else if (input[0].equals("import entries"))
-			toDo(); //TODO make a method for this
+			importEntries(input[1]); //TODO make a method for this
 		else if (input[0].equals("cd stud"))
 			changeToStudent(input[1]); //DONE
 		else if (input[0].equals("cd lec"))
@@ -573,19 +573,8 @@ public class SimpleUI {
 			return Result.FAIL;
 		}
 		ArrayList<String> fails = new ArrayList<>();
-		ArrayList<Date> successes = new ArrayList<>();
-		SimpleDateFormat formatter = 
-				new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		while(freader.hasNextLine()){
-			String attempt = freader.nextLine();
-			Date lecDate;
-			try{
-				lecDate = formatter.parse(attempt);
-				successes.add(lecDate);
-			}catch(ParseException e){
-				fails.add(attempt);
-			}
-		}
+		ArrayList<Date> successes = 
+				Utilities.linesToDates(freader, "yyyy-MM-dd hh:mm:ss", fails);
 		freader.close();
 		if (successes.size() != 0){
 			System.out.printf("%d lectures were added on dates:\n", 
@@ -737,9 +726,9 @@ public class SimpleUI {
 	 */
 	public Result parseStudentLine(String[] input){
 		if (input[0].equals("stat"))
-			removeStudent();
+			studentStats();
 		else if (input[0].equals("rm"))
-			toDo(); //TODO Implement
+			removeStudent();
 		else
 			return invalidCommand(input[0]);
 		return Result.CONTINUE;
@@ -787,6 +776,7 @@ public class SimpleUI {
 		if (requestYesNo(message))
 			coursePointer.removeStudent(studentPointer.getID());
 		studentPointer = null;
+		menu = MenuType.COURSE;
 	}
 	/*
 	"STUDENT MENU (Student #%d):\n" +

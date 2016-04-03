@@ -139,16 +139,22 @@ public class Lecture implements Iterable<PeerInteraction>{
 	}
 	
 	/**
-	 * Sets the PeerInteraction collection of this Lecture to a new empty
-	 * collection and returns the old collection.
-	 * 
-	 * @return The ArrayList of PeerInteractions previously associated with
-	 *         this Lecture.
+	 * @return A copy of the ArrayList contained within this Lecture.
 	 */
-	public ArrayList<PeerInteraction> refreshEntries(){
-		ArrayList<PeerInteraction> tmp = recordsByTime;
+	public ArrayList<PeerInteraction> toList(){
+		ArrayList<PeerInteraction> out = new ArrayList<>();
+		for (PeerInteraction elem : recordsByTime)
+			out.add(elem);
+		return out;
+	}
+	
+	/**
+	 * Sets the PeerInteraction collection of this Lecture to a new empty
+	 * collection.
+	 *
+	 */
+	public void empty(){
 		recordsByTime = new ArrayList<>();
-		return tmp;
 	}
 	
 	/**

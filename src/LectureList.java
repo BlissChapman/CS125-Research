@@ -120,11 +120,6 @@ public class LectureList implements Iterable<Lecture>{
 		return get(key.getDate());
 	}
 
-	@Override
-	public Iterator<Lecture> iterator() {
-		// TODO Auto-generated method stub
-		return new LectureIterator();
-	}
 	
 	/**
 	 * Returns a deep copy of the ArrayList containing all Lectures in this
@@ -141,8 +136,8 @@ public class LectureList implements Iterable<Lecture>{
 	}
 	
 	/**
-	 * 
-	 * @param batch
+	 * @param batch A collection of PeerInteractions that to get added to
+	 *              their corresponding lectures within this LectureList.
 	 */
 	public void addInteractions(Iterable<PeerInteraction> batch){
 		ArrayList<PeerInteraction> batchList = new ArrayList<>();
@@ -170,6 +165,45 @@ public class LectureList implements Iterable<Lecture>{
 			processedList.add( dupes.size() > 1 ? 
 					           new PeerInteraction(dupes) : pi);
 		}
+	}
+	
+	/**
+	 * Removes all entries from all Lectures in this LectureList and returns
+	 * them as an ArrayList.
+	 * 
+	 * @return All the PeerInteractions previously stored by Lectures in this
+	 *         LectureList.
+	 */
+	public void emptyEach(){
+		for (Lecture each : this)
+			each.empty();
+	}
+	
+	/**
+	 * 
+	 */
+	public ArrayList<PeerInteraction> allInteractions(){
+		ArrayList<PeerInteraction> out = new ArrayList<>();
+		for (Lecture elem : this)
+			for (PeerInteraction entry : elem)
+				out.add(entry);
+		return out;
+	}
+	
+	/**
+	 * Ensures that all PeerInteractions in this LectureList are associated
+	 * with the proper Lecture based on date. This method gets 
+	 */
+	public void refresh(){
+		ArrayList <PeerInteraction> all = allInteractions();
+		emptyEach();
+		addInteractions(all);
+	}
+	
+	@Override
+	public Iterator<Lecture> iterator() {
+		// TODO Auto-generated method stub
+		return new LectureIterator();
 	}
 	
 	public class LectureIterator implements Iterator<Lecture>{

@@ -1,5 +1,5 @@
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -308,6 +308,69 @@ public class Utilities {
 	public static <T> void insertionSort(List<T> coll, Comparator<T> ordering){
 		for (int k = 1; k < coll.size(); ++k)
 			riseSorted(coll, k, ordering);
+	}
+	
+	/**
+	 * Helper function that reads a file line by line and returns
+	 * an ArrayList of all lines that can be parsed as PeerInteraction
+	 * objects. If a non-null ArrayList is passed in as a parameter, the
+	 * method will place all lines that could not be parsed as valid
+	 * PeerInteractions into the parameter, 
+	 * 
+	 * @param  src A source of lines to be parsed as PeerInteractions.
+	 * @param  Optional ArrayList parameter to store invalid lines with line #
+	 * @return An ArrayList of all successfully parsed PeerInteractions
+	 */
+	public static ArrayList<PeerInteraction>
+		linesToInteractions(Scanner src, ArrayList<String> failures){
+		ArrayList<PeerInteraction> out = new ArrayList<>();
+		int line = 0;
+		while (src.hasNextLine()){
+			++line;
+			String trial = src.nextLine().trim();
+			if (trial.length() == 0)
+				continue;
+			try{
+				out.add(new PeerInteraction(trial));
+			}catch (IllegalArgumentException e){
+				if (failures != null)
+					failures.add("Line " + line + ": " + trial);
+			}
+		}
+		return out;
+	}
+	
+	/**
+	 * Helper function that reads a file line by line and returns
+	 * an ArrayList of all lines that can be parsed as Java Date
+	 * objects. If a non-null ArrayList is passed in as a parameter, the
+	 * method will place all lines that could not be parsed as valid
+	 * Dates into the parameter, using
+	 * 
+	 * @param src      A source of lines to be parsed as Dates.
+	 * @param format   A format string to denote Date parse format.
+	 * @param failures Optional ArrayList parameter to store invalid lines 
+	 *         with line #
+	 * @return An ArrayList of all successfully parsed PeerInteractions
+	 */
+	public static ArrayList<Date>
+	  linesToDates(Scanner src, String format, ArrayList<String> failures){
+		SimpleDateFormat formatter = new SimpleDateFormat(format);
+		ArrayList<Date> out = new ArrayList<>();
+		int line = 1;
+		while (src.hasNextLine()){
+			++line;
+			String trial = src.nextLine().trim();
+			if (trial.length() == 0)
+				continue;
+			try{
+				out.add(formatter.parse(trial));
+			}catch (ParseException e){
+				if (failures != null)
+					failures.add("Line " + line + ": " + trial);
+			}
+		}
+		return out;
 	}
 	
 	/**
