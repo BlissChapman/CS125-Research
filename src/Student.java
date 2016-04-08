@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.RandomAccess;
 import java.util.Scanner;
@@ -15,12 +16,19 @@ import java.util.Scanner;
 class Student implements Iterable<PeerInteraction>{
 	public static final float WEIGHT_PROPORTIONALITY_CONSTANT = 1;
 	public static final float WEIGHT_THRESHOLD = 10;
-	
+
 	/* ID of this Student. This value is immutable. */
 	private final int ID;
-	
+
 	//private boolean female; //One possibility for what we could store here
-	
+
+	//HashMap to hold qualitative data on student
+	private HashMap <String, String> qualitativeInfo;
+
+	//HashMap to hold quantitative data on student
+	private HashMap <String, Double> quantitativeInfo;
+
+
 	/* The collection of all PeerInteractions made by the Student, sorted
 	 * in chronological order. */
 	private ArrayList<PeerInteraction> records;
@@ -35,17 +43,17 @@ class Student implements Iterable<PeerInteraction>{
 	 * methods that use the above variables will recompute values when
 	 * this boolean is set. See refreshCache()*/
 	private boolean mutated = false;
-	
- 	/**
- 	 * ID Ctor. Needs work?
- 	 * 
- 	 * @param code The ID of the Student.
- 	 */
+
+	/**
+	 * ID Ctor. Needs work?
+	 * 
+	 * @param code The ID of the Student.
+	 */
 	public Student(int code){
 		ID = code;
 		records = new ArrayList<PeerInteraction>();
 	}
-	
+
 	/**
 	 * ID and one-entry Ctor. Is this useful?
 	 * 
@@ -81,10 +89,10 @@ class Student implements Iterable<PeerInteraction>{
 			weight = (2*records.size())/numberOfCommonResponses;
 		else
 			weight = WEIGHT_THRESHOLD;
-		
+
 		if(weight > WEIGHT_THRESHOLD)
 			weight = WEIGHT_THRESHOLD;
-		
+
 		return WEIGHT_PROPORTIONALITY_CONSTANT*weight;
 	}
 
@@ -98,8 +106,8 @@ class Student implements Iterable<PeerInteraction>{
 	public void addEntry(PeerInteraction entry){
 		if (entry.getPersonID() != ID)
 			throw new IllegalArgumentException(
-			    String.format("Student %d given entry by %d",
-				          ID, entry.getPersonID()) );
+					String.format("Student %d given entry by %d",
+							ID, entry.getPersonID()) );
 		records.add(entry);
 		pushBack();
 		refreshCache();
@@ -150,7 +158,7 @@ class Student implements Iterable<PeerInteraction>{
 		double meanSquared = ((float) sumSquared)/records.size();
 		return ratingStdDev = (float) Math.sqrt(meanSquared-mean*mean);
 	}
-	
+
 	/**
 	 * Ensures that the last few entries added are from distinct lectures.
 	 * If duplicates are found, all will be merged into a single entry.
@@ -160,16 +168,16 @@ class Student implements Iterable<PeerInteraction>{
 	public void mergeRecentDuplicates(){
 		int last = records.size()-1;
 		while (last > 0){;
-			Lecture curr = Lecture.get(records.get(last));
-			Lecture prev = Lecture.get(records.get(last));
-			if (curr != prev)
-				break;
-			else
-				--last;
+		Lecture curr = Lecture.get(records.get(last));
+		Lecture prev = Lecture.get(records.get(last));
+		if (curr != prev)
+			break;
+		else
+			--last;
 		}
 		if (last != records.size()-1){
 			PeerInteraction[] repeats 
-			    = new PeerInteraction[records.size()-last];
+			= new PeerInteraction[records.size()-last];
 			for (int idx = 0; idx < records.size()-last; ++idx)
 				repeats[idx] = records.get(idx+last);
 			for (int idx = records.size()-1; idx >= last; ++idx)
@@ -207,7 +215,7 @@ class Student implements Iterable<PeerInteraction>{
 		}
 		records = newRecords;
 	}
-	
+
 	/**
 	 * Private function that refreshes all cached variables. Setting
 	 * mutated to true causes all functions to recompute instead
@@ -220,7 +228,7 @@ class Student implements Iterable<PeerInteraction>{
 		feedbackWeight();
 		mutated = false;
 	}
-	
+
 	/**
 	 * Private helper function that pushes back an unsorted entry to
 	 * its proper spot in Student.records. Called whenever an entry is
@@ -229,10 +237,10 @@ class Student implements Iterable<PeerInteraction>{
 	private void pushBack(){
 		int last = records.size()-1;
 		while (last > 0 
-		    && records.get(last-1).getDate().compareTo(
-		           records.get(last).getDate()) > 0){
-		//^ Java verbosity in a nutshell.
-		//  Translation: records[last-1].getDate() > records[last].getDate();
+				&& records.get(last-1).getDate().compareTo(
+						records.get(last).getDate()) > 0){
+			//^ Java verbosity in a nutshell.
+			//  Translation: records[last-1].getDate() > records[last].getDate();
 			Collections.swap(records, last-1, last);
 			--last;
 		}
@@ -253,7 +261,7 @@ class Student implements Iterable<PeerInteraction>{
 		public void remove() { throw new UnsupportedOperationException(); } 
 	}
 
-	
+
 	/**
 	 * For now, this test method only works for feedback files without
 	 * NRLists (so all netIDs must be integers). It also writes nothing
@@ -290,7 +298,7 @@ class Student implements Iterable<PeerInteraction>{
 		Collections.shuffle(results);     //Tests functionality of pushBack()
 		for (PeerInteraction elem : results){
 			if (elem.getPersonID() != trial.getID() &&
-			    Math.random() >= INVALID_ID)
+					Math.random() >= INVALID_ID)
 				continue;
 			try{
 				trial.addEntry(elem);
@@ -307,5 +315,74 @@ class Student implements Iterable<PeerInteraction>{
 		System.out.println("\n\nData with duplicates merged:");
 		for (PeerInteraction elem : trial)
 			System.out.println(elem);
+	}
+
+	/**Add method for qualitative information on students.
+	 * 
+	 * 
+	 * @param characteristic	key to add
+	 * @param information		value tied to 'characteristic'
+	 */
+
+	public void addQualCharacteristic(String characteristic, String information){
+		qualitativeInfo.put(characteristic, information);
+	}
+
+	/** Remove method for qualitative information on students.
+	 * Removes the key entered and value tied to the key, returns value 
+	 * 
+	 * @param characteristic	key to remove
+	 * @return					value tied to 'characteristic'
+	 */
+
+	public String removeQualCharacteristic(String characteristic){
+		return qualitativeInfo.remove(characteristic);
+	}
+
+	/** Mutator method for qualitative information on students.
+	 *  Changes data tied to key 'characteristic' to 'value' and
+	 *  returns value of data overwritten
+	 * 
+	 * @param characteristic	key to access	
+	 * @param value				new desired value tied to 'characteristic'
+	 * @return					value previously tied to 'characteristic'
+	 */
+	public String setQualCharacteristic(String characteristic, String info){
+		return qualitativeInfo.replace(characteristic, info);
+
+	}
+
+	/**Add method for quantitative information on students.
+	 * 
+	 * 
+	 * @param characteristic	key to add
+	 * @param information		value tied to 'characteristic'
+	 */
+
+	public void addQuantCharacteristic(String characteristic, Double information){
+		quantitativeInfo.put(characteristic, information);
+	}
+
+	/** Remove method for quantitative information on students.
+	 * Removes the key entered and value tied to the key, returns value 
+	 * 
+	 * @param characteristic	key to remove
+	 * @return					value tied to 'characteristic'
+	 */
+
+	public Double removeQuantCharacteristic(String characteristic){
+		return quantitativeInfo.remove(characteristic);
+	}
+
+	/** Mutator method for quantitative information on students.
+	 *  Changes data tied to key 'characteristic' to 'value' and
+	 *  returns value of data overwritten
+	 * 
+	 * @param characteristic	key to access	
+	 * @param value				new desired value tied to 'characteristic'
+	 * @return					value previously tied to 'characteristic'
+	 */
+	public Double setQuantCharacteristic(String characteristic, Double info){
+		return quantitativeInfo.replace(characteristic, info);
 	}
 }
