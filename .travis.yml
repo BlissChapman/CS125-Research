@@ -1,6 +1,6 @@
 language: java
 jdk:
-  - oraclejdk7
+  - oraclejdk8
 
 notifications:
   slack: cs125-research:6bIP6hltuyxqaQMHk9V7kDAQ
