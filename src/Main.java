@@ -18,7 +18,7 @@ public class Main {
 		//Print each lecture object:
 		ArrayList<Lecture> lectures = LectureData.lectures;
 		for(int j = 0; j < lectures.size(); j++) {
-			System.out.println(lectures.get(j).toJSONString());
+			System.out.println(lectures.get(j));
 		}
 
 		//Print stats:
