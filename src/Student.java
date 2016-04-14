@@ -58,7 +58,7 @@ class Student implements Iterable<PeerInteraction>{
 	 *  Necessary to maintain student anonmity while still keeping
 	 *  track of characteristics   
 	 */  
-	
+
 	public Student(int code, HashMap <String, String> qual, HashMap <String, Double> quant){
 		ID = code;
 		records = new ArrayList<PeerInteraction>();

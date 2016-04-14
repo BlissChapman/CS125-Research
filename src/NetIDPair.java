@@ -200,7 +200,7 @@ public class NetIDPair {
 	 * .csv formatting method should find columns relating to desired
 	 * characteristics without hardcoding in actual column indices
 	 */
-	
+
 	/*
 
 	public void fillQuantCharacteristics(String dataFilePath){
