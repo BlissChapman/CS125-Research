@@ -53,6 +53,19 @@ class Student implements Iterable<PeerInteraction>{
 		ID = code;
 		records = new ArrayList<PeerInteraction>();
 	}
+	/** 
+	 *  Constructor to initialize HashMaps already containing data.
+	 *  Necessary to maintain student anonmity while still keeping
+	 *  track of characteristics   
+	 */  
+	
+	public Student(int code, HashMap <String, String> qual, HashMap <String, Double> quant){
+		ID = code;
+		records = new ArrayList<PeerInteraction>();
+		qualitativeInfo = qual;
+		quantitativeInfo = quant;
+	}
+
 
 	/**
 	 * ID and one-entry Ctor. Is this useful?
