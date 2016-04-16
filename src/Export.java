@@ -4,19 +4,20 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 /**
- * 
+ * A runner class that analyzes the input data (csv) using our Java infrastructure
+ * and outputs the results to a JSON file. 
  * @author CS125Research
  */
 public class Export {
 
 	public static void main(String[] args){
-		
-		exportAnalysisToFile("lectures.json");
+
+		exportAnalysisToFile("results.json");
 	}
 	
 	
 	/**
-	 * .....
+	 * .....DOCUMENTATION NEEDED.....
 	 * @param filename
 	 */
 	public static void exportAnalysisToFile(String filename){
@@ -34,7 +35,7 @@ public class Export {
 			}
 			writer.close();
 			
-			System.out.println("Exported to " + filename);
+			System.out.println("Exported results of analysis to " + filename);
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
