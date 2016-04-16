@@ -9,7 +9,7 @@ import java.util.Scanner;
  * including their lecture attendance and possibly grades. Each Student
  * will contain all the proper PeerInteractions made by the student.
  *
- * @author CS125 Research
+ * @author CS125Research
  * @todo Implement more.
  */
 class Student implements Iterable<PeerInteraction>{

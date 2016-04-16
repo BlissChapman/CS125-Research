@@ -10,7 +10,7 @@ import com.google.gson.Gson;
  * This class also contains static properties and methods involved with initializing lectures and analyzing the result.
  * @author CS125Research
  */
-public class Lecture implements Iterable<PeerInteraction>, JSONable{
+public class Lecture implements Iterable<PeerInteraction>, JSONConvertible {
 
 	private static int AUTO_INCREMENT = 0;
 	private int lectureNumber; //TODO: Discuss this name

@@ -1,6 +1,8 @@
-
-
-public interface JSONable {
+/**
+ * ...
+ * @author CS125Research
+ */
+public interface JSONConvertible {
 
 	/**
 	 * Returns a JSON string representation of class 

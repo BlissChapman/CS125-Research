@@ -1,22 +1,25 @@
-
-
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+/**
+ * 
+ * @author CS125Research
+ */
 public class Export {
 
 	public static void main(String[] args){
 		
-		
-		exportFile("lectures.json");
-		
+		exportAnalysisToFile("lectures.json");
 	}
 	
 	
-	
-	public static void exportFile(String filename){
+	/**
+	 * .....
+	 * @param filename
+	 */
+	public static void exportAnalysisToFile(String filename){
 		try {
 			PrintWriter writer;
 			writer = new PrintWriter(filename, "UTF-8");
