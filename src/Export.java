@@ -12,7 +12,7 @@ public class Export {
 
 	public static void main(String[] args){
 
-		exportAnalysisToFile("results.json");
+		exportAnalysisToFile("src/results.json");
 	}
 	
 	
