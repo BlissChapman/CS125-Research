@@ -56,18 +56,23 @@ public class Export {
 			PrintWriter writer;
 			writer = new PrintWriter(filename, "UTF-8");
 			
+			/*
+			//STUDENTS: Number of students in class
+			int STUDENTS = 600;
 			
-//			PeerInteractionsData.initialize();
-//			LectureData.initialize();
-//			
-//			//Print each lecture object:
-//			ArrayList<Lecture> lectures = LectureData.lectures;
-//			for(int j = 0; j < lectures.size(); j++) {
-//				writer.println(lectures.get(j).toJSONString());
-//			}
-//			writer.close();
-//			
-//			System.out.println("Exported results of lecture analysis to " + filename);
+			//CAPACITY: Maximum size of Roster
+			int CAPACITY = 800;
+			
+			ArrayList<String> fakeNetIDs = Utilities.generateRoster(STUDENTS);
+			NRList fakeNRList = new NRList(fakeNetIDs, fakeNetIDs.size()+100);
+			Roster exampleRoster = new Roster(fakeNRList, CAPACITY);
+			
+			
+			writer.println(exampleRoster.toJSONString());
+
+			System.out.println("Exported results of EXAMPLE roster analysis to " + filename);
+			*/
+			
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
