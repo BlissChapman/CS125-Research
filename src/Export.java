@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 /**
  * A runner class that analyzes the input data (csv) using our Java infrastructure
- * and outputs the results to a JSON file. 
+ * and outputs the results to JSON files. 
  * @author CS125Research
  */
 public class Export {

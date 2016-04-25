@@ -34,7 +34,7 @@ public class PeerInteractionsData {
 		rawData = new ArrayList<PeerInteraction>();
 		cleanData = new ArrayList<PeerInteraction>();
 
-		TextIO.readFile("./src/peerInteractions.fa2015.final.csv");
+		TextIO.readFile("./src/EncodedPeerInteractions.FA2015.csv");
 		while (!TextIO.eof())
 			rawData.add(new PeerInteraction(TextIO.getln()));
 
