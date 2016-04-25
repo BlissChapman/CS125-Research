@@ -11,7 +11,6 @@
 .mtj.tmp/
 
 # Package Files #
-.jar
 .war
 .ear
 
@@ -39,8 +38,8 @@ local.properties
 .settings/
 .loadpath
 
-# Eclipse Core
-.project
+# Eclipse Core - Add an exception to always track
+!*.project
 
 # External tool builders
 .externalToolBuilders/

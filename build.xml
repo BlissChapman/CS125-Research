@@ -8,6 +8,7 @@
   <property name="dist"  location="dist"/>
   <property name="test"  location="src"/>
   <property name="junit" location="lib/junit.jar"/>
+  <property name="gson" location="lib/gson-2.6.2.jar"/>
  
   <path id="classpath.test">
     <pathelement location="${junit}" />
@@ -27,6 +28,7 @@
     <javac srcdir="${src}" destdir="${build}/main">
         <classpath>
         <pathelement location="${junit}"/>
+        <pathelement location="${gson}" />
       </classpath>
     </javac>
   </target>

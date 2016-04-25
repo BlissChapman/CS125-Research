@@ -28,7 +28,7 @@ We provide a summary of these and other research questions in this work.
 # Code Base Structure
 The code base's structure is based on the raw data extracted from the lecture feedback database and the majority of the code so far is focused on manipulating this data into an easily analyzable state.  As you move down the list of classes described below, we move farther and farther away from the raw data, building off previous classes' abstractions.
 
-## Summary by class:
+## Summary by class [OUTDATED]:
 ###### Utilities:
 * **TextIO** is a utility class used extensively throughout CS125 to make reading from a text file much simpler.
 
@@ -46,7 +46,7 @@ The code base's structure is based on the raw data extracted from the lecture fe
 
 
 
-### Running:
+### Running [OUTDATED]:
 * `Main`
 	* Calls `PeerInteractionsData.initialize()`
 		* Uses `PeerInteraction` constructors and state to create a raw and a cleaned list of entries.
@@ -54,5 +54,7 @@ The code base's structure is based on the raw data extracted from the lecture fe
 	 	* Uses `Lecture` constructors and state to create a list of lectures and do some basic analysis.
 
 	
-### Other:
-* Travis CI current: https://travis-ci.org/Togira/CS125-Research
+### Travis CI Testing:
+NOTE: Travis builds use "**/*Test*.java" regex to determine which test files to run.  Please be careful to follow this pattern when writing new test cases and to avoid it when creating files that are not intended to be run as a test.
+* Travis CI current build: https://travis-ci.org/Togira/CS125-Research
+

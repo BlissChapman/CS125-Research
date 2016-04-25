@@ -3,13 +3,14 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.*;
+import com.google.gson.Gson;
 
 /**
  * A model for a lecture object with a unique id corresponding to the lecture number, all the associated peer interactions, the date, and the lecture topics.
  * This class also contains static properties and methods involved with initializing lectures and analyzing the result.
  * @author CS125Research
  */
-public class Lecture implements Iterable<PeerInteraction>{
+public class Lecture implements Iterable<PeerInteraction>, JSONConvertible {
 
 	private static int AUTO_INCREMENT = 0;
 	private int lectureNumber; //TODO: Discuss this name
@@ -181,6 +182,12 @@ public class Lecture implements Iterable<PeerInteraction>{
 		    + "Mean: %f\n\tStandard Deviation: %f",
 		    recordsByTime.size(), ratingMean(), ratingStdDev())
 		+ "\n\t Rating Distribution: " + ratingDistributionString();	
+	}
+	
+
+	public String toJSONString() {
+		Gson gson = new Gson();
+		return gson.toJson(this);
 	}
 	
 	/**

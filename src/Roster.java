@@ -8,7 +8,9 @@
  *       functionality to NRList class.
  */
 import java.util.*;
-public class Roster implements Iterable<Student>{
+
+import com.google.gson.Gson;
+public class Roster implements Iterable<Student>, JSONConvertible {
 
 	private Student[] map;
 	private int numStudents;
@@ -171,6 +173,14 @@ public class Roster implements Iterable<Student>{
 		}
 
 		
+	}
+	
+	/**
+	 * 
+	 */
+	public String toJSONString() {
+		Gson gson = new Gson();
+		return gson.toJson(this);
 	}
 	
 	/**

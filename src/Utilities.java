@@ -7,7 +7,7 @@ import java.util.*;
  * A utilities class containing various static methods that may be of use
  * in other classes, particularly in making large test cases.
  * 
- * @author CS125-Research
+ * @author CS125Research
  *
  */
 public class Utilities {
