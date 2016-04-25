@@ -35,7 +35,7 @@ public class RosterTest extends TestCase {
 		 */
 		ArrayList<PeerInteraction> samples = new ArrayList<>();
 		Scanner sc = 
-		    new Scanner(new File("src/peerInteractions.fa2015.final.csv"));
+		    new Scanner(new File("src/EncodedPeerInteractions.FA2015.csv"));
 		while (sc.hasNextLine()){
 			try{
 				samples.add(new PeerInteraction(sc.nextLine()));
