@@ -12,7 +12,7 @@ public class Roster implements Iterable<Student>{
 
 	private Student[] map;
 	private int numStudents;
-	
+
 	/**
 	 * Constructor for the Roster class. Creates an array of specified capacity
 	 * and keeps it empty. Students can be manually added later to the Roster
@@ -22,7 +22,7 @@ public class Roster implements Iterable<Student>{
 		map = new Student[capacity];
 		numStudents = 0;
 	}
-	
+
 	/**
 	 * Constructor for the Roster class. Creates an array of specified capacity
 	 * and fills it up with new Student objects. The Students are initialized
@@ -42,6 +42,10 @@ public class Roster implements Iterable<Student>{
 		 */
 		for (NetIDPair elem : codes){
 			map[elem.getCode()] = new Student(elem.getCode());
+
+			//replace with
+			//map[elem.getCode()] = new Student(elem.getCode(), elem.getQualMap(), elem.getQuantMap());
+
 			numStudents = codes.size();
 		}
 	}
@@ -61,7 +65,7 @@ public class Roster implements Iterable<Student>{
 		else
 			return map[ID];
 	}
-	
+
 	/**
 	 * Given a PeerInteraction, returns the Student in the Roster whose ID
 	 * matches the first netID of the argument or null if no such Student
@@ -73,7 +77,7 @@ public class Roster implements Iterable<Student>{
 	public Student get(PeerInteraction interaction){
 		return get(interaction.getPersonID());
 	}
-	
+
 	/**
 	 * This method matches all elements from a batch of PeerInteractions
 	 * to individual Students in this Roster and assigns those
@@ -91,17 +95,17 @@ public class Roster implements Iterable<Student>{
 		for (Student person : this)
 			person.mergeRecentDuplicates(); //All or Recent?
 	}
-	
+
 	/**
 	 * @return The number of students in the Roster.
 	 */
 	public int size()     { return numStudents; }
-	
+
 	/**
 	 * @return The number of students this Roster can contain.
 	 */
 	public int capacity() { return map.length; }
-	
+
 	/**
 	 * In case new Students join the class, allows addition of new Student to
 	 * Roster. Ensure extra space when constructing Roster or else this will
@@ -110,13 +114,13 @@ public class Roster implements Iterable<Student>{
 	public void addStudent(int ID){
 		if (ID < 0 || ID >= map.length)
 			throw new 
-			    IndexOutOfBoundsException(ID + " is out of Roster Range.");
+			IndexOutOfBoundsException(ID + " is out of Roster Range.");
 		if (map[ID] != null)
 			throw new IllegalArgumentException(ID + " is already taken.");
 		map[ID] = new Student(ID);
 		++numStudents;
 	}
-	 
+
 	/**
 	 * Resizes this Roster to allow addition of more Students. If shrinking
 	 * the Roster would cut off existing students, throws an exception.
@@ -128,14 +132,14 @@ public class Roster implements Iterable<Student>{
 		while (map[--max] == null);
 		if (newSize < max)
 			throw new
-			    IndexOutOfBoundsException("Minimum capacity needed: " + max);
+			IndexOutOfBoundsException("Minimum capacity needed: " + max);
 		Student[] newMap = new Student[newSize];
 		for (int i = 0; i < map.length; ++i)
 			newMap[i] = map[i];
 		map = newMap;
 	}
-	
-	
+
+
 	/**
 	 * @return An iterator to the first Student in this Roster (in order of
 	 *         increasing ID)
@@ -147,7 +151,7 @@ public class Roster implements Iterable<Student>{
 	 */
 	public class StudentIterator implements Iterator<Student>{
 		private int curr;
-		
+
 		/**
 		 * Helper function that jumps to the next non-null element
 		 * of map or until the end of map is reached.
@@ -167,19 +171,19 @@ public class Roster implements Iterable<Student>{
 		@Override
 		public void remove() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
-		
+
 	}
-	
+
 	/**
 	 * Simple main function. Shows that the iterator for this class
 	 * works properly.
 	 * 
 	 */
 	public static void main(String[] args){
-		
-		
+
+
 	}
 }

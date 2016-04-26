@@ -42,7 +42,7 @@ The code base's structure is based on the raw data extracted from the lecture fe
 * **LectureData** creates an array list of lectures by date and does basic analysis like finding the mean and standard deviation of the associated interactions.
 
 ###### Other:
-* **Student** stores information regarding a particular `Student` including their lecture attendance, possibly grades and gender, and all their feedback interactions. A list of `Student` objects may frequently be iterated over.
+* **Student** stores information regarding a particular `Student` including their lecture attendance, possibly grades and gender, and all their feedback interactions. Information on a student is contained within HashMaps populated by .csv files which link their encoded id to the demographic data we wish to track. There are two such HashMaps, one for quantitative data and one for qualitative data. A list of `Student` objects may frequently be iterated over.
 
 
 

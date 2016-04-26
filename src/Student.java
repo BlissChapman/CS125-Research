@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.RandomAccess;
 import java.util.Scanner;
@@ -15,12 +16,17 @@ import java.util.Scanner;
 class Student implements Iterable<PeerInteraction>{
 	public static final float WEIGHT_PROPORTIONALITY_CONSTANT = 1;
 	public static final float WEIGHT_THRESHOLD = 10;
-	
+
 	/* ID of this Student. This value is immutable. */
 	private final int ID;
-	
-	//private boolean female; //One possibility for what we could store here
-	
+
+	//HashMap to hold qualitative data on student
+	private HashMap <String, String> qualitativeInfo;
+
+	//HashMap to hold quantitative data on student
+	private HashMap <String, Double> quantitativeInfo;
+
+
 	/* The collection of all PeerInteractions made by the Student, sorted
 	 * in chronological order. */
 	private ArrayList<PeerInteraction> records;
@@ -35,17 +41,26 @@ class Student implements Iterable<PeerInteraction>{
 	 * methods that use the above variables will recompute values when
 	 * this boolean is set. See refreshCache()*/
 	private boolean mutated = false;
-	
- 	/**
- 	 * ID Ctor. Needs work?
- 	 * 
- 	 * @param code The ID of the Student.
- 	 */
+
+	/**
+	 * ID Ctor. Needs work?
+	 * 
+	 * @param code The ID of the Student.
+	 */
 	public Student(int code){
 		ID = code;
+		qualitativeInfo = new HashMap <String, String> (25);
+		quantitativeInfo = new HashMap <String, Double> (25);
+		fillQualCharacteristics("./src/EncodedRoster.txt");
+		fillQuantCharacteristics("./src/EncodedRoster.txt");
 		records = new ArrayList<PeerInteraction>();
+
+		//for testing purposes to make sure no null values in HashMap
+		//System.out.println("Gender: " + this.getQualCharacteristic("Gender")
+		//		+ " Major: " + this.getQualCharacteristic("Major") + "\n");
 	}
-	
+
+
 	/**
 	 * ID and one-entry Ctor. Is this useful?
 	 * 
@@ -81,10 +96,10 @@ class Student implements Iterable<PeerInteraction>{
 			weight = (2*records.size())/numberOfCommonResponses;
 		else
 			weight = WEIGHT_THRESHOLD;
-		
+
 		if(weight > WEIGHT_THRESHOLD)
 			weight = WEIGHT_THRESHOLD;
-		
+
 		return WEIGHT_PROPORTIONALITY_CONSTANT*weight;
 	}
 
@@ -98,8 +113,8 @@ class Student implements Iterable<PeerInteraction>{
 	public void addEntry(PeerInteraction entry){
 		if (entry.getPersonID() != ID)
 			throw new IllegalArgumentException(
-			    String.format("Student %d given entry by %d",
-				          ID, entry.getPersonID()) );
+					String.format("Student %d given entry by %d",
+							ID, entry.getPersonID()) );
 		records.add(entry);
 		pushBack();
 		refreshCache();
@@ -150,7 +165,7 @@ class Student implements Iterable<PeerInteraction>{
 		double meanSquared = ((float) sumSquared)/records.size();
 		return ratingStdDev = (float) Math.sqrt(meanSquared-mean*mean);
 	}
-	
+
 	/**
 	 * Ensures that the last few entries added are from distinct lectures.
 	 * If duplicates are found, all will be merged into a single entry.
@@ -160,16 +175,16 @@ class Student implements Iterable<PeerInteraction>{
 	public void mergeRecentDuplicates(){
 		int last = records.size()-1;
 		while (last > 0){;
-			Lecture curr = Lecture.get(records.get(last));
-			Lecture prev = Lecture.get(records.get(last));
-			if (curr != prev)
-				break;
-			else
-				--last;
+		Lecture curr = Lecture.get(records.get(last));
+		Lecture prev = Lecture.get(records.get(last));
+		if (curr != prev)
+			break;
+		else
+			--last;
 		}
 		if (last != records.size()-1){
 			PeerInteraction[] repeats 
-			    = new PeerInteraction[records.size()-last];
+			= new PeerInteraction[records.size()-last];
 			for (int idx = 0; idx < records.size()-last; ++idx)
 				repeats[idx] = records.get(idx+last);
 			for (int idx = records.size()-1; idx >= last; ++idx)
@@ -207,7 +222,7 @@ class Student implements Iterable<PeerInteraction>{
 		}
 		records = newRecords;
 	}
-	
+
 	/**
 	 * Private function that refreshes all cached variables. Setting
 	 * mutated to true causes all functions to recompute instead
@@ -220,7 +235,7 @@ class Student implements Iterable<PeerInteraction>{
 		feedbackWeight();
 		mutated = false;
 	}
-	
+
 	/**
 	 * Private helper function that pushes back an unsorted entry to
 	 * its proper spot in Student.records. Called whenever an entry is
@@ -229,10 +244,10 @@ class Student implements Iterable<PeerInteraction>{
 	private void pushBack(){
 		int last = records.size()-1;
 		while (last > 0 
-		    && records.get(last-1).getDate().compareTo(
-		           records.get(last).getDate()) > 0){
-		//^ Java verbosity in a nutshell.
-		//  Translation: records[last-1].getDate() > records[last].getDate();
+				&& records.get(last-1).getDate().compareTo(
+						records.get(last).getDate()) > 0){
+			//^ Java verbosity in a nutshell.
+			//  Translation: records[last-1].getDate() > records[last].getDate();
 			Collections.swap(records, last-1, last);
 			--last;
 		}
@@ -253,7 +268,7 @@ class Student implements Iterable<PeerInteraction>{
 		public void remove() { throw new UnsupportedOperationException(); } 
 	}
 
-	
+
 	/**
 	 * For now, this test method only works for feedback files without
 	 * NRLists (so all netIDs must be integers). It also writes nothing
@@ -290,7 +305,7 @@ class Student implements Iterable<PeerInteraction>{
 		Collections.shuffle(results);     //Tests functionality of pushBack()
 		for (PeerInteraction elem : results){
 			if (elem.getPersonID() != trial.getID() &&
-			    Math.random() >= INVALID_ID)
+					Math.random() >= INVALID_ID)
 				continue;
 			try{
 				trial.addEntry(elem);
@@ -308,4 +323,207 @@ class Student implements Iterable<PeerInteraction>{
 		for (PeerInteraction elem : trial)
 			System.out.println(elem);
 	}
+
+	public String getQualCharacteristic(String characteristic){
+		try{
+			return qualitativeInfo.get(characteristic);
+		}
+		catch (NullPointerException e){
+			return (characteristic + " was not found");
+		}
+	}
+
+	/**Add method for qualitative information on students.
+	 * 
+	 * 
+	 * @param characteristic	key to add
+	 * @param information		value tied to 'characteristic'
+	 */
+
+	public void addQualCharacteristic(String characteristic, String information){
+		qualitativeInfo.put(characteristic, information);
+	}
+
+	/** Remove method for qualitative information on students.
+	 * Removes the key entered and value tied to the key, returns value 
+	 * 
+	 * @param characteristic	key to remove
+	 * @return					value tied to 'characteristic'
+	 */
+
+	public String removeQualCharacteristic(String characteristic){
+		return qualitativeInfo.remove(characteristic);
+	}
+
+	/** Mutator method for qualitative information on students.
+	 *  Changes data tied to key 'characteristic' to 'value' and
+	 *  returns value of data overwritten
+	 * 
+	 * @param characteristic	key to access	
+	 * @param value				new desired value tied to 'characteristic'
+	 * @return					value previously tied to 'characteristic'
+	 */
+	public String setQualCharacteristic(String characteristic, String info){
+		return qualitativeInfo.replace(characteristic, info);
+
+	}
+
+	public Double getQuantCharacteristic(String characteristic){
+		try{
+			return quantitativeInfo.get(characteristic);
+		}
+		catch (NullPointerException e){
+			System.out.println(characteristic + " was not found");
+			return null;
+		}	
+	}
+
+	/**Add method for quantitative information on students.
+	 * 
+	 * 
+	 * @param characteristic	key to add
+	 * @param information		value tied to 'characteristic'
+	 */
+
+	public void addQuantCharacteristic(String characteristic, Double information){
+		quantitativeInfo.put(characteristic, information);
+	}
+
+	/** Remove method for quantitative information on students.
+	 * Removes the key entered and value tied to the key, returns value 
+	 * 
+	 * @param characteristic	key to remove
+	 * @return					value tied to 'characteristic'
+	 */
+
+	public Double removeQuantCharacteristic(String characteristic){
+		return quantitativeInfo.remove(characteristic);
+	}
+
+	/** Mutator method for quantitative information on students.
+	 *  Changes data tied to key 'characteristic' to 'value' and
+	 *  returns value of data overwritten
+	 * 
+	 * @param characteristic	key to access	
+	 * @param value				new desired value tied to 'characteristic'
+	 * @return					value previously tied to 'characteristic'
+	 */
+	public Double setQuantCharacteristic(String characteristic, Double info){
+		return quantitativeInfo.replace(characteristic, info);
+	}
+
+	/** Accessor method to obtain map of qualitative info. Necessary for mapping
+	 * a Student Object's 'code' to certain characteristics because NetIDPair
+	 * class is last point at which student's netid is visible and all traces of
+	 * student identifiers are hidden afterwards
+	 * 
+	 * @return map of qualitative info on student
+	 */
+	public HashMap<String,String> getQualMap(){
+		return qualitativeInfo;
+	}
+
+	/** Accessor method to obtain map of quantitative info. Necessary for mapping
+	 * a Student Object's 'code' to certain characteristics because NetIDPair
+	 * class is last point at which student's netid is visible and all traces of
+	 * student identifiers are hidden afterwards
+	 * 
+	 * @return map of quantitative info on student
+	 */
+
+	public HashMap<String,Double> getQuantMap(){
+		return quantitativeInfo;
+	}
+
+	/** Fills map 'qualitativeInfo' with desired characteristics. 
+	 * Pulls data from .csv file using TextIO interface. With proper
+	 * .csv formatting method should find columns relating to desired
+	 * characteristics without hardcoding in actual column indices
+	 */
+
+
+	public void fillQualCharacteristics(String dataFilePath){
+
+		TextIO.readFile(dataFilePath);
+
+		/*
+		//code to automate finding of characteristics columns
+		int netidIndex, genderIndex, majorIndex, collegeIndex, etc. 
+
+		String [] col = TextIO.getln().split(",");
+		for(int i = 0; i < col.length; i++){ // need to find actual col.length value
+			if(col[i].equals("netid"))
+				netidIndex = i;
+			else if(col[i].equals("Gender"))
+				genderIndex = i;
+			else if(col[i].equals("Major"))
+				majorIndex = i;
+			else if(col[i].equals("College"))
+				collegeIndex = i;
+			//else if etc.
+		}
+		 */
+
+		int indexOfGender = 1, indexOfMajor = 5;
+
+
+		while(!TextIO.eof())
+		{
+			String [] line = TextIO.getln().split(",");
+			if(line[0].equals("" + this.ID)){
+				addQualCharacteristic("Gender", line[indexOfGender]);
+				addQualCharacteristic("Major", line[indexOfMajor]);
+				// rinse and repeat for all desired characteristics
+				return;
+			}
+		}
+	}
+
+
+	/** Fills map 'quantitativeInfo' with desired characteristics. 
+	 * Pulls data from .csv file using TextIO interface. With proper
+	 * .csv formatting method should find columns relating to desired
+	 * characteristics without hardcoding in actual column indices
+	 */
+
+
+
+	public void fillQuantCharacteristics(String dataFilePath){
+
+		TextIO.readFile(dataFilePath);	
+
+		//code to automate finding of characteristics columns
+		//int netidIndex, gpaIndex, ageIndex, quizAvgIndex, etc. 
+
+		/*
+		String [] col = TextIO.getln().split(",");
+		for(int i = 0; i < col.length; i++){ //what does col.length equal?
+			if(col[i].equals("netid"))
+				netidIndex = i;
+			else if(col[i].equals("GPA"))
+				gpaIndex = i;
+			else if(col[i].equals("Age"))
+				ageIndex = i;
+			else if(col[i].equals("Quiz Average"))
+				quizAvgIndex = i;
+			//else if etc.
+		}
+		 */
+
+		//code should work because directly mimics fillQualCharacteristics
+		//but have no quantitative data to test as of now
+		while(!TextIO.eof())
+		{
+			String [] line = TextIO.getln().split(",");
+			if(line[0].equals("" + this.ID)){
+				//addQuantCharacteristic("GPA", new Double(line[gpaIndex]));
+				//addQuantCharacteristic("Quiz Average", new Double(line[quizAvgIndex]));
+				// rinse and repeat for all desired characteristics
+				return;
+			}
+		}
+
+
+	}
+
 }

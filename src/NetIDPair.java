@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * A simple pair POD that couples an integer ID code with 
@@ -8,7 +9,7 @@ import java.util.Arrays;
 public class NetIDPair {
 	private String netID;
 	private int code;
-	
+
 	/**
 	 * Struct constructor.
 	 * 
@@ -19,15 +20,15 @@ public class NetIDPair {
 		netID = newNetID;
 		code = newCode;	
 	}
-	
+
 	/**
 	 * @return The code associated with this netID.
 	 */	
 	public int getCode() { return code; }
-	
+
 	/**
 	 * @return The string representation of this pair. Just a comma
- 	 *         separated juxtaposition of netID and code.
+	 *         separated juxtaposition of netID and code.
 	 */
 	public String toString(){
 		char[] build = new char[netID.length()];
@@ -37,19 +38,19 @@ public class NetIDPair {
 		build[last] = netID.charAt(last);
 		return (new String(build)) + ": " + code;
 	}
-	
+
 	/**
 	 * @return True iff searchID matches this NetIDPair's netID.
 	 */
 	public boolean equals(String searchID){
 		return this.netID.equals(searchID);
 	}
-	
+
 	/**
 	 * @return True iff other.netID matches this NetIDPair's netID.
 	 */
 	public boolean equals(NetIDPair other){
 		return this.netID.equals(other.netID);
 	}
-	
+
 }
