@@ -20,8 +20,6 @@ class Student implements Iterable<PeerInteraction>{
 	/* ID of this Student. This value is immutable. */
 	private final int ID;
 
-	//private boolean female; //One possibility for what we could store here
-
 	//HashMap to hold qualitative data on student
 	private HashMap <String, String> qualitativeInfo;
 
@@ -51,19 +49,15 @@ class Student implements Iterable<PeerInteraction>{
 	 */
 	public Student(int code){
 		ID = code;
+		qualitativeInfo = new HashMap <String, String> (25);
+		quantitativeInfo = new HashMap <String, Double> (25);
+		fillQualCharacteristics("./src/EncodedRoster.txt");
+		fillQuantCharacteristics("./src/EncodedRoster.txt");
 		records = new ArrayList<PeerInteraction>();
-	}
-	/** 
-	 *  Constructor to initialize HashMaps already containing data.
-	 *  Necessary to maintain student anonmity while still keeping
-	 *  track of characteristics   
-	 */  
 
-	public Student(int code, HashMap <String, String> qual, HashMap <String, Double> quant){
-		ID = code;
-		records = new ArrayList<PeerInteraction>();
-		qualitativeInfo = qual;
-		quantitativeInfo = quant;
+		//for testing purposes to make sure no null values in HashMap
+		//System.out.println("Gender: " + this.getQualCharacteristic("Gender")
+		//		+ " Major: " + this.getQualCharacteristic("Major") + "\n");
 	}
 
 
@@ -330,6 +324,15 @@ class Student implements Iterable<PeerInteraction>{
 			System.out.println(elem);
 	}
 
+	public String getQualCharacteristic(String characteristic){
+		try{
+			return qualitativeInfo.get(characteristic);
+		}
+		catch (NullPointerException e){
+			return (characteristic + " was not found");
+		}
+	}
+
 	/**Add method for qualitative information on students.
 	 * 
 	 * 
@@ -365,6 +368,16 @@ class Student implements Iterable<PeerInteraction>{
 
 	}
 
+	public Double getQuantCharacteristic(String characteristic){
+		try{
+			return quantitativeInfo.get(characteristic);
+		}
+		catch (NullPointerException e){
+			System.out.println(characteristic + " was not found");
+			return null;
+		}	
+	}
+
 	/**Add method for quantitative information on students.
 	 * 
 	 * 
@@ -398,4 +411,119 @@ class Student implements Iterable<PeerInteraction>{
 	public Double setQuantCharacteristic(String characteristic, Double info){
 		return quantitativeInfo.replace(characteristic, info);
 	}
+
+	/** Accessor method to obtain map of qualitative info. Necessary for mapping
+	 * a Student Object's 'code' to certain characteristics because NetIDPair
+	 * class is last point at which student's netid is visible and all traces of
+	 * student identifiers are hidden afterwards
+	 * 
+	 * @return map of qualitative info on student
+	 */
+	public HashMap<String,String> getQualMap(){
+		return qualitativeInfo;
+	}
+
+	/** Accessor method to obtain map of quantitative info. Necessary for mapping
+	 * a Student Object's 'code' to certain characteristics because NetIDPair
+	 * class is last point at which student's netid is visible and all traces of
+	 * student identifiers are hidden afterwards
+	 * 
+	 * @return map of quantitative info on student
+	 */
+
+	public HashMap<String,Double> getQuantMap(){
+		return quantitativeInfo;
+	}
+
+	/** Fills map 'qualitativeInfo' with desired characteristics. 
+	 * Pulls data from .csv file using TextIO interface. With proper
+	 * .csv formatting method should find columns relating to desired
+	 * characteristics without hardcoding in actual column indices
+	 */
+
+
+	public void fillQualCharacteristics(String dataFilePath){
+
+		TextIO.readFile(dataFilePath);
+
+		/*
+		//code to automate finding of characteristics columns
+		int netidIndex, genderIndex, majorIndex, collegeIndex, etc. 
+
+		String [] col = TextIO.getln().split(",");
+		for(int i = 0; i < col.length; i++){ // need to find actual col.length value
+			if(col[i].equals("netid"))
+				netidIndex = i;
+			else if(col[i].equals("Gender"))
+				genderIndex = i;
+			else if(col[i].equals("Major"))
+				majorIndex = i;
+			else if(col[i].equals("College"))
+				collegeIndex = i;
+			//else if etc.
+		}
+		 */
+
+		int indexOfGender = 1, indexOfMajor = 5;
+
+
+		while(!TextIO.eof())
+		{
+			String [] line = TextIO.getln().split(",");
+			if(line[0].equals("" + this.ID)){
+				addQualCharacteristic("Gender", line[indexOfGender]);
+				addQualCharacteristic("Major", line[indexOfMajor]);
+				// rinse and repeat for all desired characteristics
+				return;
+			}
+		}
+	}
+
+
+	/** Fills map 'quantitativeInfo' with desired characteristics. 
+	 * Pulls data from .csv file using TextIO interface. With proper
+	 * .csv formatting method should find columns relating to desired
+	 * characteristics without hardcoding in actual column indices
+	 */
+
+
+
+	public void fillQuantCharacteristics(String dataFilePath){
+
+		TextIO.readFile(dataFilePath);	
+
+		//code to automate finding of characteristics columns
+		//int netidIndex, gpaIndex, ageIndex, quizAvgIndex, etc. 
+
+		/*
+		String [] col = TextIO.getln().split(",");
+		for(int i = 0; i < col.length; i++){ //what does col.length equal?
+			if(col[i].equals("netid"))
+				netidIndex = i;
+			else if(col[i].equals("GPA"))
+				gpaIndex = i;
+			else if(col[i].equals("Age"))
+				ageIndex = i;
+			else if(col[i].equals("Quiz Average"))
+				quizAvgIndex = i;
+			//else if etc.
+		}
+		 */
+
+		//code should work because directly mimics fillQualCharacteristics
+		//but have no quantitative data to test as of now
+		while(!TextIO.eof())
+		{
+			String [] line = TextIO.getln().split(",");
+			if(line[0].equals("" + this.ID)){
+				//addQuantCharacteristic("GPA", new Double(line[gpaIndex]));
+				//addQuantCharacteristic("Quiz Average", new Double(line[quizAvgIndex]));
+				// rinse and repeat for all desired characteristics
+				return;
+			}
+		}
+
+
+	}
+
 }
